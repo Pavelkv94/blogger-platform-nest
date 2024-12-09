@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, NotFoundException, Param, Post, Query } from '@nestjs/common';
 import { UsersService } from '../application/users.service';
 import { UsersQueryRepository } from '../infrastructure/users.query-repository';
 import { CreateUserDto } from '../dto/create-user.dto';
@@ -40,7 +40,11 @@ export class UsersController {
   @ApiNoContentResponse() //swagger
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  deleteUser(@Param('id') id: string): Promise<void> {
-    return this.usersService.deleteUser(id);
+  async deleteUser(@Param('id') id: string): Promise<void> {
+    const user = await this.usersQueryRepository.findUserById(id);
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    await this.usersService.deleteUser(id);
   }
 }

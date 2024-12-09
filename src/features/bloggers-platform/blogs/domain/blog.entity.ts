@@ -30,7 +30,6 @@ export class BlogEntity {
     blog.name = dto.name;
     blog.description = dto.description;
     blog.websiteUrl = dto.websiteUrl;
-    blog.isMembership = dto.isMembership;
 
     return blog as BlogDocument;
   }

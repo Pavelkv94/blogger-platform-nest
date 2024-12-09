@@ -1,14 +1,15 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { UserDocument, UserEntity, UserModelType } from '../domain/user.entity';
 import { InjectModel } from '@nestjs/mongoose';
+import { DeletionStatus } from 'src/core/dto/deletion-status';
 
 @Injectable()
 export class UsersRepository {
   constructor(@InjectModel(UserEntity.name) private UserModel: UserModelType) {}
 
   async findUserById(id: string): Promise<UserDocument | null> {
-    const userDocument = await this.UserModel.findOne({ _id: id });
-    if (!userDocument) {
+    const userDocument = await this.UserModel.findOne({ _id: id, deletionStatus: DeletionStatus.NotDeleted });
+    if (!userDocument || !id) {
       return null;
     }
 

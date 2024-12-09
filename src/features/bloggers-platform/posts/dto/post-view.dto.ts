@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { LikeStatusType } from '../../likes/dto/like-status.dto';
+import { LikeStatuses } from '../../likes/dto/like-status.dto';
 import { NewestLike, PostDocument } from '../domain/post.entity';
 
 export class PostViewDto {
@@ -16,16 +16,16 @@ export class PostViewDto {
   @ApiProperty({ example: 'Blog name', description: 'Name of the blog' })
   blogName: string;
   @ApiProperty({ example: 'Created at', description: 'Created at date' })
-  createdAt: string;
+  createdAt: Date;
   @ApiProperty({ example: 'Extended likes info', description: 'Extended likes info' })
   extendedLikesInfo: {
     likesCount: number;
     dislikesCount: number;
-    myStatus: LikeStatusType;
+    myStatus: LikeStatuses;
     newestLikes: NewestLike[];
   };
 
-  constructor(model: PostDocument, myStatus: LikeStatusType, newestLikes: NewestLike[]) {
+  constructor(model: PostDocument, myStatus: LikeStatuses, newestLikes: NewestLike[]) {
     this.id = model._id.toString();
     this.title = model.title;
     this.shortDescription = model.shortDescription;
@@ -41,7 +41,7 @@ export class PostViewDto {
     };
   }
 
-  static mapToView(post: PostDocument, myStatus: LikeStatusType, newestLikes: NewestLike[]): PostViewDto {
+  static mapToView(post: PostDocument, myStatus: LikeStatuses, newestLikes: NewestLike[]): PostViewDto {
     return new PostViewDto(post, myStatus, newestLikes);
   }
 }

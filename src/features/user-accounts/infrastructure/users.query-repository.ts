@@ -45,8 +45,9 @@ export class UsersQueryRepository {
     });
   }
 
-  async findUserById(userId: string): Promise<UserEntity | null> {
-    return this.UserModel.findOne({ _id: userId, deletionStatus: DeletionStatus.NotDeleted });
+  async findUserById(userId: string): Promise<UserViewDto | null> {
+    const user = await this.UserModel.findOne({ _id: userId, deletionStatus: DeletionStatus.NotDeleted });
+    return user ? UserViewDto.mapToView(user) : null;
   }
   async getUsersCount(searchLoginTerm: string, searchEmailTerm: string): Promise<number> {
     let filter: any = {

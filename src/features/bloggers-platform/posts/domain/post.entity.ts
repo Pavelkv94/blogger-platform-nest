@@ -4,13 +4,15 @@ import { DeletionStatus } from 'src/core/dto/deletion-status';
 import { CreatePostDto } from '../dto/post-create.dto';
 import { UpdatePostDto } from '../dto/post-update.dto';
 
+//! Ask about intefaces
 export interface NewestLike {
   addedAt: string;
   userId: string;
   login: string;
 }
 
-export interface ExtendedLikesInfo {
+//! Ask about intefaces
+interface ExtendedLikesInfo {
   likesCount: number;
   dislikesCount: number;
   newestLikes: NewestLike[];
@@ -45,8 +47,8 @@ export class PostEntity {
   @Prop({ type: String, required: true })
   blogName: string;
 
-  @Prop({ type: String, required: true })
-  createdAt: string;
+  @Prop({ type: Date })
+  createdAt: Date;
 
   @Prop({ type: String, required: true, default: DeletionStatus.NotDeleted })
   deletionStatus: DeletionStatus;

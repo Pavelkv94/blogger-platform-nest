@@ -6,6 +6,7 @@ import { GetPostsQueryParams } from '../dto/get-posts-query-params.input-dto';
 import { PostViewDto } from '../dto/post-view.dto';
 import { DeletionStatus } from 'src/core/dto/deletion-status';
 import { PaginatedViewDto } from 'src/core/dto/base.paginated.view-dto';
+import { LikeStatuses } from '../../likes/dto/like-status.dto';
 
 @Injectable()
 export class PostsQueryRepository {
@@ -14,7 +15,7 @@ export class PostsQueryRepository {
     private readonly postModel: Model<PostEntity>,
   ) {}
 
-  async findAll(query: GetPostsQueryParams, blog_id?: string): Promise<PaginatedViewDto<PostViewDto[]>> {
+  async findAllPosts(query: GetPostsQueryParams, blog_id?: string): Promise<PaginatedViewDto<PostViewDto[]>> {
     const { sortBy, sortDirection, pageNumber, pageSize } = query;
 
     const filter: any = blog_id ? { blogId: blog_id } : {};
@@ -25,7 +26,7 @@ export class PostsQueryRepository {
       .limit(pageSize)
       .sort({ [sortBy]: sortDirection });
 
-    const postsView = postsFromDb.map((post) => PostViewDto.mapToView(post, 'None', []));
+    const postsView = postsFromDb.map((post) => PostViewDto.mapToView(post, LikeStatuses.None, []));
 
     const postsCount = await this.#getPostsCount(blog_id);
 
@@ -86,7 +87,7 @@ export class PostsQueryRepository {
 
   async findById(post_id: string): Promise<PostViewDto | null> {
     const post = await this.postModel.findOne({ _id: post_id, deletionStatus: DeletionStatus.NotDeleted });
-    return post ? PostViewDto.mapToView(post, 'None', []) : null;
+    return post ? PostViewDto.mapToView(post, LikeStatuses.None, []) : null;
   }
 
   async #getPostsCount(blog_id?: string): Promise<number> {

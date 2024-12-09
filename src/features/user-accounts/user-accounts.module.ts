@@ -9,7 +9,7 @@ import { BcryptService } from 'src/adapters/bcrypt.service';
 
 @Module({
   imports: [MongooseModule.forFeature([{ name: UserEntity.name, schema: UserSchema }])],
-  exports: [],
+  exports: [MongooseModule],
   controllers: [UsersController],
   providers: [UsersService, UsersQueryRepository, UsersRepository, BcryptService],
 })

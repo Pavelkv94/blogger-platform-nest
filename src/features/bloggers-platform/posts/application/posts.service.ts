@@ -1,8 +1,9 @@
 import { Injectable } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
 import { PostsRepository } from '../infrastructure/posts.repository';
-import { CreatePostDto } from '../dto/post-create.dto';
+import { CreatePostDto, CreatePostForBlogDto } from '../dto/post-create.dto';
 import { UpdatePostDto } from '../dto/post-update.dto';
-import { PostEntity } from '../domain/post.entity';
+import { PostEntity, PostModelType } from '../domain/post.entity';
 import { BlogsService } from '../../blogs/application/blogs.service';
 
 @Injectable()
@@ -10,11 +11,21 @@ export class PostsService {
   constructor(
     private readonly postsRepository: PostsRepository,
     private readonly blogsService: BlogsService,
+    @InjectModel(PostEntity.name) private PostModel: PostModelType,
   ) {}
 
   async create(createPostDto: CreatePostDto): Promise<string> {
     const blog = await this.blogsService.findById(createPostDto.blogId);
-    const newPost = PostEntity.buildInstance(createPostDto, blog.name);
+    const newPost = this.PostModel.buildInstance(createPostDto, blog.name);
+    await this.postsRepository.save(newPost);
+
+    return newPost._id.toString();
+  }
+
+  async createForBlog(createPostDto: CreatePostForBlogDto, blogId: string): Promise<string> {
+    const blog = await this.blogsService.findById(blogId);
+    const createPostDtoWithBlogId = { ...createPostDto, blogId };
+    const newPost = this.PostModel.buildInstance(createPostDtoWithBlogId, blog.name);
     await this.postsRepository.save(newPost);
 
     return newPost._id.toString();

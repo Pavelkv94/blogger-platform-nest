@@ -12,6 +12,9 @@ import { PostsRepository } from './posts/infrastructure/posts.repository';
 import { PostsController } from './posts/api/posts.controller';
 import { PostSchema } from './posts/domain/post.entity';
 import { PostEntity } from './posts/domain/post.entity';
+import { CommentSchema } from './comments/domain/comment.entity';
+import { CommentEntity } from './comments/domain/comment.entity';
+import { CommentsQueryRepository } from './comments/infrastructure/comments.query-repository';
 
 @ApiTags('Bloggers Platform') //swagger
 @Module({
@@ -19,10 +22,19 @@ import { PostEntity } from './posts/domain/post.entity';
     MongooseModule.forFeature([
       { name: BlogEntity.name, schema: BlogSchema },
       { name: PostEntity.name, schema: PostSchema },
+      { name: CommentEntity.name, schema: CommentSchema },
     ]),
   ],
   exports: [],
   controllers: [BlogsController, PostsController],
-  providers: [BlogsService, BlogsRepository, BlogsQueryRepository, PostsService, PostsRepository, PostsQueryRepository],
+  providers: [
+    BlogsService,
+    BlogsRepository,
+    BlogsQueryRepository,
+    PostsService,
+    PostsRepository,
+    PostsQueryRepository,
+    CommentsQueryRepository,
+  ],
 })
 export class BloggersPlatformModule {}

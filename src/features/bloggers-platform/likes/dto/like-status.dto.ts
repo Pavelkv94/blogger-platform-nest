@@ -1,5 +1,9 @@
-export type LikeStatusType = 'None' | 'Like' | 'Dislike';
+export enum LikeStatuses {
+  None = 'None',
+  Like = 'Like',
+  Dislike = 'Dislike',
+}
 
 export class LikeStatusDto {
-  myStatus: LikeStatusType;
+  myStatus: LikeStatuses;
 }
