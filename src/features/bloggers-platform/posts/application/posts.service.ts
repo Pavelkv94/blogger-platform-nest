@@ -32,7 +32,7 @@ export class PostsService {
   }
 
   async update(id: string, updatePostDto: UpdatePostDto): Promise<void> {
-    const post = await this.postsRepository.findOrNotFoundFail(id);
+    const post = await this.postsRepository.findPostByIdOrNotFoundFail(id);
 
     post.update(updatePostDto);
 
@@ -40,7 +40,7 @@ export class PostsService {
   }
 
   async delete(id: string): Promise<void> {
-    const post = await this.postsRepository.findOrNotFoundFail(id);
+    const post = await this.postsRepository.findPostByIdOrNotFoundFail(id);
 
     post.makeDeleted();
 

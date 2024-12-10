@@ -1,10 +1,10 @@
-import { Body, Controller, Delete, Get, HttpStatus, HttpCode, Param, Post, Query, Put, NotFoundException } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpStatus, HttpCode, Param, Post, Query, Put } from '@nestjs/common';
 import { BlogsService } from '../application/blogs.service';
 import { BlogsQueryRepository } from '../infrastructure/blogs.query-repository';
 import { BlogCreateDto } from '../dto/blog-create.dto';
 import { ApiNoContentResponse, ApiNotFoundResponse, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { BlogViewDto } from '../dto/blog-view.dto';
-import { PaginatedViewDto } from 'src/core/dto/base.paginated.view-dto';
+import { PaginatedBlogViewDto, PaginatedPostViewDto } from 'src/core/dto/base.paginated.view-dto';
 import { GetBlogsQueryParams } from '../dto/get-blogs-query-params.input-dto';
 import { BlogUpdateDto } from '../dto/blog-update.dto';
 import { GetPostsQueryParams } from '../../posts/dto/get-posts-query-params.input-dto';
@@ -12,6 +12,7 @@ import { PostsQueryRepository } from '../../posts/infrastructure/posts.query-rep
 import { PostViewDto } from '../../posts/dto/post-view.dto';
 import { CreatePostForBlogDto } from '../../posts/dto/post-create.dto';
 import { PostsService } from '../../posts/application/posts.service';
+import { NotFoundDomainException } from 'src/core/exeptions/domain-exceptions';
 
 @ApiTags('Blogs') //swagger
 @Controller('blogs')
@@ -24,9 +25,9 @@ export class BlogsController {
   ) {}
 
   @ApiOperation({ summary: 'Get all blogs' }) //swagger
-  @ApiOkResponse({ type: PaginatedViewDto }) //swagger
+  @ApiOkResponse({ type: PaginatedBlogViewDto }) //swagger
   @Get()
-  getBlogs(@Query() query: GetBlogsQueryParams): Promise<PaginatedViewDto<BlogViewDto[]>> {
+  findBlogs(@Query() query: GetBlogsQueryParams): Promise<PaginatedBlogViewDto> {
     const blogs = this.blogsQueryRepository.findBlogs(query);
     return blogs;
   }
@@ -34,10 +35,10 @@ export class BlogsController {
   @ApiOperation({ summary: 'Get a blog by ID' }) //swagger
   @ApiOkResponse({ type: BlogViewDto }) //swagger
   @Get(':id')
-  async getBlog(@Param('id') id: string): Promise<BlogViewDto> {
-    const blog = await this.blogsQueryRepository.findBlogById(id);
+  async findBlogByIdOrNotFoundFail(@Param('id') id: string): Promise<BlogViewDto> {
+    const blog = await this.blogsQueryRepository.findBlogByIdOrNotFoundFail(id);
     if (!blog) {
-      throw new NotFoundException('Blog not found');
+      throw NotFoundDomainException.create('Blog not found');
     }
     return blog;
   }
@@ -46,9 +47,9 @@ export class BlogsController {
   @ApiOkResponse({ type: BlogViewDto }) //swagger
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  async createBlog(@Body() body: BlogCreateDto): Promise<BlogViewDto | null> {
+  async createBlog(@Body() body: BlogCreateDto): Promise<BlogViewDto> {
     const blogId = await this.blogsService.createBlog(body);
-    const newBlog = await this.blogsQueryRepository.findBlogById(blogId);
+    const newBlog = await this.blogsQueryRepository.findBlogByIdOrNotFoundFail(blogId);
 
     return newBlog;
   }
@@ -72,13 +73,11 @@ export class BlogsController {
 
   // BLOG POSTS
   @ApiOperation({ summary: 'Get all posts by blog ID' }) //swagger
-  @ApiOkResponse({ type: PaginatedViewDto }) //swagger
+  @ApiOkResponse({ type: PaginatedPostViewDto }) //swagger
   @Get(':blogId/posts')
-  async getPostsByBlogId(@Query() query: GetPostsQueryParams, @Param('blogId') blogId: string): Promise<PaginatedViewDto<PostViewDto[]>> {
-    const blog = await this.blogsQueryRepository.findBlogById(blogId);
-    if (!blog) {
-      throw new NotFoundException('Blog not found');
-    }
+  async getPostsByBlogId(@Query() query: GetPostsQueryParams, @Param('blogId') blogId: string): Promise<PaginatedPostViewDto> {
+    const blog = await this.blogsQueryRepository.findBlogByIdOrNotFoundFail(blogId);
+
     const posts = await this.postQueryRepository.findAllPosts(query, blog.id);
 
     return posts;
@@ -87,9 +86,9 @@ export class BlogsController {
   @ApiOperation({ summary: 'Create a new post for a blog' }) //swagger
   @ApiOkResponse({ type: PostViewDto }) //swagger
   @Post(':blogId/posts')
-  async createPostByBlogId(@Param('blogId') blogId: string, @Body() body: CreatePostForBlogDto): Promise<PostViewDto | null> {
+  async createPostByBlogId(@Param('blogId') blogId: string, @Body() body: CreatePostForBlogDto): Promise<PostViewDto> {
     const newPostId = await this.postService.createForBlog(body, blogId);
-    const newPost = await this.postQueryRepository.findById(newPostId);
+    const newPost = await this.postQueryRepository.findPostByIdOrNotFoundFail(newPostId);
 
     return newPost;
   }

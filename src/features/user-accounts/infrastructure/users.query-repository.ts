@@ -3,14 +3,14 @@ import { InjectModel } from '@nestjs/mongoose';
 import { UserEntity, UserModelType } from '../domain/user.entity';
 import { UserViewDto } from '../dto/user-view.dto';
 import { GetUsersQueryParams } from '../dto/get-users-query-params.input-dto';
-import { PaginatedViewDto } from 'src/core/dto/base.paginated.view-dto';
+import { PaginatedUserViewDto } from 'src/core/dto/base.paginated.view-dto';
 import { DeletionStatus } from 'src/core/dto/deletion-status';
 
 @Injectable()
 export class UsersQueryRepository {
   constructor(@InjectModel(UserEntity.name) private UserModel: UserModelType) {}
 
-  async findUsers(queryData: GetUsersQueryParams): Promise<PaginatedViewDto<UserViewDto[]>> {
+  async findUsers(queryData: GetUsersQueryParams): Promise<PaginatedUserViewDto> {
     const { pageSize, pageNumber, sortBy, sortDirection, searchLoginTerm, searchEmailTerm } = queryData;
 
     let filter: any = {
@@ -37,7 +37,7 @@ export class UsersQueryRepository {
 
     const usersCount = await this.getUsersCount(searchLoginTerm || '', searchEmailTerm || '');
 
-    return PaginatedViewDto.mapToView({
+    return PaginatedUserViewDto.mapToView({
       items: usersView,
       page: pageNumber,
       size: pageSize,

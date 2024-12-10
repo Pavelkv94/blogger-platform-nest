@@ -4,15 +4,31 @@ import { BlogCreateDto } from '../dto/blog-create.dto';
 import { BlogUpdateDto } from '../dto/blog-update.dto';
 import { DeletionStatus } from 'src/core/dto/deletion-status';
 
+
+export const nameConstraints = {
+  minLength: 0,
+  maxLength: 15,
+};
+
+export const descriptionConstraints = {
+  minLength: 0,
+  maxLength: 500,
+};
+
+export const websiteUrlConstraints = {
+  minLength: 0,
+  maxLength: 100,
+};
+
 @Schema({ timestamps: true })
 export class BlogEntity {
-  @Prop({ type: String, required: true })
+  @Prop({ type: String, required: true, ...nameConstraints })
   name: string;
 
-  @Prop({ type: String, required: true })
+  @Prop({ type: String, required: true, ...descriptionConstraints })
   description: string;
 
-  @Prop({ type: String, required: true })
+  @Prop({ type: String, required: true, ...websiteUrlConstraints })
   websiteUrl: string;
 
   @Prop({ type: Boolean, required: true, default: false })

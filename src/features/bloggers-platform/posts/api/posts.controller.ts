@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, HttpCode, HttpStatus, Query, NotFoundException } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Body, Param, HttpCode, HttpStatus, Query } from '@nestjs/common';
 import { PostsService } from '../application/posts.service';
 import { CreatePostDto } from '../dto/post-create.dto';
 import { UpdatePostDto } from '../dto/post-update.dto';
@@ -29,10 +29,7 @@ export class PostsController {
   @ApiResponse({ status: 200, type: PostViewDto })
   @Get(':id')
   async findOne(@Param('id') id: string): Promise<PostViewDto> {
-    const post = await this.postsQueryRepository.findById(id);
-    if (!post) {
-      throw new NotFoundException('Post not found');
-    }
+    const post = await this.postsQueryRepository.findPostByIdOrNotFoundFail(id);
     return post;
   }
 
@@ -40,9 +37,9 @@ export class PostsController {
   @ApiResponse({ status: 201, type: PostViewDto }) //swagger
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  async create(@Body() createPostDto: CreatePostDto): Promise<PostViewDto | null> {
+  async create(@Body() createPostDto: CreatePostDto): Promise<PostViewDto> {
     const id = await this.postsService.create(createPostDto);
-    const post = await this.postsQueryRepository.findById(id);
+    const post = await this.postsQueryRepository.findPostByIdOrNotFoundFail(id);
     return post;
   }
 

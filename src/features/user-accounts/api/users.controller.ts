@@ -1,11 +1,12 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpStatus, NotFoundException, Param, Post, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, Query } from '@nestjs/common';
 import { UsersService } from '../application/users.service';
 import { UsersQueryRepository } from '../infrastructure/users.query-repository';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { GetUsersQueryParams } from '../dto/get-users-query-params.input-dto';
 import { UserViewDto } from '../dto/user-view.dto';
-import { PaginatedViewDto } from 'src/core/dto/base.paginated.view-dto';
-import { ApiNoContentResponse, ApiOkResponse, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { PaginatedUserViewDto } from 'src/core/dto/base.paginated.view-dto';
+import { ApiNoContentResponse, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { Types } from 'mongoose';
 
 @ApiTags('Users') //swagger
 @Controller('users')
@@ -16,10 +17,9 @@ export class UsersController {
   ) {}
 
   @ApiOperation({ summary: 'Get all users' }) //swagger
-  @ApiOkResponse({ type: PaginatedViewDto }) //swagger
-  @ApiQuery({ type: GetUsersQueryParams }) //swagger
+  @ApiOkResponse({ type: PaginatedUserViewDto }) //swagger
   @Get()
-  getUsers(@Query() query: GetUsersQueryParams): Promise<PaginatedViewDto<UserViewDto[]>> {
+  getUsers(@Query() query: GetUsersQueryParams): Promise<PaginatedUserViewDto> {
     const users = this.usersQueryRepository.findUsers(query);
 
     return users;
@@ -40,11 +40,7 @@ export class UsersController {
   @ApiNoContentResponse() //swagger
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async deleteUser(@Param('id') id: string): Promise<void> {
-    const user = await this.usersQueryRepository.findUserById(id);
-    if (!user) {
-      throw new NotFoundException('User not found');
-    }
-    await this.usersService.deleteUser(id);
+  async deleteUser(@Param('id') id: Types.ObjectId): Promise<void> {
+    await this.usersService.deleteUser(id.toString());
   }
 }

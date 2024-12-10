@@ -13,7 +13,7 @@ export class BlogsService {
   ) {}
 
   async findById(id: string): Promise<BlogDocument> {
-    return this.blogsRepository.findOrNotFoundFail(id);
+    return this.blogsRepository.findBlogByIdOrNotFoundFail(id);
   }
 
   async createBlog(createDto: BlogCreateDto): Promise<string> {
@@ -25,7 +25,7 @@ export class BlogsService {
   }
 
   async updateBlog(id: string, updateDto: BlogUpdateDto): Promise<void> {
-    const blog = await this.blogsRepository.findOrNotFoundFail(id);
+    const blog = await this.blogsRepository.findBlogByIdOrNotFoundFail(id);
 
     blog.update(updateDto);
 
@@ -33,7 +33,7 @@ export class BlogsService {
   }
 
   async deleteBlog(id: string): Promise<void> {
-    const blog = await this.blogsRepository.findOrNotFoundFail(id);
+    const blog = await this.blogsRepository.findBlogByIdOrNotFoundFail(id);
 
     blog.makeDeleted();
 

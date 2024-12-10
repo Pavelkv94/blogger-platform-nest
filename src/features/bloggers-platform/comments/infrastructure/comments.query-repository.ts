@@ -5,13 +5,13 @@ import { DeletionStatus } from 'src/core/dto/deletion-status';
 import { CommentViewDto } from '../dto/comment-view.dto';
 import { LikeStatuses } from '../../likes/dto/like-status.dto';
 import { GetPostsQueryParams } from '../../posts/dto/get-posts-query-params.input-dto';
-import { PaginatedViewDto } from 'src/core/dto/base.paginated.view-dto';
+import { PaginatedCommentViewDto } from 'src/core/dto/base.paginated.view-dto';
 
 @Injectable()
 export class CommentsQueryRepository {
   constructor(@InjectModel(CommentEntity.name) private CommentModel: CommentModelType) {}
 
-  async findAllComments(postId: string, query: GetPostsQueryParams): Promise<PaginatedViewDto<CommentViewDto[]>> {
+  async findAllComments(postId: string, query: GetPostsQueryParams): Promise<PaginatedCommentViewDto> {
     const { sortBy, sortDirection, pageNumber, pageSize } = query;
 
     const filter: any = { postId: postId };
@@ -23,7 +23,7 @@ export class CommentsQueryRepository {
 
     const commentsView = commentsFromDb.map((comment) => CommentViewDto.mapToView(comment, LikeStatuses.None));
 
-    return PaginatedViewDto.mapToView({
+    return PaginatedCommentViewDto.mapToView({
       items: commentsView,
       page: pageNumber,
       size: pageSize,

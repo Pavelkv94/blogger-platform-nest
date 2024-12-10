@@ -5,8 +5,9 @@ import { PostEntity } from '../domain/post.entity';
 import { GetPostsQueryParams } from '../dto/get-posts-query-params.input-dto';
 import { PostViewDto } from '../dto/post-view.dto';
 import { DeletionStatus } from 'src/core/dto/deletion-status';
-import { PaginatedViewDto } from 'src/core/dto/base.paginated.view-dto';
+import { PaginatedPostViewDto } from 'src/core/dto/base.paginated.view-dto';
 import { LikeStatuses } from '../../likes/dto/like-status.dto';
+import { NotFoundDomainException } from 'src/core/exeptions/domain-exceptions';
 
 @Injectable()
 export class PostsQueryRepository {
@@ -15,7 +16,7 @@ export class PostsQueryRepository {
     private readonly postModel: Model<PostEntity>,
   ) {}
 
-  async findAllPosts(query: GetPostsQueryParams, blog_id?: string): Promise<PaginatedViewDto<PostViewDto[]>> {
+  async findAllPosts(query: GetPostsQueryParams, blog_id?: string): Promise<PaginatedPostViewDto> {
     const { sortBy, sortDirection, pageNumber, pageSize } = query;
 
     const filter: any = blog_id ? { blogId: blog_id } : {};
@@ -30,7 +31,7 @@ export class PostsQueryRepository {
 
     const postsCount = await this.#getPostsCount(blog_id);
 
-    return PaginatedViewDto.mapToView({
+    return PaginatedPostViewDto.mapToView({
       items: postsView,
       page: pageNumber,
       size: pageSize,
@@ -85,9 +86,12 @@ export class PostsQueryRepository {
     //   };
   }
 
-  async findById(post_id: string): Promise<PostViewDto | null> {
+  async findPostByIdOrNotFoundFail(post_id: string): Promise<PostViewDto> {
     const post = await this.postModel.findOne({ _id: post_id, deletionStatus: DeletionStatus.NotDeleted });
-    return post ? PostViewDto.mapToView(post, LikeStatuses.None, []) : null;
+    if (!post) {
+      throw NotFoundDomainException.create('Post not found');
+    }
+    return PostViewDto.mapToView(post, LikeStatuses.None, []);
   }
 
   async #getPostsCount(blog_id?: string): Promise<number> {
