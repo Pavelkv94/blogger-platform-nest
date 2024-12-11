@@ -39,7 +39,7 @@ export const NotFoundDomainException = ConcreteDomainExceptionFactory(
   DomainExceptionCode.NotFound,
 );
 export const BadRequestDomainException = ConcreteDomainExceptionFactory(
-  'Bed Request',
+  'Bad Request',
   DomainExceptionCode.BadRequest,
 );
 export const ForbiddenDomainException = ConcreteDomainExceptionFactory(

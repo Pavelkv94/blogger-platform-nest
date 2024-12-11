@@ -8,11 +8,11 @@ import { ConfigModule } from '@nestjs/config';
   imports: [
     ConfigModule.forRoot(),
     MongooseModule.forRoot(process.env.MONGO_URL ?? '', {
-      dbName: process.env.DB_NAME ?? 'default'
+      dbName: process.env.DB_NAME ?? 'default',
     }),
     UserAccountsModule,
     BloggersPlatformModule,
-    TestingModule
+    TestingModule,
   ],
   controllers: [],
   providers: [],

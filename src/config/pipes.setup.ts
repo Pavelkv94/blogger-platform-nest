@@ -37,9 +37,10 @@ export function pipesSetup(app: INestApplication) {
       //class-transformer создает экземпляр dto
       //соответственно применятся значения по-умолчанию
       //и методы классов dto
-      transform: true,
-      //Выдавать первую ошибку для каждого поля
+      transform: true, // транформирует данные по типам, например если приходит uri параметр id строкой но указать тип number то он автоматически трансформирует в число
+      //Выдавать первую ошибку для каждого поля если их много
       stopAtFirstError: true,
+      //получить все ошибки и обработать более кастомно
       exceptionFactory: (errors) => {
         const formattedErrors = errorFormatter(errors);
 

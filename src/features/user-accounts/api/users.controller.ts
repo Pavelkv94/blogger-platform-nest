@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, Query, UseGuards } from '@nestjs/common';
 import { UsersService } from '../application/users.service';
 import { UsersQueryRepository } from '../infrastructure/users.query-repository';
 import { CreateUserDto } from '../dto/create-user.dto';
@@ -7,8 +7,10 @@ import { UserViewDto } from '../dto/user-view.dto';
 import { PaginatedUserViewDto } from 'src/core/dto/base.paginated.view-dto';
 import { ApiNoContentResponse, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Types } from 'mongoose';
+import { BasicAuthGuard } from 'src/core/guards/basic-auth.guard';
 
 @ApiTags('Users') //swagger
+@UseGuards(BasicAuthGuard)
 @Controller('users')
 export class UsersController {
   constructor(
@@ -31,13 +33,12 @@ export class UsersController {
   @HttpCode(HttpStatus.CREATED)
   async createUser(@Body() body: CreateUserDto) {
     const userId = await this.usersService.createUser(body);
-    const newUser = await this.usersQueryRepository.findUserById(userId);
+    const newUser = await this.usersQueryRepository.findUserByIdOrNotFound(userId);
 
     return newUser;
   }
-
   @ApiOperation({ summary: 'Delete a user by ID' }) //swagger
-  @ApiNoContentResponse() //swagger
+  @ApiNoContentResponse({ description: 'No Content' }) //swagger
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   async deleteUser(@Param('id') id: Types.ObjectId): Promise<void> {

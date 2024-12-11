@@ -16,7 +16,7 @@ export class TestingController {
   ) {}
 
   @ApiOperation({ summary: 'Delete all data' }) //swagger
-  @ApiNoContentResponse() //swagger
+  @ApiNoContentResponse({ description: 'All data is deleted' }) //swagger
   @Delete('all-data')
   @HttpCode(204)
   async removeAll() {

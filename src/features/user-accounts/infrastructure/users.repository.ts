@@ -17,6 +17,18 @@ export class UsersRepository {
     return userDocument;
   }
 
+  async findUserByLoginOrEmail(loginOrEmail: string): Promise<UserDocument | null> {
+    const userDocument = await this.UserModel.findOne({
+      $or: [{ email: loginOrEmail }, { login: loginOrEmail }],
+      deletionStatus: DeletionStatus.NotDeleted,
+    });
+    if (!userDocument || !loginOrEmail) {
+      return null;
+    }
+
+    return userDocument;
+  }
+
   async save(user: UserDocument) {
     await user.save();
   }

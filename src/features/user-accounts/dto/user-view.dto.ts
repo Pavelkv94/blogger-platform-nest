@@ -1,5 +1,5 @@
 import { UserDocument } from '../domain/user.entity';
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, OmitType } from '@nestjs/swagger';
 
 export class UserViewDto {
   @ApiProperty({ example: 'email' })
@@ -20,5 +20,19 @@ export class UserViewDto {
 
   static mapToView(user: UserDocument): UserViewDto {
     return new UserViewDto(user);
+  }
+}
+
+export class MeViewDto extends OmitType(UserViewDto, ['createdAt', 'id'] as const) {
+  userId: string;
+
+  static mapToView(user: UserDocument): MeViewDto {
+    const dto = new MeViewDto();
+
+    dto.email = user.email;
+    dto.login = user.login;
+    dto.userId = user._id.toString();
+
+    return dto;
   }
 }

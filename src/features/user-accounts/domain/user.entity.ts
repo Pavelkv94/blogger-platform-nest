@@ -7,11 +7,6 @@ export const loginConstraints = {
   maxLength: 10,
 };
 
-export const passwordConstraints = {
-  minLength: 6,
-  maxLength: 20,
-};
-
 @Schema({ timestamps: true })
 export class UserEntity {
   @Prop({ type: String, required: true, ...loginConstraints })

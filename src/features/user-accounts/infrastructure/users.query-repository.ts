@@ -1,10 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { UserEntity, UserModelType } from '../domain/user.entity';
-import { UserViewDto } from '../dto/user-view.dto';
+import { MeViewDto, UserViewDto } from '../dto/user-view.dto';
 import { GetUsersQueryParams } from '../dto/get-users-query-params.input-dto';
 import { PaginatedUserViewDto } from 'src/core/dto/base.paginated.view-dto';
 import { DeletionStatus } from 'src/core/dto/deletion-status';
+import { NotFoundDomainException } from 'src/core/exeptions/domain-exceptions';
 
 @Injectable()
 export class UsersQueryRepository {
@@ -45,9 +46,23 @@ export class UsersQueryRepository {
     });
   }
 
-  async findUserById(userId: string): Promise<UserViewDto | null> {
+  async findUserByIdOrNotFound(userId: string): Promise<UserViewDto> {
     const user = await this.UserModel.findOne({ _id: userId, deletionStatus: DeletionStatus.NotDeleted });
-    return user ? UserViewDto.mapToView(user) : null;
+
+    if (!user) {
+      throw NotFoundDomainException.create();
+    }
+
+    return UserViewDto.mapToView(user);
+  }
+  async findMeByIdOrNotFound(userId: string): Promise<MeViewDto> {
+    const user = await this.UserModel.findOne({ _id: userId, deletionStatus: DeletionStatus.NotDeleted });
+
+    if (!user) {
+      throw NotFoundDomainException.create();
+    }
+
+    return MeViewDto.mapToView(user);
   }
   async getUsersCount(searchLoginTerm: string, searchEmailTerm: string): Promise<number> {
     let filter: any = {
