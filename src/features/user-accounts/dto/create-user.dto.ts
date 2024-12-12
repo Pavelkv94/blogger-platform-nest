@@ -9,6 +9,7 @@ export class CreateUserDto {
   @Length(loginConstraints.minLength, loginConstraints.maxLength)
   @Trim()
   readonly login: string;
+  
   @ApiProperty({ example: 'example@example.com' })
   @IsString()
   @IsEmail()
@@ -19,3 +20,5 @@ export class CreateUserDto {
   @Length(6, 10)
   readonly password: string;
 }
+
+export class RegistrationInputDto extends CreateUserDto {}

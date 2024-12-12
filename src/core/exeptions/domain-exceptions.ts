@@ -3,7 +3,7 @@ import { DomainExceptionCode } from './domain-exception-codes';
 export class ErrorExtension {
   constructor(
     public message: string,
-    public key: string | null = null,
+    public field: string | null = null,
   ) {}
 }
 
@@ -28,8 +28,8 @@ function ConcreteDomainExceptionFactory(
       super(commonMessage, code, extensions);
     }
 
-    static create(message?: string, key?: string) {
-      return new this(message ? [new ErrorExtension(message, key)] : []);
+    static create(message?: string, field?: string) {
+      return new this(message ? [new ErrorExtension(message, field)] : []);
     }
   };
 }

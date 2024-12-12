@@ -5,9 +5,14 @@ import { UpdatePostDto } from '../dto/post-update.dto';
 import { GetPostsQueryParams } from '../dto/get-posts-query-params.input-dto';
 import { PostsQueryRepository } from '../infrastructure/posts.query-repository';
 import { PostViewDto } from '../dto/post-view.dto';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { CommentViewDto } from '../../comments/dto/comment-view.dto';
+import { ApiTags } from '@nestjs/swagger';
 import { CommentsQueryRepository } from '../../comments/infrastructure/comments.query-repository';
+import { SwaggerPostCreate } from 'src/core/decorators/swagger/swagger-post';
+import { SwaggerAuthStatus } from 'src/core/decorators/swagger/swagger-options';
+import { SwaggerDelete } from 'src/core/decorators/swagger/swagger-delete';
+import { SwaggerPut } from 'src/core/decorators/swagger/swagger-put';
+import { SwaggerGet, SwaggerGetWith404 } from 'src/core/decorators/swagger/swagger-get';
+import { PaginatedCommentViewDto, PaginatedPostViewDto } from 'src/core/dto/base.paginated.view-dto';
 
 @ApiTags('posts') //swagger
 @Controller('posts') //swagger
@@ -18,23 +23,20 @@ export class PostsController {
     private readonly commentsQueryRepository: CommentsQueryRepository,
   ) {}
 
-  @ApiOperation({ summary: 'Get all posts' }) //swagger
-  @ApiResponse({ status: 200, type: [PostViewDto] }) //swagger
+  @SwaggerGet('Get all posts', PaginatedPostViewDto, SwaggerAuthStatus.WithoutAuth) //swagger
   @Get()
   async findPosts(@Query() query: GetPostsQueryParams) {
     return this.postsQueryRepository.findAllPosts(query);
   }
 
-  @ApiOperation({ summary: 'Get post by id' })
-  @ApiResponse({ status: 200, type: PostViewDto })
+  @SwaggerGetWith404('Get post by id', PostViewDto, SwaggerAuthStatus.WithoutAuth) //swagger
   @Get(':id')
   async findOne(@Param('id') id: string): Promise<PostViewDto> {
     const post = await this.postsQueryRepository.findPostByIdOrNotFoundFail(id);
     return post;
   }
 
-  @ApiOperation({ summary: 'Create post' }) //swagger
-  @ApiResponse({ status: 201, type: PostViewDto }) //swagger
+  @SwaggerPostCreate('Create post', PostViewDto, SwaggerAuthStatus.WithAuth) //swagger
   @Post()
   @HttpCode(HttpStatus.CREATED)
   async create(@Body() createPostDto: CreatePostDto): Promise<PostViewDto> {
@@ -43,16 +45,14 @@ export class PostsController {
     return post;
   }
 
-  @ApiOperation({ summary: 'Update post by id' }) //swagger
-  @ApiResponse({ status: 204 }) //swagger
+  @SwaggerPut('Update a blog by ID') //swagger
   @Put(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   async update(@Param('id') id: string, @Body() updatePostDto: UpdatePostDto) {
     await this.postsService.update(id, updatePostDto);
   }
 
-  @ApiOperation({ summary: 'Delete post by id' })
-  @ApiResponse({ status: 204 })
+  @SwaggerDelete('Delete post by id', 'Post ID')
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   async remove(@Param('id') id: string) {
@@ -60,8 +60,7 @@ export class PostsController {
   }
 
   //POST COMMENTS
-  @ApiOperation({ summary: 'Get all comments for a post' })
-  @ApiResponse({ status: 200, type: [CommentViewDto] })
+  @SwaggerGetWith404('Get all comments for a post', PaginatedCommentViewDto, SwaggerAuthStatus.WithoutAuth) //swagger
   @Get(':id/comments')
   async findPostComments(@Query() query: GetPostsQueryParams, @Param('id') id: string) {
     const comments = await this.commentsQueryRepository.findAllComments(id, query);

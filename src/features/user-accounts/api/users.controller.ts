@@ -5,9 +5,13 @@ import { CreateUserDto } from '../dto/create-user.dto';
 import { GetUsersQueryParams } from '../dto/get-users-query-params.input-dto';
 import { UserViewDto } from '../dto/user-view.dto';
 import { PaginatedUserViewDto } from 'src/core/dto/base.paginated.view-dto';
-import { ApiNoContentResponse, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { Types } from 'mongoose';
+import { ApiBasicAuth, ApiTags } from '@nestjs/swagger';
 import { BasicAuthGuard } from 'src/core/guards/basic-auth.guard';
+import { SwaggerPostCreate } from 'src/core/decorators/swagger/swagger-post';
+import { SwaggerDelete } from 'src/core/decorators/swagger/swagger-delete';
+import { Types } from 'mongoose';
+import { SwaggerAuthStatus } from 'src/core/decorators/swagger/swagger-options';
+import { SwaggerGet } from 'src/core/decorators/swagger/swagger-get';
 
 @ApiTags('Users') //swagger
 @UseGuards(BasicAuthGuard)
@@ -18,8 +22,8 @@ export class UsersController {
     private readonly usersQueryRepository: UsersQueryRepository,
   ) {}
 
-  @ApiOperation({ summary: 'Get all users' }) //swagger
-  @ApiOkResponse({ type: PaginatedUserViewDto }) //swagger
+  @SwaggerGet('Get all users', PaginatedUserViewDto, SwaggerAuthStatus.WithAuth)
+  @ApiBasicAuth() //swagger
   @Get()
   getUsers(@Query() query: GetUsersQueryParams): Promise<PaginatedUserViewDto> {
     const users = this.usersQueryRepository.findUsers(query);
@@ -27,8 +31,8 @@ export class UsersController {
     return users;
   }
 
-  @ApiOperation({ summary: 'Create a new user' }) //swagger
-  @ApiOkResponse({ type: UserViewDto }) //swagger
+  @SwaggerPostCreate('Create a new user', UserViewDto, SwaggerAuthStatus.WithAuth)
+  @ApiBasicAuth()
   @Post()
   @HttpCode(HttpStatus.CREATED)
   async createUser(@Body() body: CreateUserDto) {
@@ -37,8 +41,9 @@ export class UsersController {
 
     return newUser;
   }
-  @ApiOperation({ summary: 'Delete a user by ID' }) //swagger
-  @ApiNoContentResponse({ description: 'No Content' }) //swagger
+
+  @SwaggerDelete('Delete a user by ID', 'User ID')
+  @ApiBasicAuth() //swagger
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   async deleteUser(@Param('id') id: Types.ObjectId): Promise<void> {

@@ -2,7 +2,7 @@ import { INestApplication, ValidationError, ValidationPipe } from '@nestjs/commo
 import { BadRequestDomainException } from 'src/core/exeptions/domain-exceptions';
 import { ObjectIdValidationPipe } from 'src/core/pipes/object-id-validation.pipe';
 
-type ErrorResponse = { message: string; key: string };
+type ErrorResponse = { message: string; field: string };
 
 //функция использует рекурсию для обхода объекта children при вложенных полях при валидации
 //поставьте логи и разберитесь как она работает
@@ -19,7 +19,7 @@ export const errorFormatter = (errors: ValidationError[], errorMessage?: any): E
       for (const key of constrainKeys) {
         errorsForResponse.push({
           message: error.constraints[key] ? `${error.constraints[key]}; Received value: ${error?.value}` : '',
-          key: error.property,
+          field: error.property,
         });
       }
     }

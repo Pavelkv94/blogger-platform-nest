@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { UserDocument, UserEntity, UserModelType } from '../domain/user.entity';
 import { InjectModel } from '@nestjs/mongoose';
 import { DeletionStatus } from 'src/core/dto/deletion-status';
-import { NotFoundDomainException } from 'src/core/exeptions/domain-exceptions';
+import { BadRequestDomainException, NotFoundDomainException } from 'src/core/exeptions/domain-exceptions';
 
 @Injectable()
 export class UsersRepository {
@@ -37,15 +37,61 @@ export class UsersRepository {
     const user = await this.findUserById(id);
 
     if (!user) {
-      //TODO: replace with domain exception
       throw NotFoundDomainException.create('User not found');
     }
 
     return user;
   }
 
-  async loginIsExist(login: string): Promise<boolean> {
+  async loginIsExist(login: string): Promise<void> {
     const user = await this.UserModel.findOne({ login });
-    return !!user;
+
+    if (user) {
+      throw BadRequestDomainException.create('Login already exists', 'login');
+    }
+  }
+
+  async emailIsExist(email: string): Promise<void> {
+    const user = await this.UserModel.findOne({ email });
+
+    if (user) {
+      throw BadRequestDomainException.create('Email already exists', 'email');
+    }
+  }
+
+  async findConfirmationCodeByUserId(userId: string): Promise<string> {
+    const user = await this.UserModel.findOne({ _id: userId });
+
+    if (!user) {
+      throw NotFoundDomainException.create('User not found');
+    }
+
+    return user.emailConfirmation.confirmationCode;
+  }
+  async findUserByConfirmationCodeOrBadRequestFail(code: string): Promise<UserDocument> {
+    const user = await this.UserModel.findOne({ 'emailConfirmation.confirmationCode': code });
+    if (!user) {
+      throw BadRequestDomainException.create('Code doesnt exist', 'code');
+    }
+
+    return user;
+  }
+
+  async findUserByEmailOrBadRequestFail(email: string): Promise<UserDocument> {
+    const user = await this.UserModel.findOne({ email });
+    if (!user) {
+      throw BadRequestDomainException.create('User doesnt exist', 'email');
+    }
+
+    return user;
+  }
+
+  async findUserByRecoveryCodeOrBadRequestFail(code: string): Promise<UserDocument> {
+    const user = await this.UserModel.findOne({ 'recoveryConfirmation.recoveryCode': code });
+    if (!user) {
+      throw BadRequestDomainException.create('Code not found', 'code');
+    }
+
+    return user;
   }
 }

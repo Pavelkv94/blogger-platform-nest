@@ -6,12 +6,12 @@ import { UsersService } from './application/users.service';
 import { UsersQueryRepository } from './infrastructure/users.query-repository';
 import { UsersRepository } from './infrastructure/users.repository';
 import { BcryptService } from './application/bcrypt.service';
-import { LoginIsExistConstraint } from './validation/login-is-exist.decorator';
 import { AuthController } from './api/auth.controller';
 import { JwtModule } from '@nestjs/jwt';
 import { AuthService } from './application/auth.service';
 import { PassportModule } from '@nestjs/passport';
 import { ConfigModule } from '@nestjs/config';
+import { NotificationsModule } from '../notifications/notifications.module';
 
 @Module({
   imports: [
@@ -25,6 +25,7 @@ import { ConfigModule } from '@nestjs/config';
       signOptions: { expiresIn: '60m' }, // Время жизни токена
     }),
     MongooseModule.forFeature([{ name: UserEntity.name, schema: UserSchema }]),
+    NotificationsModule,
   ],
   exports: [MongooseModule],
   controllers: [UsersController, AuthController],
@@ -33,7 +34,6 @@ import { ConfigModule } from '@nestjs/config';
     UsersQueryRepository,
     UsersRepository,
     BcryptService,
-    LoginIsExistConstraint,
     AuthService,
     // LocalStrategy, //* for passport
     // JwtStrategy, //* for passport

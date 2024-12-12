@@ -14,6 +14,8 @@ export class UsersService {
   ) {}
 
   async createUser(payload: CreateUserDto): Promise<string> {
+    await this.usersRepository.loginIsExist(payload.login);
+
     const passwordhash = await this.bcryptService.generateHash(payload.password);
     const newUser = this.UserModel.buildInstance(payload.login, payload.email, passwordhash);
 
