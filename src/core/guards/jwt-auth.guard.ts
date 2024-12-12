@@ -20,14 +20,15 @@ export class JwtAuthGuard implements CanActivate {
     if (authType !== 'Bearer') {
       throw UnauthorizedDomainException.create();
     }
-    const payload = this.jwtService.verify(token);
 
-    if (!payload) {
+    //try catch for token expiration errors and other JWT verification errors
+    try {
+      const payload = this.jwtService.verify(token);
+      request['user'] = payload;
+      return true;
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (e: any) {
       throw UnauthorizedDomainException.create();
     }
-
-    request['user'] = payload;
-
-    return true;
   }
 }

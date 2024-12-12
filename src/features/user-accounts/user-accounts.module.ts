@@ -22,7 +22,7 @@ import { NotificationsModule } from '../notifications/notifications.module';
     //или написать свой tokens сервис (адаптер), где эти опции будут уже учтены
     JwtModule.register({
       secret: process.env.JWT_ACCESS_SECRET, // секретный ключ
-      signOptions: { expiresIn: '60m' }, // Время жизни токена
+      signOptions: { expiresIn: '5s' }, // Время жизни токена
     }),
     MongooseModule.forFeature([{ name: UserEntity.name, schema: UserSchema }]),
     NotificationsModule,
