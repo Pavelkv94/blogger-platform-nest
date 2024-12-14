@@ -33,10 +33,10 @@ export const loginConstraints = {
 
 @Schema({ timestamps: true })
 export class UserEntity {
-  @Prop({ type: String, required: true, ...loginConstraints })
+  @Prop({ type: String, required: true, unique: true, ...loginConstraints })
   login: string;
 
-  @Prop({ type: String, required: true })
+  @Prop({ type: String, required: true, unique: true,  })
   email: string;
 
   @Prop({ type: String, required: true })

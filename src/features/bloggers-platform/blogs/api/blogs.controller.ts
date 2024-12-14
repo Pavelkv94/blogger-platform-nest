@@ -74,6 +74,8 @@ export class BlogsController {
   @SwaggerGetWith404('Get all posts by blog ID', PaginatedPostViewDto, SwaggerAuthStatus.WithoutAuth) //swagger
   @Get(':blogId/posts')
   async getPostsByBlogId(@Query() query: GetPostsQueryParams, @Param('blogId') blogId: string): Promise<PaginatedPostViewDto> {
+
+    //! ask
     const blog = await this.blogsQueryRepository.findBlogByIdOrNotFoundFail(blogId);
 
     const posts = await this.postQueryRepository.findAllPosts(query, blog.id);

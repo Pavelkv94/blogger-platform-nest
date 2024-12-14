@@ -44,7 +44,7 @@ export class UsersRepository {
   }
 
   async loginIsExist(login: string): Promise<void> {
-    const user = await this.UserModel.findOne({ login });
+    const user = await this.UserModel.findOne({ login, deletionStatus: DeletionStatus.NotDeleted });
 
     if (user) {
       throw BadRequestDomainException.create('Login already exists', 'login');
@@ -52,7 +52,7 @@ export class UsersRepository {
   }
 
   async emailIsExist(email: string): Promise<void> {
-    const user = await this.UserModel.findOne({ email });
+    const user = await this.UserModel.findOne({ email, deletionStatus: DeletionStatus.NotDeleted });
 
     if (user) {
       throw BadRequestDomainException.create('Email already exists', 'email');
@@ -60,7 +60,7 @@ export class UsersRepository {
   }
 
   async findConfirmationCodeByUserId(userId: string): Promise<string> {
-    const user = await this.UserModel.findOne({ _id: userId });
+    const user = await this.UserModel.findOne({ _id: userId, deletionStatus: DeletionStatus.NotDeleted });
 
     if (!user) {
       throw NotFoundDomainException.create('User not found');
@@ -69,7 +69,7 @@ export class UsersRepository {
     return user.emailConfirmation.confirmationCode;
   }
   async findUserByConfirmationCodeOrBadRequestFail(code: string): Promise<UserDocument> {
-    const user = await this.UserModel.findOne({ 'emailConfirmation.confirmationCode': code });
+    const user = await this.UserModel.findOne({ 'emailConfirmation.confirmationCode': code, deletionStatus: DeletionStatus.NotDeleted });
     if (!user) {
       throw BadRequestDomainException.create('Code doesnt exist', 'code');
     }
@@ -78,7 +78,7 @@ export class UsersRepository {
   }
 
   async findUserByEmailOrBadRequestFail(email: string): Promise<UserDocument> {
-    const user = await this.UserModel.findOne({ email });
+    const user = await this.UserModel.findOne({ email, deletionStatus: DeletionStatus.NotDeleted });
     if (!user) {
       throw BadRequestDomainException.create('User doesnt exist', 'email');
     }
@@ -87,7 +87,7 @@ export class UsersRepository {
   }
 
   async findUserByRecoveryCodeOrBadRequestFail(code: string): Promise<UserDocument> {
-    const user = await this.UserModel.findOne({ 'recoveryConfirmation.recoveryCode': code });
+    const user = await this.UserModel.findOne({ 'recoveryConfirmation.recoveryCode': code, deletionStatus: DeletionStatus.NotDeleted });
     if (!user) {
       throw BadRequestDomainException.create('Code not found', 'code');
     }

@@ -2,13 +2,11 @@ import { HydratedDocument, Model } from 'mongoose';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { DeletionStatus } from 'src/core/dto/deletion-status';
 
-//! Ask about intefaces
 export interface CommentatorInfo {
   userId: string;
   userLogin: string;
 }
 
-//! Ask about intefaces
 export interface LikesInfo {
   likesCount: number;
   dislikesCount: number;
@@ -40,7 +38,6 @@ export class CommentEntity {
 
   @Prop({ type: LikesInfoSchema, required: true })
   likesInfo: LikesInfo;
-
 
   // static buildInstance(dto: BlogCreateDto): BlogDocument {
   //   const blog = new this(); //UserModel!

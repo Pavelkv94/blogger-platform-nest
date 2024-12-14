@@ -19,14 +19,12 @@ export const contentConstraints = {
   maxLength: 1000,
 };
 
-//! Ask about intefaces
 export interface NewestLike {
   addedAt: string;
   userId: string;
   login: string;
 }
 
-//! Ask about intefaces
 interface ExtendedLikesInfo {
   likesCount: number;
   dislikesCount: number;
