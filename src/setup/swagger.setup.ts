@@ -6,6 +6,7 @@ import fs from 'fs';
 
 
 export function swaggerSetup(app: INestApplication) {
+  
   const config = new DocumentBuilder().setTitle('BLOGGER API').addBearerAuth().addBasicAuth().setVersion('1.0').build();
 
   const document = SwaggerModule.createDocument(app, config);

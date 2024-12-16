@@ -3,6 +3,8 @@ import { HydratedDocument, Model } from 'mongoose';
 import { DeletionStatus } from 'src/core/dto/deletion-status';
 import { CreatePostDto } from '../dto/post-create.dto';
 import { UpdatePostDto } from '../dto/post-update.dto';
+import { ExtendedLikes } from './extended-likes.schema';
+import { ExtendedLikesSchema } from './extended-likes.schema';
 
 export const titleConstraints = {
   minLength: 0,
@@ -17,30 +19,6 @@ export const shortDescriptionConstraints = {
 export const contentConstraints = {
   minLength: 0,
   maxLength: 1000,
-};
-
-export interface NewestLike {
-  addedAt: string;
-  userId: string;
-  login: string;
-}
-
-interface ExtendedLikesInfo {
-  likesCount: number;
-  dislikesCount: number;
-  newestLikes: NewestLike[];
-}
-
-const NewestLikeSchema = {
-  addedAt: { type: String, required: true },
-  userId: { type: String, required: true },
-  login: { type: String, required: true },
-};
-
-const ExtendedLikesInfoSchema = {
-  likesCount: { type: Number, required: true, default: 0 },
-  dislikesCount: { type: Number, required: true, default: 0 },
-  newestLikes: [NewestLikeSchema],
 };
 
 @Schema({ timestamps: true })
@@ -67,7 +45,7 @@ export class PostEntity {
   deletionStatus: DeletionStatus;
 
   @Prop({
-    type: ExtendedLikesInfoSchema,
+    type: ExtendedLikesSchema,
     required: true,
     default: {
       likesCount: 0,
@@ -75,7 +53,7 @@ export class PostEntity {
       newestLikes: [],
     },
   })
-  extendedLikesInfo: ExtendedLikesInfo;
+  extendedLikesInfo: ExtendedLikes;
 
   static buildInstance(dto: CreatePostDto, blogName: string): PostDocument {
     const post = new this(); //PostModel!

@@ -3,28 +3,10 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { DeletionStatus } from 'src/core/dto/deletion-status';
 import { randomUUID } from 'crypto';
 import { getExpirationDate } from 'src/core/utils/date/getExpirationDate';
-
-interface EmailConfirmation {
-  confirmationCode: string;
-  expirationDate: string;
-  isConfirmed: boolean;
-}
-
-interface RecoveryConfirmation {
-  recoveryCode: string;
-  expirationDate: string;
-}
-
-const EmailConfirmationSchema = {
-  confirmationCode: { type: String, required: true },
-  expirationDate: { type: String, required: true },
-  isConfirmed: { type: Boolean, required: true },
-};
-
-const RecoveryConfirmationSchema = {
-  recoveryCode: { type: String, required: false, default: null },
-  expirationDate: { type: String, required: false, default: null },
-};
+import { EmailConfirmationSchema } from './email-confirmation.schema';
+import { EmailConfirmation } from './email-confirmation.schema';
+import { RecoveryConfirmationSchema } from './recovery-confirmation.schema';
+import { RecoveryConfirmation } from './recovery-confirmation.schema';
 
 export const loginConstraints = {
   minLength: 3,
@@ -36,7 +18,7 @@ export class UserEntity {
   @Prop({ type: String, required: true, unique: true, ...loginConstraints })
   login: string;
 
-  @Prop({ type: String, required: true, unique: true,  })
+  @Prop({ type: String, required: true, unique: true })
   email: string;
 
   @Prop({ type: String, required: true })
@@ -48,25 +30,17 @@ export class UserEntity {
   @Prop({ enum: DeletionStatus, default: DeletionStatus.NotDeleted })
   deletionStatus: DeletionStatus;
 
-  @Prop({
-    type: EmailConfirmationSchema,
-    required: true,
-    default: {
-      confirmationCode: null,
-      expirationDate: null,
-      isConfirmed: false,
-    },
-  })
+  @Prop({ type: EmailConfirmationSchema, required: true, default: {
+    confirmationCode: null,
+    expirationDate: null,
+    isConfirmed: false,
+  } })
   emailConfirmation: EmailConfirmation;
 
-  @Prop({
-    type: RecoveryConfirmationSchema,
-    required: true,
-    default: {
-      recoveryCode: null,
-      expirationDate: null,
-    },
-  })
+  @Prop({ type: RecoveryConfirmationSchema, required: true, default: {
+    recoveryCode: null,
+    expirationDate: null,
+  } })
   recoveryConfirmation: RecoveryConfirmation;
 
   static buildInstance(login: string, email: string, passwordHash: string): UserDocument {

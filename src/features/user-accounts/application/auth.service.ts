@@ -45,8 +45,15 @@ export class AuthService {
   }
 
   async registerUser(body: RegistrationInputDto): Promise<void> {
-    await this.usersRepository.loginIsExist(body.login);
-    await this.usersRepository.emailIsExist(body.email);
+    const loginIsExist = await this.usersRepository.findUserByLogin(body.login);
+    if (loginIsExist) {
+      throw BadRequestDomainException.create('Login already exists', 'login');
+    }
+
+    const emailIsExist = await this.usersRepository.findUserByEmail(body.email);
+    if (emailIsExist) {
+      throw BadRequestDomainException.create('Email already exists', 'email');
+    }
 
     const userId = await this.usersService.createUser(body);
 

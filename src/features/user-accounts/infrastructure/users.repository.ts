@@ -43,20 +43,16 @@ export class UsersRepository {
     return user;
   }
 
-  async loginIsExist(login: string): Promise<void> {
+  async findUserByLogin(login: string): Promise<boolean> {
     const user = await this.UserModel.findOne({ login, deletionStatus: DeletionStatus.NotDeleted });
 
-    if (user) {
-      throw BadRequestDomainException.create('Login already exists', 'login');
-    }
+    return !!user;
   }
 
-  async emailIsExist(email: string): Promise<void> {
+  async findUserByEmail(email: string): Promise<boolean> {
     const user = await this.UserModel.findOne({ email, deletionStatus: DeletionStatus.NotDeleted });
 
-    if (user) {
-      throw BadRequestDomainException.create('Email already exists', 'email');
-    }
+    return !!user;
   }
 
   async findConfirmationCodeByUserId(userId: string): Promise<string> {

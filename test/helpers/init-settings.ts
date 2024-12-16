@@ -6,7 +6,7 @@ import { UsersTestManager } from './users-test-manager';
 import { deleteAllData } from './delete-all-data';
 import { EmailService } from '../../src/features/notifications/email.service';
 import { EmailServiceMock } from '../mock/email-service.mock';
-import { configApp } from 'src/config/app.setup';
+import { configApp } from 'src/setup/app.setup';
 
 export const initSettings = async (
   //передаем callback, который получает ModuleBuilder, если хотим изменить настройку тестового модуля

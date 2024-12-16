@@ -1,6 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { CommentatorInfo, CommentDocument, LikesInfo } from '../domain/comment.entity';
+import { CommentDocument } from '../domain/comment.entity';
 import { LikeStatuses } from '../../likes/dto/like-status.dto';
+import { CommentatorInfo } from '../domain/commentator-info.schema';
+import { LikesInfo } from '../domain/likes-info.schema';
 
 export class CommentViewDto {
   @ApiProperty({ example: 'Comment ID', description: 'ID of the comment' })

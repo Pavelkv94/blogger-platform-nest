@@ -9,20 +9,22 @@ import { BcryptService } from './application/bcrypt.service';
 import { AuthController } from './api/auth.controller';
 import { JwtModule } from '@nestjs/jwt';
 import { AuthService } from './application/auth.service';
-import { PassportModule } from '@nestjs/passport';
-import { ConfigModule } from '@nestjs/config';
+// import { PassportModule } from '@nestjs/passport';
 import { NotificationsModule } from '../notifications/notifications.module';
+import { CoreConfig } from 'src/core/core.config';
 
 @Module({
   imports: [
-    ConfigModule.forRoot(),
-    PassportModule,
+    // PassportModule,
     //если в системе несколько токенов (например, access и refresh) с разными опциями (время жизни, секрет)
     //можно переопределить опции при вызове метода jwt.service.sign
     //или написать свой tokens сервис (адаптер), где эти опции будут уже учтены
-    JwtModule.register({
-      secret: process.env.JWT_ACCESS_SECRET, // секретный ключ
-      signOptions: { expiresIn: '5s' }, // Время жизни токена
+    JwtModule.registerAsync({
+      useFactory: (coreConfig: CoreConfig) => ({
+        secret: coreConfig.accessTokenSecret,
+        signOptions: { expiresIn: '5s' },
+      }),
+      inject: [CoreConfig],
     }),
     MongooseModule.forFeature([{ name: UserEntity.name, schema: UserSchema }]),
     NotificationsModule,

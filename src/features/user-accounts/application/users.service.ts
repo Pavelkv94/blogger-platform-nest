@@ -4,6 +4,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { UserEntity, UserModelType } from '../domain/user.entity';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { BcryptService } from './bcrypt.service';
+import { BadRequestDomainException } from 'src/core/exeptions/domain-exceptions';
 
 @Injectable()
 export class UsersService {
@@ -14,7 +15,15 @@ export class UsersService {
   ) {}
 
   async createUser(payload: CreateUserDto): Promise<string> {
-    await this.usersRepository.loginIsExist(payload.login);
+    const loginIsExist = await this.usersRepository.findUserByLogin(payload.login);
+    if (loginIsExist) {
+      throw BadRequestDomainException.create('Login already exists', 'login');
+    }
+
+    const emailIsExist = await this.usersRepository.findUserByEmail(payload.email);
+    if (emailIsExist) {
+      throw BadRequestDomainException.create('Email already exists', 'email');
+    }
 
     const passwordhash = await this.bcryptService.generateHash(payload.password);
     const newUser = this.UserModel.buildInstance(payload.login, payload.email, passwordhash);

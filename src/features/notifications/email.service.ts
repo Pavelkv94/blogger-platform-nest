@@ -1,16 +1,17 @@
 import { MailerService } from '@nestjs-modules/mailer';
 import { Injectable } from '@nestjs/common';
+import { MailerConfig } from './mailer.config';
 
 type MailPurposeType = 'activationAcc' | 'passwordRecovery';
 
 @Injectable()
 export class EmailService {
-  constructor(private mailerService: MailerService) {}
+  constructor(private mailerService: MailerService, private mailerConfig: MailerConfig) {}
 
   async sendConfirmationEmail(email: string, code: string, purpose: MailPurposeType): Promise<void> {
     const isActivation = purpose === 'activationAcc';
 
-    const subject = isActivation ? 'Account activation at ' + process.env.CLIENT_URL : 'Recovery Password at ' + process.env.CLIENT_URL;
+    const subject = isActivation ? 'Account activation at ' + this.mailerConfig.client_url : 'Recovery Password at ' + this.mailerConfig.client_url;
     const htmlText = isActivation
       ? `
         <h1>Thank for your registration</h1>
