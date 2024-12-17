@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Inject, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, Inject, Post, Res, UseGuards } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { LoginOuputDto } from '../dto/login-user.dto';
 import { AuthService } from '../application/auth.service';
@@ -14,6 +14,14 @@ import { SwaggerGet } from 'src/core/decorators/swagger/swagger-get';
 import { SwaggerAuthStatus } from 'src/core/decorators/swagger/swagger-options';
 import { SwaggerPostForLogin } from 'src/core/decorators/swagger/swagger-post';
 import { SwaggerPostWith429 } from 'src/core/decorators/swagger/swagger-post';
+import { LoginUserCommand } from '../application/usecases/login-user.usecase';
+import { CommandBus } from '@nestjs/cqrs';
+import { RegisterUserCommand } from '../application/usecases/register-user.usecase';
+import { PassRecoveryCommand } from '../application/usecases/pass-recovery.usecase';
+import { RegisterConfirmCommand } from '../application/usecases/register-confirm.usecase';
+import { ResendEmailCommand } from '../application/usecases/resend-email.usecase';
+import { SetNewPassCommand } from '../application/usecases/set-new-pass.usecase';
+import { Response } from 'express';
 
 @ApiTags('Auth') //swagger
 @Controller('auth')
@@ -21,17 +29,25 @@ export class AuthController {
   constructor(
     @Inject() private readonly authService: AuthService,
     @Inject() private readonly usersQueryRepository: UsersQueryRepository,
+    private readonly commandBus: CommandBus,
   ) {}
 
   @SwaggerPostForLogin('Try login user to the system', LoginOuputDto)
   @Post('login')
   @UseGuards(LocalAuthGuard)
   @HttpCode(HttpStatus.OK)
-  async login(@ExtractUserFromRequest() user: UserJwtPayloadDto): Promise<LoginOuputDto> {
+  async login(@ExtractUserFromRequest() user: UserJwtPayloadDto, @Res() res: Response): Promise<LoginOuputDto> {
     // в экспрессе делали так, здесь же валидация происходит в гварде
     // const userId = await this.authService.validateUser(body);
     // const accessToken = await this.authService.login(userId);
-    const accessToken = await this.authService.login(user);
+    const { accessToken, refreshToken } = await this.commandBus.execute<LoginUserCommand, { accessToken: string; refreshToken: string }>(new LoginUserCommand(user));
+
+    res.cookie('refreshToken', refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production', // Use secure cookies in production
+      maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+      sameSite: 'lax', // or 'strict' based on your requirements
+    });
 
     return { accessToken };
   }
@@ -49,34 +65,34 @@ export class AuthController {
   @Post('registration')
   @HttpCode(HttpStatus.NO_CONTENT)
   async registration(@Body() body: RegistrationInputDto): Promise<void> {
-    return await this.authService.registerUser(body);
+    return await this.commandBus.execute<RegisterUserCommand, void>(new RegisterUserCommand(body));
   }
 
   @SwaggerPostWith429('Confirm registration of new user')
   @Post('registration-confirmation')
   @HttpCode(HttpStatus.NO_CONTENT)
   async registrationConfirmation(@Body() body: RegistrationConfirmationInputDto): Promise<void> {
-    return await this.authService.registrationConfirmation(body.code);
+    return await this.commandBus.execute<RegisterConfirmCommand, void>(new RegisterConfirmCommand(body.code));
   }
 
   @SwaggerPostWith429('Resend confirmation email')
   @Post('registration-email-resending')
   @HttpCode(HttpStatus.NO_CONTENT)
   async registrationEmailResending(@Body() body: ResendConfirmationInputDto): Promise<void> {
-    return await this.authService.registrationEmailResending(body.email);
+    return await this.commandBus.execute<ResendEmailCommand, void>(new ResendEmailCommand(body.email));
   }
 
   @SwaggerPostWith429('Password recovery')
   @Post('password-recovery')
   @HttpCode(HttpStatus.NO_CONTENT)
   async passwordRecovery(@Body() body: PasswordRecoveryInputDto): Promise<void> {
-    return await this.authService.passwordRecovery(body.email);
+    return await this.commandBus.execute<PassRecoveryCommand, void>(new PassRecoveryCommand(body.email));
   }
 
   @SwaggerPostWith429('Set new password')
   @Post('new-password')
   @HttpCode(HttpStatus.NO_CONTENT)
   async newPassword(@Body() body: NewPasswordInputDto): Promise<void> {
-    return await this.authService.newPassword(body.code, body.newPassword);
+    return await this.commandBus.execute<SetNewPassCommand, void>(new SetNewPassCommand(body.code, body.newPassword));
   }
 }

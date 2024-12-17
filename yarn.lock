@@ -824,6 +824,13 @@
     path-to-regexp "3.3.0"
     tslib "2.8.1"
 
+"@nestjs/cqrs@^10.2.8":
+  version "10.2.8"
+  resolved "https://registry.yarnpkg.com/@nestjs/cqrs/-/cqrs-10.2.8.tgz#0bfda904669d7ac50e94c0c979c8e4bb4092cdca"
+  integrity sha512-nes4J9duwogme6CzNg8uhF5WVbSKYnNotjhHP+3kJxe6RTzcvJDZN10KpROjWJALEVO5fNmKnkGMecoOfqYzYA==
+  dependencies:
+    uuid "11.0.2"
+
 "@nestjs/jwt@^10.2.0":
   version "10.2.0"
   resolved "https://registry.yarnpkg.com/@nestjs/jwt/-/jwt-10.2.0.tgz#6aa35a04922d19c6426efced4671620f92e6dbd0"
@@ -1039,6 +1046,11 @@
   integrity sha512-K6uROf1LD88uDQqJCktA4yzL1YYAK6NgfsI0v/mTgyPKWsX1CnJ0XPSDhViejru1GcRkLWb8RlzFYJRqGUbaug==
   dependencies:
     "@types/node" "*"
+
+"@types/cookie-parser@^1.4.8":
+  version "1.4.8"
+  resolved "https://registry.yarnpkg.com/@types/cookie-parser/-/cookie-parser-1.4.8.tgz#d2215e7915f624fbfe4233da8f063f511679f1f3"
+  integrity sha512-l37JqFrOJ9yQfRQkljb41l0xVphc7kg5JTjjr+pLRZ0IyZ49V4BQ8vbF4Ut2C2e+WH4al3xD3ZwYwIUfnbT4NQ==
 
 "@types/cookiejar@^2.1.5":
   version "2.1.5"
@@ -2271,6 +2283,14 @@ convert-source-map@^2.0.0:
   resolved "https://registry.yarnpkg.com/convert-source-map/-/convert-source-map-2.0.0.tgz#4b560f649fc4e918dd0ab75cf4961e8bc882d82a"
   integrity sha512-Kvp459HrV2FEJ1CAsi1Ku+MY3kasH19TFykTz2xWmMeq6bk2NU3XXvfJ+Q61m0xktWwt+1HSYf3JZsTms3aRJg==
 
+cookie-parser@^1.4.7:
+  version "1.4.7"
+  resolved "https://registry.yarnpkg.com/cookie-parser/-/cookie-parser-1.4.7.tgz#e2125635dfd766888ffe90d60c286404fa0e7b26"
+  integrity sha512-nGUvgXnotP3BsjiLX2ypbQnWoGUPIIfHQNZkkC668ntrzGWEZVW70HDEB1qnNGMicPje6EttlIgzo51YSwNQGw==
+  dependencies:
+    cookie "0.7.2"
+    cookie-signature "1.0.6"
+
 cookie-signature@1.0.6:
   version "1.0.6"
   resolved "https://registry.yarnpkg.com/cookie-signature/-/cookie-signature-1.0.6.tgz#e303a882b342cc3ee8ca513a79999734dab3ae2c"
@@ -2280,6 +2300,11 @@ cookie@0.7.1:
   version "0.7.1"
   resolved "https://registry.yarnpkg.com/cookie/-/cookie-0.7.1.tgz#2f73c42142d5d5cf71310a74fc4ae61670e5dbc9"
   integrity sha512-6DnInpx7SJ2AK3+CTUE/ZM0vWTUboZCegxhC2xiIydHR9jNuTAASBrfEpHhiGOZw/nX51bHt6YQl8jsGo4y/0w==
+
+cookie@0.7.2:
+  version "0.7.2"
+  resolved "https://registry.yarnpkg.com/cookie/-/cookie-0.7.2.tgz#556369c472a2ba910f2979891b526b3436237ed7"
+  integrity sha512-yki5XnKuf750l50uGTllt6kKILY4nQ1eNIQatoXEByZ5dWgnKqbnqmTrBE5B4N7lrMJKQ2ytWMiTO2o0v6Ew/w==
 
 cookiejar@^2.1.4:
   version "2.1.4"
@@ -6604,6 +6629,11 @@ utils-merge@1.0.1, utils-merge@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/utils-merge/-/utils-merge-1.0.1.tgz#9f95710f50a267947b2ccc124741c1028427e713"
   integrity sha512-pMZTvIkT1d+TFGvDOqodOclx0QWkkgi6Tdoa8gC8ffGAAqz9pzPTZWAybbsHHoED/ztMtkv/VoYTYyShUn81hA==
+
+uuid@11.0.2:
+  version "11.0.2"
+  resolved "https://registry.yarnpkg.com/uuid/-/uuid-11.0.2.tgz#a8d68ba7347d051e7ea716cc8dcbbab634d66875"
+  integrity sha512-14FfcOJmqdjbBPdDjFQyk/SdT4NySW4eM0zcG+HqbHP5jzuH56xO3J1DGhgs/cEMCfwYi3HQI1gnTO62iaG+tQ==
 
 uuid@^9.0.1:
   version "9.0.1"

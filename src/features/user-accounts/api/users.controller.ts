@@ -1,5 +1,4 @@
 import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, Query, UseGuards } from '@nestjs/common';
-import { UsersService } from '../application/users.service';
 import { UsersQueryRepository } from '../infrastructure/users.query-repository';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { GetUsersQueryParams } from '../dto/get-users-query-params.input-dto';
@@ -12,14 +11,17 @@ import { SwaggerDelete } from 'src/core/decorators/swagger/swagger-delete';
 import { Types } from 'mongoose';
 import { SwaggerAuthStatus } from 'src/core/decorators/swagger/swagger-options';
 import { SwaggerGet } from 'src/core/decorators/swagger/swagger-get';
+import { CreateUserCommand } from '../application/usecases/create-user.usecase';
+import { CommandBus } from '@nestjs/cqrs';
+import { DeleteUserCommand } from '../application/usecases/delete-user.usecase';
 
 @ApiTags('Users') //swagger
 @UseGuards(BasicAuthGuard)
 @Controller('users')
 export class UsersController {
   constructor(
-    private readonly usersService: UsersService,
     private readonly usersQueryRepository: UsersQueryRepository,
+    private readonly commandBus: CommandBus,
   ) {}
 
   @SwaggerGet('Get all users', PaginatedUserViewDto, SwaggerAuthStatus.WithAuth)
@@ -36,7 +38,7 @@ export class UsersController {
   @Post()
   @HttpCode(HttpStatus.CREATED)
   async createUser(@Body() body: CreateUserDto) {
-    const userId = await this.usersService.createUser(body);
+    const userId = await this.commandBus.execute<CreateUserCommand, string>(new CreateUserCommand(body));
     const newUser = await this.usersQueryRepository.findUserByIdOrNotFound(userId);
 
     return newUser;
@@ -47,6 +49,6 @@ export class UsersController {
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   async deleteUser(@Param('id') id: Types.ObjectId): Promise<void> {
-    await this.usersService.deleteUser(id.toString());
+    await this.commandBus.execute<DeleteUserCommand, void>(new DeleteUserCommand(id.toString()));
   }
 }

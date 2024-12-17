@@ -1,0 +1,5 @@
+{
+    "jestrunner.jestPath": "node '/home/pnkazlou/Programming/INCUBATOR/blogger-platform-nest/node_modules/jest/bin/jest.js'",
+    "jestrunner.jestCommand": "NODE_ENV=testing node '/home/pnkazlou/Programming/INCUBATOR/blogger-platform-nest/node_modules/jest/bin/jest.js'",
+    "jestrunner.debugOptions": {}
+}

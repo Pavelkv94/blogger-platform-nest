@@ -38,6 +38,6 @@ export abstract class BaseExceptionFilter implements ExceptionFilter {
       path: url,
       message: (exception as any).message || 'Internal server error',
       code: exception instanceof DomainException ? exception.code.toString() : null,
-    };
+    } as StandardErrorResponse;
   }
 }

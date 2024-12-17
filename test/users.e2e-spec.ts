@@ -119,6 +119,4 @@ describe('users', () => {
 
     expect(sendEmailMethod).toHaveBeenCalled();
   });
-
-  
 });
