@@ -44,7 +44,6 @@ const useCases = [
     JwtModule.registerAsync({
       useFactory: (coreConfig: CoreConfig) => ({
         secret: coreConfig.accessTokenSecret,
-        signOptions: { expiresIn: '5s' },
       }),
       inject: [CoreConfig],
     }),
@@ -52,7 +51,7 @@ const useCases = [
     NotificationsModule,
     CqrsModule,
   ],
-  exports: [MongooseModule],
+  exports: [MongooseModule, UsersRepository],
   controllers: [UsersController, AuthController],
   providers: [
     UsersQueryRepository,

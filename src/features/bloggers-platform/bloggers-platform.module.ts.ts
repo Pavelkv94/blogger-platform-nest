@@ -20,6 +20,14 @@ import { DeleteBlogUseCase } from './blogs/application/usecases/delete-blog.usec
 import { CreatePostUseCase } from './posts/application/usecases/create-post.usecase';
 import { UpdatePostUseCase } from './posts/application/usecases/update-post.usecase';
 import { DeletePostUseCase } from './posts/application/usecases/delete-post.usecase';
+import { CreateCommentUseCase } from './comments/application/usecases/create-comment.usecase';
+import { CommentsRepository } from './comments/infrastructure/comments.repository';
+import { UserAccountsModule } from '../user-accounts/user-accounts.module';
+import { CoreConfig } from 'src/core/core.config';
+import { JwtModule } from '@nestjs/jwt';
+import { DeleteCommentUseCase } from './comments/application/usecases/delete-comment.usecase';
+import { CommentsController } from './comments/api/comments.controller';
+import { UpdateCommentUseCase } from './comments/application/usecases/update-comment.usecase';
 
 const useCases = [
   CreateBlogUseCase,
@@ -28,7 +36,19 @@ const useCases = [
   CreatePostUseCase,
   UpdatePostUseCase,
   DeletePostUseCase,
+  CreateCommentUseCase,
+  DeleteCommentUseCase,
+  UpdateCommentUseCase
 ];
+
+const repositories = [
+  BlogsRepository,
+  BlogsQueryRepository,
+  PostsRepository,
+  PostsQueryRepository,
+  CommentsQueryRepository,
+  CommentsRepository,
+]
 
 @ApiTags('Bloggers Platform') //swagger
 @Module({
@@ -38,17 +58,21 @@ const useCases = [
       { name: PostEntity.name, schema: PostSchema },
       { name: CommentEntity.name, schema: CommentSchema },
     ]),
+    JwtModule.registerAsync({
+      useFactory: (coreConfig: CoreConfig) => ({
+        secret: coreConfig.accessTokenSecret,
+      }),
+      inject: [CoreConfig],
+    }),
     CqrsModule,
+    //! так можно делать чтобы получить доступ к UserRepository???
+    UserAccountsModule
   ],
   exports: [],
-  controllers: [BlogsController, PostsController],
+  controllers: [BlogsController, PostsController, CommentsController],
   providers: [
     ...useCases,
-    BlogsRepository,
-    BlogsQueryRepository,
-    PostsRepository,
-    PostsQueryRepository,
-    CommentsQueryRepository,
+    ...repositories
   ],
 })
 export class BloggersPlatformModule {}

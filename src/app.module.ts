@@ -1,13 +1,12 @@
 //* configModule должен импортироваться в первую очередь
 import { configModule } from './config';
-import { DynamicModule, Module } from '@nestjs/common';
+import { CoreConfig } from './core/core.config';
+import { CoreModule } from './core/core.module';
+import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { UserAccountsModule } from './features/user-accounts/user-accounts.module';
 import { BloggersPlatformModule } from './features/bloggers-platform/bloggers-platform.module.ts';
 import { TestingModule } from './features/testing/testing.module';
-import { CoreConfig } from './core/core.config';
-import { CoreModule } from './core/core.module';
-import { NestFactory } from '@nestjs/core';
 
 @Module({
   imports: [
@@ -23,11 +22,13 @@ import { NestFactory } from '@nestjs/core';
     }),
     UserAccountsModule,
     BloggersPlatformModule,
-    // TestingModule, //* см. ниже
+    TestingModule.register(process.env.INCLUDE_TESTING_MODULE!), //* см. ниже
   ],
   controllers: [],
   providers: [],
 })
+export class AppModule {}
+/*
 export class AppModule {
   //* такой мудрёный способ мы используем, чтобы добавить к основным модулям необязательный модуль.
   //* чтобы не обращаться в декораторе к переменной окружения через process.env в декораторе, потому что
@@ -55,3 +56,4 @@ export async function initAppModule(): Promise<DynamicModule> {
 
   return AppModule.forRoot(coreConfig);
 }
+*/

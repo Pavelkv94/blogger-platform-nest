@@ -33,7 +33,7 @@ export class UsersRepository {
     await user.save();
   }
 
-  async findOrNotFoundFail(id: string): Promise<UserDocument> {
+  async findByIdOrNotFoundFail(id: string): Promise<UserDocument> {
     const user = await this.findUserById(id);
 
     if (!user) {

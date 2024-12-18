@@ -6,6 +6,7 @@ import { CommentViewDto } from '../dto/comment-view.dto';
 import { LikeStatuses } from '../../likes/dto/like-status.dto';
 import { GetPostsQueryParams } from '../../posts/dto/get-posts-query-params.input-dto';
 import { PaginatedCommentViewDto } from 'src/core/dto/base.paginated.view-dto';
+import { NotFoundDomainException } from 'src/core/exeptions/domain-exceptions';
 
 @Injectable()
 export class CommentsQueryRepository {
@@ -31,8 +32,12 @@ export class CommentsQueryRepository {
     });
   }
 
-  async findCommentById(commentId: string): Promise<CommentViewDto | null> {
+  async findCommentByIdOrNotFound(commentId: string): Promise<CommentViewDto> {
     const comment = await this.CommentModel.findOne({ _id: commentId, deletionStatus: DeletionStatus.NotDeleted });
-    return comment ? CommentViewDto.mapToView(comment, LikeStatuses.None) : null;
+    if(!comment) {
+      throw NotFoundDomainException.create()
+    }
+
+    return CommentViewDto.mapToView(comment, LikeStatuses.None)
   }
 }

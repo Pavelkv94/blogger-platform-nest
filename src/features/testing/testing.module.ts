@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { DynamicModule, Module } from '@nestjs/common';
 import { TestingController } from './testing.controller';
 import { MongooseModule } from '@nestjs/mongoose';
 import { UserEntity, UserSchema } from '../user-accounts/domain/user.entity';
@@ -6,16 +6,71 @@ import { BlogEntity, BlogSchema } from '../bloggers-platform/blogs/domain/blog.e
 import { PostEntity, PostSchema } from '../bloggers-platform/posts/domain/post.entity';
 import { CommentEntity } from '../bloggers-platform/comments/domain/comment.entity';
 import { CommentSchema } from '../bloggers-platform/comments/domain/comment.entity';
+// import { CoreConfig } from 'src/core/core.config';
 
 @Module({
-  imports: [
-    MongooseModule.forFeature([
-      { name: UserEntity.name, schema: UserSchema },
-      { name: BlogEntity.name, schema: BlogSchema },
-      { name: PostEntity.name, schema: PostSchema },
-      { name: CommentEntity.name, schema: CommentSchema },
-    ]),
-  ],
-  controllers: [TestingController],
+  // imports: [
+  //   MongooseModule.forFeature([
+  //     { name: UserEntity.name, schema: UserSchema },
+  //     { name: BlogEntity.name, schema: BlogSchema },
+  //     { name: PostEntity.name, schema: PostSchema },
+  //     { name: CommentEntity.name, schema: CommentSchema },
+  //   ]),
+  // ],
+  // controllers: [TestingController],
 })
-export class TestingModule {}
+// export class TestingModule {
+//   static async forRootAsync(options: { useFactory: (coreConfig: CoreConfig) => { includeTestingModule: boolean }; inject: any[] }): Promise<DynamicModule> {
+//     const config = await options.useFactory(options.inject[0]);
+//     console.log('Config:', config);  // Add this log
+//     console.log('Injected value:', options.inject[0]); // Add this log
+
+//     const providers = options.inject.map((provider) => ({
+//       provide: provider,
+//       useFactory: options.useFactory,
+//       inject: options.inject,
+//     }));
+
+//     if (options.inject[0].includeTestingModule) {
+//       return {
+//         module: TestingModule,
+//         imports: [
+//           MongooseModule.forFeature([
+//             { name: UserEntity.name, schema: UserSchema },
+//             { name: BlogEntity.name, schema: BlogSchema },
+//             { name: PostEntity.name, schema: PostSchema },
+//             { name: CommentEntity.name, schema: CommentSchema },
+//           ]),
+//         ],
+//         controllers: [TestingController],
+//         providers: providers,
+//       };
+//     }
+//     return {
+//       module: TestingModule,
+//       controllers: [],
+//     };
+//   }
+// }
+export class TestingModule {
+  static register(env: string): DynamicModule {
+    if (env === 'true') {
+      return {
+        module: TestingModule,
+        imports: [
+          MongooseModule.forFeature([
+            { name: UserEntity.name, schema: UserSchema },
+            { name: BlogEntity.name, schema: BlogSchema },
+            { name: PostEntity.name, schema: PostSchema },
+            { name: CommentEntity.name, schema: CommentSchema },
+          ]),
+        ],
+        controllers: [TestingController],
+      };
+    }
+    return {
+      module: TestingModule,
+      controllers: [],
+    };
+  }
+}

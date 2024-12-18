@@ -5,12 +5,19 @@ import { LikesInfo } from './likes-info.schema';
 import { CommentatorInfo } from './commentator-info.schema';
 import { CommentatorInfoSchema } from './commentator-info.schema';
 import { LikesInfoSchema } from './likes-info.schema';
+import { CreateCommentDto } from '../dto/create-comment.dto';
 
-
+export const commentContentConstraints = {
+  minLength: 20,
+  maxLength: 300,
+};
 @Schema({ timestamps: true })
 export class CommentEntity {
-  @Prop({ type: String, required: true })
+  @Prop({ type: String, required: true, ...commentContentConstraints })
   content: string;
+
+  @Prop({ type: String, required: true })
+  postId: string;
 
   @Prop({ type: Date })
   createdAt: Date;
@@ -24,25 +31,26 @@ export class CommentEntity {
   @Prop({ type: LikesInfoSchema, required: true, default: { likesCount: 0, dislikesCount: 0 } })
   likesInfo: LikesInfo;
 
-  // static buildInstance(dto: BlogCreateDto): BlogDocument {
-  //   const blog = new this(); //UserModel!
+  static buildInstance(dto: CreateCommentDto): CommentDocument {
+    const comment = new this(); //CommentModel!
 
-  //   blog.name = dto.name;
-  //   blog.description = dto.description;
-  //   blog.websiteUrl = dto.websiteUrl;
+    comment.postId = dto.postId;
+    comment.content = dto.content;
+    comment.commentatorInfo = {
+      userId: dto.user._id.toString(),
+      userLogin: dto.user.login,
+    };
 
-  //   return blog as BlogDocument;
-  // }
+    return comment as CommentDocument;
+  }
 
   makeDeleted() {
     this.deletionStatus = DeletionStatus.PermanentDeleted;
   }
 
-  // update(dto: BlogUpdateDto) {
-  //   this.name = dto.name;
-  //   this.description = dto.description;
-  //   this.websiteUrl = dto.websiteUrl;
-  // }
+  update(content: string) {
+    this.content = content;
+  }
 }
 
 export const CommentSchema = SchemaFactory.createForClass(CommentEntity);

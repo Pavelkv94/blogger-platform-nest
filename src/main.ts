@@ -1,14 +1,14 @@
 import { NestFactory } from '@nestjs/core';
-import { initAppModule } from './app.module';
+import { AppModule } from './app.module';
 import { configApp } from './setup/app.setup';
 import { CoreConfig } from './core/core.config';
 import cookieParser from 'cookie-parser';
 
 async function bootstrap() {
   // создаём на основе донастроенного модуля наше приложение(с TestingModule или без)
-  const dynamicAppModule = await initAppModule();
+  // const dynamicAppModule = await initAppModule();
 
-  const app = await NestFactory.create(dynamicAppModule);
+  const app = await NestFactory.create(AppModule);
 
   const coreConfig = app.get<CoreConfig>(CoreConfig);
   

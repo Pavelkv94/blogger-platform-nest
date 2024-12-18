@@ -1,7 +1,7 @@
 import { getConnectionToken } from '@nestjs/mongoose';
 import { Test, TestingModuleBuilder } from '@nestjs/testing';
 import { Connection } from 'mongoose';
-import { initAppModule } from '../../src/app.module';
+import { AppModule } from '../../src/app.module';
 import { UsersTestManager } from './users-test-manager';
 import { deleteAllData } from './delete-all-data';
 import { EmailService } from '../../src/features/notifications/email.service';
@@ -14,10 +14,10 @@ export const initSettings = async (
   //передаем callback, который получает ModuleBuilder, если хотим изменить настройку тестового модуля
   addSettingsToModuleBuilder?: (moduleBuilder: TestingModuleBuilder) => void,
 ) => {
-  const dynamicAppModule = await initAppModule();
+  // const dynamicAppModule = await initAppModule();
 
   const testingModuleBuilder: TestingModuleBuilder = Test.createTestingModule({
-    imports: [dynamicAppModule],
+    imports: [AppModule],
   })
 
     .overrideProvider(EmailService)

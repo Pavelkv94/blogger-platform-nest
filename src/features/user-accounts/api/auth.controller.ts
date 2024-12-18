@@ -36,13 +36,13 @@ export class AuthController {
   @Post('login')
   @UseGuards(LocalAuthGuard)
   @HttpCode(HttpStatus.OK)
-  async login(@ExtractUserFromRequest() user: UserJwtPayloadDto, @Res() res: Response): Promise<LoginOuputDto> {
+  async login(@ExtractUserFromRequest() user: UserJwtPayloadDto, @Res({ passthrough: true }) response: Response): Promise<LoginOuputDto> {
     // в экспрессе делали так, здесь же валидация происходит в гварде
     // const userId = await this.authService.validateUser(body);
     // const accessToken = await this.authService.login(userId);
     const { accessToken, refreshToken } = await this.commandBus.execute<LoginUserCommand, { accessToken: string; refreshToken: string }>(new LoginUserCommand(user));
 
-    res.cookie('refreshToken', refreshToken, {
+    response.cookie('refreshToken', refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production', // Use secure cookies in production
       maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days

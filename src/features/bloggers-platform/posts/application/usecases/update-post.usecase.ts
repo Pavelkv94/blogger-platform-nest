@@ -5,6 +5,7 @@ import { PostEntity } from '../../domain/post.entity';
 import { BlogsRepository } from '../../../blogs/infrastructure/blogs.repository';
 import { PostsRepository } from '../../infrastructure/posts.repository';
 import { UpdatePostDto } from '../../dto/post-update.dto';
+import { NotFoundDomainException } from 'src/core/exeptions/domain-exceptions';
 
 export class UpdatePostCommand {
   constructor(
@@ -22,7 +23,11 @@ export class UpdatePostUseCase implements ICommandHandler<UpdatePostCommand> {
   ) {}
 
   async execute(command: UpdatePostCommand): Promise<void> {
-    const post = await this.postsRepository.findPostByIdOrNotFoundFail(command.id);
+    const post = await this.postsRepository.findPostById(command.id);
+
+    if (!post) {
+      throw NotFoundDomainException.create('Post not found');
+    }
 
     post.update(command.payload);
 

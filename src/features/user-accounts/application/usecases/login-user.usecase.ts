@@ -12,8 +12,8 @@ export class LoginUserUseCase implements ICommandHandler<LoginUserCommand> {
   constructor(@Inject() private readonly jwtService: JwtService) {}
 
   async execute(command: LoginUserCommand): Promise<{ accessToken: string; refreshToken: string }> {
-    const accessToken = this.jwtService.sign(command.payload);
-    const refreshToken = this.jwtService.sign(command.payload, { expiresIn: '10d' });
+    const accessToken = this.jwtService.sign(command.payload, { expiresIn: '10m' });
+    const refreshToken = this.jwtService.sign(command.payload, { expiresIn: '30m' });
 
     return { accessToken, refreshToken };
   }

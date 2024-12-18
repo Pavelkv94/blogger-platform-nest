@@ -13,6 +13,7 @@ export class LocalAuthGuard implements CanActivate {
 
     const user = await this.authService.validateUser(request.body);
 
+    
     if (!user) {
       throw UnauthorizedDomainException.create();
     }
