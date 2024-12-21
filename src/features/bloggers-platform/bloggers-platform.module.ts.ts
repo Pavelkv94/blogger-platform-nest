@@ -28,6 +28,15 @@ import { JwtModule } from '@nestjs/jwt';
 import { DeleteCommentUseCase } from './comments/application/usecases/delete-comment.usecase';
 import { CommentsController } from './comments/api/comments.controller';
 import { UpdateCommentUseCase } from './comments/application/usecases/update-comment.usecase';
+import { LikeCommentUseCase } from './comments/application/usecases/like-comment.usecase';
+import { LikePostUseCase } from './posts/application/usecases/like-post.usecase';
+import { CreateLikeUseCase } from './likes/application/usecases/create-like.usecase';
+import { UpdateLikeUseCase } from './likes/application/usecases/update-like.usecase';
+import { LikesRepository } from './likes/infrastructure/likes.repository';
+import { LikeEntity, LikeSchema } from './likes/domain/like.entity';
+import { PassportModule } from '@nestjs/passport';
+import { JwtStrategy } from 'src/core/guards/passport/jwt.strategy';
+import { BlogIsNotExistConstraint } from './posts/api/validation/blogIsExist.decorator';
 
 const useCases = [
   CreateBlogUseCase,
@@ -38,7 +47,11 @@ const useCases = [
   DeletePostUseCase,
   CreateCommentUseCase,
   DeleteCommentUseCase,
-  UpdateCommentUseCase
+  UpdateCommentUseCase,
+  LikePostUseCase,
+  LikeCommentUseCase,
+  CreateLikeUseCase,
+  UpdateLikeUseCase
 ];
 
 const repositories = [
@@ -48,15 +61,19 @@ const repositories = [
   PostsQueryRepository,
   CommentsQueryRepository,
   CommentsRepository,
+  LikesRepository
 ]
 
 @ApiTags('Bloggers Platform') //swagger
 @Module({
   imports: [
+    PassportModule,
     MongooseModule.forFeature([
       { name: BlogEntity.name, schema: BlogSchema },
       { name: PostEntity.name, schema: PostSchema },
       { name: CommentEntity.name, schema: CommentSchema },
+      { name: LikeEntity.name, schema: LikeSchema },
+
     ]),
     JwtModule.registerAsync({
       useFactory: (coreConfig: CoreConfig) => ({
@@ -72,7 +89,9 @@ const repositories = [
   controllers: [BlogsController, PostsController, CommentsController],
   providers: [
     ...useCases,
-    ...repositories
+    ...repositories,
+    JwtStrategy,
+    BlogIsNotExistConstraint
   ],
 })
 export class BloggersPlatformModule {}

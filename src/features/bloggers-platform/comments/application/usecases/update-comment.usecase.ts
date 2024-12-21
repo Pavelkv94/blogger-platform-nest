@@ -17,6 +17,9 @@ export class UpdateCommentUseCase implements ICommandHandler<UpdateCommentComman
   constructor(private readonly commentsRepository: CommentsRepository) {}
 
   async execute(command: UpdateCommentCommand): Promise<void> {
+    if (!command.commentId) {
+      throw NotFoundDomainException.create('Comment not found');
+    }
     const resultObject = await this.commentsRepository.findCommentById(command.commentId, command.userId);
 
     if (resultObject.status === ResultStatus.NOT_FOUND) {

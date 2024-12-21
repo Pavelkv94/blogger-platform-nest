@@ -6,6 +6,7 @@ import { CommentatorInfo } from './commentator-info.schema';
 import { CommentatorInfoSchema } from './commentator-info.schema';
 import { LikesInfoSchema } from './likes-info.schema';
 import { CreateCommentDto } from '../dto/create-comment.dto';
+import { LikeStatus } from '../../likes/dto/like-status.dto';
 
 export const commentContentConstraints = {
   minLength: 20,
@@ -50,6 +51,13 @@ export class CommentEntity {
 
   update(content: string) {
     this.content = content;
+  }
+
+  countLikes(prevStatus: LikeStatus, newStatus: LikeStatus) {
+    if (prevStatus === 'Like') this.likesInfo.likesCount -= 1;
+    if (prevStatus === 'Dislike') this.likesInfo.dislikesCount -= 1;
+    if (newStatus === 'Like') this.likesInfo.likesCount += 1;
+    if (newStatus === 'Dislike') this.likesInfo.dislikesCount += 1;
   }
 }
 

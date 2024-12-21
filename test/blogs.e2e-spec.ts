@@ -97,47 +97,22 @@ describe('blogs', () => {
     await blogsTestManager.deleteBlogWithInvalidAuth(blog.id);
   });
 
-  //   it('should return users info while "me" request with correct accessTokens', async () => {
-  //     const tokens = await userTestManger.createAndLoginSeveralUsers(1);
+  it('should GET blogs, POST blog and GET blogs again', async () => {
+    const blogs = await blogsTestManager.createSeveralBlogs(5);
+    const getBlogsResponse = await blogsTestManager.getBlogs('?pageNumber=1&sortDirection=asc');
 
-  //     const responseBody = await userTestManger.me(tokens[0].accessToken);
+    expect(blogs.length).toBe(5);
+    expect(getBlogsResponse.totalCount).toBe(5);
 
-  //     expect(responseBody).toEqual({
-  //       login: expect.anything(),
-  //       userId: expect.anything(),
-  //       email: expect.anything(),
-  //     } as MeViewDto);
-  //   });
+    const body: BlogCreateDto = {
+      name: 'name1',
+      description: 'qwerty',
+      websiteUrl: 'email@email.em',
+    };
 
-  //   it(`shouldn't return users info while "me" request if accessTokens expired`, async () => {
-  //     const tokens = await userTestManger.createAndLoginSeveralUsers(1);
-  //     await delay(2000);
-  //     await userTestManger.me(tokens[0].accessToken, HttpStatus.UNAUTHORIZED);
-  //   });
+    await blogsTestManager.createBlog(body);
 
-  //   it(`should register user without really send email`, async () => {
-  //     await userTestManger.registration(
-  //       {
-  //         email: 'email@email.em',
-  //         password: '123123123',
-  //         login: 'login123',
-  //       } as CreateUserDto,
-  //       HttpStatus.NO_CONTENT,
-  //     );
-  //   });
-
-  //   it(`should call email sending method while registration`, async () => {
-  //     const sendEmailMethod = (app.get(EmailService).sendConfirmationEmail = jest.fn().mockImplementation(() => Promise.resolve()));
-
-  //     await userTestManger.registration(
-  //       {
-  //         email: 'email@email.em',
-  //         password: '123123123',
-  //         login: 'login123',
-  //       } as CreateUserDto,
-  //       HttpStatus.NO_CONTENT,
-  //     );
-
-  //     expect(sendEmailMethod).toHaveBeenCalled();
-  //   });
+    const getBlogsResponseAgain = await blogsTestManager.getBlogs('?pageNumber=1&sortDirection=asc');
+    expect(getBlogsResponseAgain.totalCount).toBe(6);
+  });
 });

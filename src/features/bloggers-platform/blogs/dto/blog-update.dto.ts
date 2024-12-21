@@ -4,10 +4,11 @@ import { IsString } from 'class-validator';
 import { Length } from 'class-validator';
 import { nameConstraints } from '../domain/blog.entity';
 import { descriptionConstraints, websiteUrlConstraints } from '../domain/blog.entity';
+import { IsNotEmptyString } from 'src/core/decorators/validation/IsNotEmptyString';
 
 export class BlogUpdateDto {
   @ApiProperty({ example: 'Blog Name' })
-  @IsString()
+  @IsNotEmptyString()
   @Length(nameConstraints.minLength,  nameConstraints.maxLength)
   name: string;
   @ApiProperty({ example: 'Blog Description' })

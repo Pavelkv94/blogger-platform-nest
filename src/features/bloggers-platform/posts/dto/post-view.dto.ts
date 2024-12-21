@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { LikeStatuses } from '../../likes/dto/like-status.dto';
+import { LikeStatus } from '../../likes/dto/like-status.dto';
 import { PostDocument } from '../domain/post.entity';
 import { NewestLikes } from '../domain/newest-likes-schema';
 
@@ -22,11 +22,11 @@ export class PostViewDto {
   extendedLikesInfo: {
     likesCount: number;
     dislikesCount: number;
-    myStatus: LikeStatuses;
+    myStatus: LikeStatus;
     newestLikes: NewestLikes[];
   };
 
-  constructor(model: PostDocument, myStatus: LikeStatuses, newestLikes: NewestLikes[]) {
+  constructor(model: PostDocument, myStatus: LikeStatus, newestLikes: NewestLikes[]) {
     this.id = model._id.toString();
     this.title = model.title;
     this.shortDescription = model.shortDescription;
@@ -42,7 +42,7 @@ export class PostViewDto {
     };
   }
 
-  static mapToView(post: PostDocument, myStatus: LikeStatuses, newestLikes: NewestLikes[]): PostViewDto {
+  static mapToView(post: PostDocument, myStatus: LikeStatus, newestLikes: NewestLikes[]): PostViewDto {
     return new PostViewDto(post, myStatus, newestLikes);
   }
 }

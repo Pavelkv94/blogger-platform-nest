@@ -9,6 +9,7 @@ export class JwtOptionalAuthGuard extends AuthGuard('jwt') {
   canActivate(context: ExecutionContext) {
     return super.canActivate(context);
   }
-
-  //handleRequest(err: any, user: any, info: any) {}
+  handleRequest(err: any, user: any) {
+        return user || null
+  }
 }

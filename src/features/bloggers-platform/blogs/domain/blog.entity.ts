@@ -6,17 +6,17 @@ import { DeletionStatus } from 'src/core/dto/deletion-status';
 
 
 export const nameConstraints = {
-  minLength: 0,
+  minLength: 1,
   maxLength: 15,
 };
 
 export const descriptionConstraints = {
-  minLength: 0,
+  minLength: 1,
   maxLength: 500,
 };
 
 export const websiteUrlConstraints = {
-  minLength: 0,
+  minLength: 1,
   maxLength: 100,
 };
 

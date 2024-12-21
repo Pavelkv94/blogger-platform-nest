@@ -7,10 +7,14 @@ import { SwaggerAuthStatus } from 'src/core/decorators/swagger/swagger-options';
 import { JwtAuthGuard } from 'src/core/guards/jwt-auth.guard';
 import { DeleteCommentCommand } from '../application/usecases/delete-comment.usecase';
 import { CommandBus } from '@nestjs/cqrs';
-import { ExtractUserFromRequest } from 'src/core/decorators/param/extract-user-from-request';
+import { ExtractAnyUserFromRequest, ExtractUserFromRequest } from 'src/core/decorators/param/extract-user-from-request';
 import { UserJwtPayloadDto } from 'src/features/user-accounts/dto/user-jwt-payload.dto';
 import { UpdateCommentInputDto } from '../dto/update-comment.dto';
 import { UpdateCommentCommand } from '../application/usecases/update-comment.usecase';
+import { SwaggerPut } from 'src/core/decorators/swagger/swagger-put';
+import { LikeInputDto } from '../../likes/dto/like-input.dto';
+import { LikeCommentCommand } from '../application/usecases/like-comment.usecase';
+import { JwtOptionalAuthGuard } from 'src/core/guards/jwt-optional-auth.guard';
 
 @ApiTags('Comments') //swagger
 @Controller('comments')
@@ -22,10 +26,13 @@ export class CommentsController {
 
   @SwaggerGetWith404('Get a comment by ID', CommentViewDto, SwaggerAuthStatus.WithoutAuth) //swagger
   @Get(':id')
-  getComment(@Param('id') id: string): Promise<CommentViewDto | null> {
-    return this.commentsQueryRepository.findCommentByIdOrNotFound(id);
+  @UseGuards(JwtOptionalAuthGuard)
+  getComment(@Param('id') id: string, @ExtractAnyUserFromRequest() user: UserJwtPayloadDto | null ): Promise<CommentViewDto | null> {
+    const userId = user ? user.userId : null;
+    return this.commentsQueryRepository.findCommentByIdOrNotFound(id, userId);
   }
 
+  // @SwaggerGetWith404('Get a comment by ID', CommentViewDto, SwaggerAuthStatus.WithoutAuth) //swagger
   @ApiBearerAuth() //swagger
   @UseGuards(JwtAuthGuard)
   @Put(':id')
@@ -41,5 +48,15 @@ export class CommentsController {
   @HttpCode(HttpStatus.NO_CONTENT)
   deleteComment(@Param('id') commentId: string, @ExtractUserFromRequest() user: UserJwtPayloadDto): Promise<void> {
     return this.commandBus.execute(new DeleteCommentCommand(commentId, user.userId));
+  }
+
+  //COMMENT LIKES
+  @SwaggerPut('Make like/dislike/unlike/undislike operations') //swagger
+  @ApiBearerAuth() //swagger
+  @UseGuards(JwtAuthGuard)
+  @Put(':id/like-status')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async likeStatus(@Param('id') commentId: string, @Body() payload: LikeInputDto, @ExtractUserFromRequest() user: UserJwtPayloadDto) {
+    await this.commandBus.execute(new LikeCommentCommand(commentId, user.userId, payload.likeStatus));
   }
 }

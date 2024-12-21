@@ -9,6 +9,7 @@ import { EmailServiceMock } from '../mock/email-service.mock';
 import { configApp } from 'src/setup/app.setup';
 import { CoreConfig } from 'src/core/core.config';
 import { BlogsTestManager } from './blogs-test-manager';
+import { PostsTestManager } from './posts-test-manager';
 
 export const initSettings = async (
   //передаем callback, который получает ModuleBuilder, если хотим изменить настройку тестового модуля
@@ -40,7 +41,9 @@ export const initSettings = async (
   const httpServer = app.getHttpServer();
   const userTestManger = new UsersTestManager(app);
   const blogsTestManager = new BlogsTestManager(app);
+  const postsTestManager = new PostsTestManager(app);
 
+  
   await deleteAllData(app);
 
   return {
@@ -49,5 +52,6 @@ export const initSettings = async (
     httpServer,
     userTestManger,
     blogsTestManager,
+    postsTestManager
   };
 };

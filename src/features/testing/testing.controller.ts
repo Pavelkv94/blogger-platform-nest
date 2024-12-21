@@ -5,6 +5,7 @@ import { ApiNoContentResponse, ApiOperation } from '@nestjs/swagger';
 import { BlogEntity, BlogModelType } from '../bloggers-platform/blogs/domain/blog.entity';
 import { PostEntity, PostModelType } from '../bloggers-platform/posts/domain/post.entity';
 import { CommentEntity, CommentModelType } from '../bloggers-platform/comments/domain/comment.entity';
+import { LikeEntity, LikeModelType } from '../bloggers-platform/likes/domain/like.entity';
 
 @Controller('testing')
 export class TestingController {
@@ -13,6 +14,7 @@ export class TestingController {
     @InjectModel(BlogEntity.name) private BlogModel: BlogModelType,
     @InjectModel(PostEntity.name) private PostModel: PostModelType,
     @InjectModel(CommentEntity.name) private CommentModel: CommentModelType,
+    @InjectModel(LikeEntity.name) private LikeModel: LikeModelType,
   ) {}
 
   @ApiOperation({ summary: 'Delete all data' }) //swagger
@@ -24,5 +26,6 @@ export class TestingController {
     await this.BlogModel.deleteMany({});
     await this.PostModel.deleteMany({});
     await this.CommentModel.deleteMany({});
+    await this.LikeModel.deleteMany({});
   }
 }

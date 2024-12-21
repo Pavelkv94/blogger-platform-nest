@@ -6,6 +6,7 @@ import { BlogEntity, BlogSchema } from '../bloggers-platform/blogs/domain/blog.e
 import { PostEntity, PostSchema } from '../bloggers-platform/posts/domain/post.entity';
 import { CommentEntity } from '../bloggers-platform/comments/domain/comment.entity';
 import { CommentSchema } from '../bloggers-platform/comments/domain/comment.entity';
+import { LikeEntity, LikeSchema } from '../bloggers-platform/likes/domain/like.entity';
 // import { CoreConfig } from 'src/core/core.config';
 
 @Module({
@@ -63,6 +64,8 @@ export class TestingModule {
             { name: BlogEntity.name, schema: BlogSchema },
             { name: PostEntity.name, schema: PostSchema },
             { name: CommentEntity.name, schema: CommentSchema },
+            { name: LikeEntity.name, schema: LikeSchema },
+
           ]),
         ],
         controllers: [TestingController],

@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { CommentDocument } from '../domain/comment.entity';
-import { LikeStatuses } from '../../likes/dto/like-status.dto';
+import { LikeStatus } from '../../likes/dto/like-status.dto';
 import { CommentatorInfo } from '../domain/commentator-info.schema';
 import { LikesInfo } from '../domain/likes-info.schema';
 
@@ -14,9 +14,9 @@ export class CommentViewDto {
   @ApiProperty({ example: 'Commentator info', description: 'Commentator info' })
   commentatorInfo: CommentatorInfo;
   @ApiProperty({ example: 'Likes info', description: 'Likes info' })
-  likesInfo: LikesInfo & { myStatus: LikeStatuses };
+  likesInfo: LikesInfo & { myStatus: LikeStatus };
 
-  constructor(model: CommentDocument, myStatus: LikeStatuses) {
+  constructor(model: CommentDocument, myStatus: LikeStatus) {
     this.id = model._id.toString();
     this.content = model.content;
     this.content = model.content;
@@ -29,7 +29,7 @@ export class CommentViewDto {
     };
   }
 
-  static mapToView(comment: CommentDocument, myStatus: LikeStatuses): CommentViewDto {
+  static mapToView(comment: CommentDocument, myStatus: LikeStatus): CommentViewDto {
     return new CommentViewDto(comment, myStatus);
   }
 }

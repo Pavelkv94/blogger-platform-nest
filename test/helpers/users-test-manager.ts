@@ -40,6 +40,7 @@ export class UsersTestManager {
   //   }
 
   async login(loginOrEmail: string, password: string, statusCode: number = HttpStatus.OK): Promise<{ accessToken: string }> {
+   
     const response = await request(this.app.getHttpServer()).post(`/auth/login`).send({ loginOrEmail, password }).expect(statusCode);
 
     return {

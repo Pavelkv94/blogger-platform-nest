@@ -8,6 +8,7 @@ import { DomainExceptionCode } from '../domain-exception-codes';
 @Catch(DomainException)
 export class DomainExceptionsFilter extends BaseExceptionFilter {
   onCatch(exception: DomainException, response: Response, request: Request): void {
+
     response.status(this.calculateHttpCode(exception)).json(this.getDefaultHttpBody(request.url, exception));
   }
 

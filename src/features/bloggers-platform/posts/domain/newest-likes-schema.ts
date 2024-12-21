@@ -2,8 +2,8 @@ import { Prop, SchemaFactory, Schema } from '@nestjs/mongoose';
 
 @Schema({ _id: false })
 export class NewestLikes {
-  @Prop({ type: String, required: true })
-  addedAt: string;
+  @Prop({ type: Date, required: true })
+  addedAt: Date;
 
   @Prop({ type: String, required: true })
   userId: string;

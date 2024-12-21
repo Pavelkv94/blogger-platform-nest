@@ -1,30 +1,36 @@
-// import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-// import { LikeStatuses } from '../../dto/like-status.dto';
-// import { LikesRepository } from '../../infrastructure/likes.repository';
-// import { UsersRepository } from 'src/features/user-accounts/infrastructure/users.repository';
-// import { LikeEntity, LikeModelType } from '../../domain/like.entity';
-// import { InjectModel } from '@nestjs/mongoose';
+import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
+import { InjectModel } from '@nestjs/mongoose';
+import { LikeStatus } from '../../dto/like-status.dto';
+import { LikesRepository } from '../../infrastructure/likes.repository';
+import { UsersRepository } from 'src/features/user-accounts/infrastructure/users.repository';
+import { LikeEntity, LikeModelType } from '../../domain/like.entity';
+import { NotFoundDomainException } from 'src/core/exeptions/domain-exceptions';
 
+export class CreateLikeCommand {
+  constructor(
+    public readonly userId: string,
+    public readonly parent_id: string,
+    public readonly newStatus: LikeStatus,
+  ) {}
+}
 
-// export class CreateLikeCommand {
-//   constructor(public readonly userId: string, public readonly parent_id: string, public readonly likeStatus: LikeStatuses,) {}
-// }
+@CommandHandler(CreateLikeCommand)
+export class CreateLikeUseCase implements ICommandHandler<CreateLikeCommand> {
+  constructor(
+    private readonly likesRepository: LikesRepository,
+    private readonly usersRepository: UsersRepository,
+    @InjectModel(LikeEntity.name) private LikeModel: LikeModelType,
+  ) {}
 
-// @CommandHandler(CreateLikeCommand)
-// export class CreateLikeUseCase implements ICommandHandler<CreateLikeCommand> {
-//   constructor(
-//     private readonly likesRepository: LikesRepository,
-//     private readonly usersRepository: UsersRepository,
-//     @InjectModel(LikeEntity.name) private LikeModel: LikeModelType,
-//   ) {}
+  async execute(command: CreateLikeCommand): Promise<void> {
+    const user = await this.usersRepository.findUserById(command.userId);
 
-//   async execute(command: CreateLikeCommand): Promise<boolean> {
-//     const user = this.usersRepository.findByIdOrNotFoundFail(command.userId);
+    if (!user) {
+      throw NotFoundDomainException.create('User not found');
+    }
 
-//     const newLike = this.LikeModel.buildInstance(command.payload);
+    const newLike = this.LikeModel.buildInstance(user, command.parent_id, command.newStatus);
 
-//     await this.likesRepository.save(newLike);
-
-//     return !!newLike;
-//   }
-// }
+    await this.likesRepository.save(newLike);
+  }
+}

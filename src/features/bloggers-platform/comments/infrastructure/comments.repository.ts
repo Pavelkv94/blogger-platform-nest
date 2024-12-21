@@ -18,7 +18,7 @@ export class CommentsRepository {
       };
     }
 
-    if (comment.commentatorInfo.userId !== userId) {
+    if (userId && comment.commentatorInfo.userId !== userId) {
       return {
         status: ResultStatus.FORBIDDEN,
         errorMessage: 'Access forbidden',

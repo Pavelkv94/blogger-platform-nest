@@ -98,7 +98,7 @@ export class BlogsController {
   @Post(':blogId/posts')
   async createPostForBlog(@Param('blogId') blogId: string, @Body() body: CreatePostForBlogDto): Promise<PostViewDto> {
     const newPostId = await this.commandBus.execute(new CreatePostCommand(body, blogId));
-    const newPost = await this.postQueryRepository.findPostByIdOrNotFoundFail(newPostId);
+    const newPost = await this.postQueryRepository.findPostByIdOrNotFoundFail(newPostId, null);
 
     return newPost;
   }

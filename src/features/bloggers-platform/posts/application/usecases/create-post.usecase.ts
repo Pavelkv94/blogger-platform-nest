@@ -5,9 +5,13 @@ import { CreatePostDto, CreatePostForBlogDto } from '../../dto/post-create.dto';
 import { PostEntity } from '../../domain/post.entity';
 import { BlogsRepository } from '../../../blogs/infrastructure/blogs.repository';
 import { PostsRepository } from '../../infrastructure/posts.repository';
+import { NotFoundDomainException } from 'src/core/exeptions/domain-exceptions';
 
 export class CreatePostCommand {
-  constructor(public readonly payload: CreatePostDto | CreatePostForBlogDto, public readonly blogId?: string) {}
+  constructor(
+    public readonly payload: CreatePostDto | CreatePostForBlogDto,
+    public readonly blogId?: string,
+  ) {}
 }
 
 @CommandHandler(CreatePostCommand)
@@ -20,13 +24,14 @@ export class CreatePostUseCase implements ICommandHandler<CreatePostCommand> {
 
   async execute(command: CreatePostCommand): Promise<string> {
     const targetBlogId = command.blogId ?? (command.payload as CreatePostDto).blogId;
-    const blog = await this.blogsRepository.findBlogByIdOrNotFoundFail(targetBlogId);
-    
-    const postDtoWithBlogId = command.blogId 
-      ? { ...command.payload, blogId: command.blogId } 
-      : command.payload as CreatePostDto;
-    
-    const newPost = this.PostModel.buildInstance(postDtoWithBlogId, blog.name);
+    const blog = await this.blogsRepository.findBlogById(targetBlogId);
+
+    if(command.blogId && !blog) {
+      throw NotFoundDomainException.create("Blog not found")
+    }
+    const postDtoWithBlogId = command.blogId ? { ...command.payload, blogId: command.blogId } : (command.payload as CreatePostDto);
+
+    const newPost = this.PostModel.buildInstance(postDtoWithBlogId, blog!.name);
     await this.postsRepository.save(newPost);
 
     return newPost._id.toString();

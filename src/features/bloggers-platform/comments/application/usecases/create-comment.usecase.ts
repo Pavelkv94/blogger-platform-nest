@@ -22,7 +22,6 @@ export class CreateCommentUseCase implements ICommandHandler<CreateCommentComman
     private readonly postsRepository: PostsRepository,
     private readonly usersRepository: UsersRepository,
     private readonly commentsRepository: CommentsRepository,
-
     @InjectModel(CommentEntity.name) private CommentModel: CommentModelType,
   ) {}
 

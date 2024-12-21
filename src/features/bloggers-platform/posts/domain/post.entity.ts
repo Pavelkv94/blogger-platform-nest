@@ -7,17 +7,17 @@ import { ExtendedLikes } from './extended-likes.schema';
 import { ExtendedLikesSchema } from './extended-likes.schema';
 
 export const titleConstraints = {
-  minLength: 0,
+  minLength: 1,
   maxLength: 30,
 };
 
 export const shortDescriptionConstraints = {
-  minLength: 0,
+  minLength: 1,
   maxLength: 100,
 };
 
 export const contentConstraints = {
-  minLength: 0,
+  minLength: 1,
   maxLength: 1000,
 };
 
