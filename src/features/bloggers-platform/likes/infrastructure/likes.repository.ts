@@ -8,9 +8,6 @@ export class LikesRepository {
 
   async findLike(userId: string, parent_id: string): Promise<LikeDocument | null> {
     const likeDocument = await this.LikeModel.findOne({ user_id: userId, parent_id: parent_id });
-// console.log(userId, parent_id );
-// console.log(await this.LikeModel.find({ }));
-
 
     if (!likeDocument) {
       return null;

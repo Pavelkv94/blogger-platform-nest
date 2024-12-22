@@ -23,6 +23,12 @@ import { TestingModule } from './features/testing/testing.module';
     UserAccountsModule,
     BloggersPlatformModule,
     TestingModule.register(process.env.INCLUDE_TESTING_MODULE!), //* см. ниже
+    // TestingModule.registerAsync({
+    //   useFactory: (coreConfig: CoreConfig) => ({
+    //     includeTestingModule: coreConfig.includeTestingModule,
+    //   }),
+    //   inject: [CoreConfig],
+    // }),
   ],
   controllers: [],
   providers: [],

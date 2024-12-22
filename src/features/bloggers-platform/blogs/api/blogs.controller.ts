@@ -22,6 +22,9 @@ import { UpdateBlogCommand } from '../application/usecases/update-blog.usecase';
 import { DeleteBlogCommand } from '../application/usecases/delete-blog.usecase';
 import { CreatePostCommand } from '../../posts/application/usecases/create-post.usecase';
 import { BasicAuthGuard } from 'src/core/guards/basic-auth.guard';
+import { JwtOptionalAuthGuard } from 'src/core/guards/jwt-optional-auth.guard';
+import { ExtractAnyUserFromRequest } from 'src/core/decorators/param/extract-user-from-request';
+import { UserJwtPayloadDto } from 'src/features/user-accounts/dto/user-jwt-payload.dto';
 
 @ApiTags('Blogs') //swagger
 @Controller('blogs')
@@ -81,13 +84,18 @@ export class BlogsController {
 
   // BLOG POSTS
   @SwaggerGetWith404('Get all posts by blog ID', PaginatedPostViewDto, SwaggerAuthStatus.WithoutAuth) //swagger
+  @UseGuards(JwtOptionalAuthGuard)
   @Get(':blogId/posts')
-  async getPostsByBlogId(@Query() query: GetPostsQueryParams, @Param('blogId') blogId: string): Promise<PaginatedPostViewDto> {
-
-    //! ask
+  async getPostsByBlogId(
+    @Query() query: GetPostsQueryParams,
+    @Param('blogId') blogId: string,
+    @ExtractAnyUserFromRequest() user: UserJwtPayloadDto | null,
+  ): Promise<PaginatedPostViewDto> {
     const blog = await this.blogsQueryRepository.findBlogByIdOrNotFoundFail(blogId);
 
-    const posts = await this.postQueryRepository.findAllPosts(query, blog.id);
+    const userId = user ? user.userId : null;
+
+    const posts = await this.postQueryRepository.findAllPosts(query, userId, blog.id);
 
     return posts;
   }

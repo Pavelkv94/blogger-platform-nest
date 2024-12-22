@@ -40,6 +40,7 @@ export class PostsController {
   @UseGuards(JwtOptionalAuthGuard)
   @Get()
   async findPosts(@Query() query: GetPostsQueryParams, @ExtractAnyUserFromRequest() user: UserJwtPayloadDto | null) {
+    
     const userId = user ? user.userId : null;
     return this.postsQueryRepository.findAllPosts(query, userId);
   }

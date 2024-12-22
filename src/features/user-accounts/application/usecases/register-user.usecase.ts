@@ -1,7 +1,7 @@
 import { Inject } from '@nestjs/common';
 import { CommandBus, CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { RegistrationInputDto } from '../../dto/create-user.dto';
-import { BadRequestDomainException } from 'src/core/exeptions/domain-exceptions';
+import { BadRequestDomainException, NotFoundDomainException } from 'src/core/exeptions/domain-exceptions';
 import { EmailService } from 'src/features/notifications/email.service';
 import { UsersRepository } from '../../infrastructure/users.repository';
 import { CreateUserCommand } from './create-user.usecase';
@@ -31,8 +31,12 @@ export class RegisterUserUseCase implements ICommandHandler<RegisterUserCommand>
 
     const userId = await this.commandBus.execute<CreateUserCommand, string>(new CreateUserCommand(command.payload));
 
-    const confirmationCode = await this.usersRepository.findConfirmationCodeByUserId(userId);
+    const user = await this.usersRepository.findUserById(userId);
 
-    this.emailService.sendConfirmationEmail(command.payload.email, confirmationCode, 'activationAcc').catch(console.error);
+    if (!user) {
+      throw NotFoundDomainException.create('Post not found');
+    }
+
+    this.emailService.sendConfirmationEmail(command.payload.email, user.emailConfirmation.confirmationCode, 'activationAcc').catch(console.error);
   }
 }

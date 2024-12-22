@@ -14,7 +14,6 @@ export class PostsRepository {
     });
     if (!post) {
       return null
-      // throw NotFoundDomainException.create('Post not found');
     }
     return post;
   }

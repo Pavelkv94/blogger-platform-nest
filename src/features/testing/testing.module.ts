@@ -21,7 +21,7 @@ import { LikeEntity, LikeSchema } from '../bloggers-platform/likes/domain/like.e
   // controllers: [TestingController],
 })
 // export class TestingModule {
-//   static async forRootAsync(options: { useFactory: (coreConfig: CoreConfig) => { includeTestingModule: boolean }; inject: any[] }): Promise<DynamicModule> {
+//   static async registerAsync(options: { useFactory: (coreConfig: CoreConfig) => { includeTestingModule: boolean }; inject: any[] }): Promise<DynamicModule> {
 //     const config = await options.useFactory(options.inject[0]);
 //     console.log('Config:', config);  // Add this log
 //     console.log('Injected value:', options.inject[0]); // Add this log

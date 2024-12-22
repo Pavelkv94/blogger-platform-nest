@@ -1,6 +1,1 @@
-export class CommentsService {
-
-    async checkComment() {
-        
-    }
-}
+//* all logic move to the usecases exept utils

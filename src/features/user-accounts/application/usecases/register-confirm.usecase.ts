@@ -21,7 +21,11 @@ export class RegisterConfirmUseCase implements ICommandHandler<RegisterConfirmCo
       throw BadRequestDomainException.create('Code not found', 'code');
     }
 
-    const user = await this.usersRepository.findUserByConfirmationCodeOrBadRequestFail(command.code);
+    const user = await this.usersRepository.findUserByConfirmationCode(command.code);
+    if (!user) {
+      throw BadRequestDomainException.create('Code doesnt exist', 'code');
+    }
+
     if (user.emailConfirmation.isConfirmed) {
       throw BadRequestDomainException.create('User already confirmed', 'code');
     }

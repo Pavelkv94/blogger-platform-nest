@@ -25,8 +25,9 @@ export class CreateUserUseCase implements ICommandHandler<CreateUserCommand> {
       throw BadRequestDomainException.create('Login already exists', 'login');
     }
 
-    const emailIsExist = await this.usersRepository.findUserByEmail(command.payload.email);
-    if (emailIsExist) {
+    const user = await this.usersRepository.findUserByEmail(command.payload.email);
+
+    if (user) {
       throw BadRequestDomainException.create('Email already exists', 'email');
     }
 

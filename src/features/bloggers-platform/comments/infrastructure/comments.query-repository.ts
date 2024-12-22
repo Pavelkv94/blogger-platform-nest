@@ -20,8 +20,8 @@ export class CommentsQueryRepository {
   ) {}
 
   async findAllComments(postId: string, query: GetPostsQueryParams, userId: string | null): Promise<PaginatedCommentViewDto> {
-    //! проверка здесь?
     const post = await this.PostModel.findOne({_id: postId});
+    
     if(!post) {
       throw NotFoundDomainException.create("Post not found")
     }

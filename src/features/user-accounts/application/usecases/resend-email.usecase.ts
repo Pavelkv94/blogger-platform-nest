@@ -16,8 +16,12 @@ export class ResendEmailUseCase implements ICommandHandler<ResendEmailCommand> {
   ) {}
 
   async execute(command: ResendEmailCommand): Promise<void> {
-    const user = await this.usersRepository.findUserByEmailOrBadRequestFail(command.email);
+    const user = await this.usersRepository.findUserByEmail(command.email);
 
+    if(!user) {
+      throw BadRequestDomainException.create('User doesnt exist', 'email');
+    }
+    
     if (user.emailConfirmation.isConfirmed) {
       throw BadRequestDomainException.create('User already confirmed', 'email');
     }

@@ -33,7 +33,7 @@ import { MailerConfig } from './mailer.config';
         },
       }),
       inject: [MailerConfig],
-      extraProviders: [MailerConfig], //! без этого не работает
+      extraProviders: [MailerConfig], //? без этого не работает
     }),
   ],
   exports: [EmailService],
