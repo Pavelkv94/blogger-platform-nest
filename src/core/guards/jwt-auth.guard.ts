@@ -1,3 +1,5 @@
+//* замена passport.js
+
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Request } from 'express';
 import { UnauthorizedDomainException } from 'src/core/exeptions/domain-exceptions';

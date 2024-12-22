@@ -4,7 +4,6 @@ import { CommentsQueryRepository } from '../infrastructure/comments.query-reposi
 import { CommentViewDto } from '../dto/comment-view.dto';
 import { SwaggerGetWith404 } from 'src/core/decorators/swagger/swagger-get';
 import { SwaggerAuthStatus } from 'src/core/decorators/swagger/swagger-options';
-import { JwtAuthGuard } from 'src/core/guards/jwt-auth.guard';
 import { DeleteCommentCommand } from '../application/usecases/delete-comment.usecase';
 import { CommandBus } from '@nestjs/cqrs';
 import { ExtractAnyUserFromRequest, ExtractUserFromRequest } from 'src/core/decorators/param/extract-user-from-request';
@@ -15,6 +14,7 @@ import { SwaggerPut } from 'src/core/decorators/swagger/swagger-put';
 import { LikeInputDto } from '../../likes/dto/like-input.dto';
 import { LikeCommentCommand } from '../application/usecases/like-comment.usecase';
 import { JwtOptionalAuthGuard } from 'src/core/guards/jwt-optional-auth.guard';
+import { JwtAuthPassportGuard } from 'src/core/guards/passport/jwt-auth-passport.guard';
 
 @ApiTags('Comments') //swagger
 @Controller('comments')
@@ -34,7 +34,7 @@ export class CommentsController {
 
   // @SwaggerGetWith404('Get a comment by ID', CommentViewDto, SwaggerAuthStatus.WithoutAuth) //swagger
   @ApiBearerAuth() //swagger
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthPassportGuard)
   @Put(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   updateComment(@Param('id') commentId: string, @Body() payload: UpdateCommentInputDto, @ExtractUserFromRequest() user: UserJwtPayloadDto): Promise<void> {
@@ -43,7 +43,7 @@ export class CommentsController {
 
   // @SwaggerGetWith404('Get a comment by ID', CommentViewDto, SwaggerAuthStatus.WithoutAuth) //swagger
   @ApiBearerAuth() //swagger
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthPassportGuard)
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   deleteComment(@Param('id') commentId: string, @ExtractUserFromRequest() user: UserJwtPayloadDto): Promise<void> {
@@ -53,7 +53,7 @@ export class CommentsController {
   //COMMENT LIKES
   @SwaggerPut('Make like/dislike/unlike/undislike operations') //swagger
   @ApiBearerAuth() //swagger
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthPassportGuard)
   @Put(':id/like-status')
   @HttpCode(HttpStatus.NO_CONTENT)
   async likeStatus(@Param('id') commentId: string, @Body() payload: LikeInputDto, @ExtractUserFromRequest() user: UserJwtPayloadDto) {

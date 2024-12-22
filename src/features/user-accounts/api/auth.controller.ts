@@ -5,7 +5,6 @@ import { AuthService } from '../application/auth.service';
 import { MeViewDto } from '../dto/user-view.dto';
 import { UsersQueryRepository } from '../infrastructure/users.query-repository';
 import { LocalAuthGuard } from './guards/local-auth.guard';
-import { JwtAuthGuard } from 'src/core/guards/jwt-auth.guard';
 import { UserJwtPayloadDto } from '../dto/user-jwt-payload.dto';
 import { ExtractUserFromRequest } from 'src/core/decorators/param/extract-user-from-request';
 import { RegistrationInputDto } from '../dto/create-user.dto';
@@ -22,6 +21,8 @@ import { RegisterConfirmCommand } from '../application/usecases/register-confirm
 import { ResendEmailCommand } from '../application/usecases/resend-email.usecase';
 import { SetNewPassCommand } from '../application/usecases/set-new-pass.usecase';
 import { Response } from 'express';
+import { JwtAuthPassportGuard } from 'src/core/guards/passport/jwt-auth-passport.guard';
+// import { LocalAuthPasportGuard } from './guards/passport/local-auth-passport.guard';
 
 @ApiTags('Auth') //swagger
 @Controller('auth')
@@ -54,7 +55,7 @@ export class AuthController {
 
   @SwaggerGet('Get information about current user', MeViewDto, SwaggerAuthStatus.WithAuth)
   @Get('me')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthPassportGuard)
   async getMe(@ExtractUserFromRequest() user: UserJwtPayloadDto): Promise<MeViewDto> {
     const currentUser = await this.usersQueryRepository.findMeByIdOrNotFound(user.userId);
 

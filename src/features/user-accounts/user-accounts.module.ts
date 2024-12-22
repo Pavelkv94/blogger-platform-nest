@@ -20,6 +20,9 @@ import { ResendEmailUseCase } from './application/usecases/resend-email.usecase'
 import { RegisterConfirmUseCase } from './application/usecases/register-confirm.usecase';
 import { PassRecoveryUseCase } from './application/usecases/pass-recovery.usecase';
 import { CqrsModule } from '@nestjs/cqrs';
+import { PassportModule } from '@nestjs/passport';
+import { JwtStrategy } from 'src/core/guards/passport/jwt.strategy';
+import { LocalStrategy } from './api/guards/passport/local.strategy';
 
 const adapters = [BcryptService]
 
@@ -37,7 +40,7 @@ const useCases = [
 
 @Module({
   imports: [
-    // PassportModule,
+    PassportModule, //* for passport
     //если в системе несколько токенов (например, access и refresh) с разными опциями (время жизни, секрет)
     //можно переопределить опции при вызове метода jwt.service.sign
     //или написать свой tokens сервис (адаптер), где эти опции будут уже учтены
@@ -59,8 +62,8 @@ const useCases = [
     ...adapters,
     AuthService,
     ...useCases,
-    // LocalStrategy, //* for passport
-    // JwtStrategy, //* for passport
+    LocalStrategy, //* for passport
+    JwtStrategy, //* for passport
   ],
 })
 export class UserAccountsModule {}
