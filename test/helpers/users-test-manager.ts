@@ -25,27 +25,19 @@ export class UsersTestManager {
 
     return response.body;
   }
-  //   async updateUser(
-  //     userId: string,
-  //     updateModel: UpdateUserInputDto,
-  //     statusCode: number = HttpStatus.NO_CONTENT,
-  //   ): Promise<UserViewDto> {
-  //     const response = await request(this.app.getHttpServer())
-  //       .put(`/${GLOBAL_PREFIX}/users/${userId}`)
-  //       .send(updateModel)
-  //       .auth('admin', 'qwerty')
-  //       .expect(statusCode);
-
-  //     return response.body;
-  //   }
 
   async login(loginOrEmail: string, password: string, statusCode: number = HttpStatus.OK): Promise<{ accessToken: string }> {
-   
     const response = await request(this.app.getHttpServer()).post(`/auth/login`).send({ loginOrEmail, password }).expect(statusCode);
 
     return {
       accessToken: response.body.accessToken,
     };
+  }
+
+  async loginWithAgent(loginOrEmail: string, password: string, agent: string, statusCode: number = HttpStatus.OK): Promise<any> {
+    const response = await request(this.app.getHttpServer()).post(`/auth/login`).set("User-Agent", agent).send({ loginOrEmail, password }).expect(statusCode);
+
+    return response
   }
 
   async registration(createModel: CreateUserDto, statusCode: number = HttpStatus.CREATED): Promise<void> {

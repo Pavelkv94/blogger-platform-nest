@@ -31,7 +31,7 @@ import { RefreshTokenUserUseCase } from './application/usecases/users/refresh-to
 import { JwtRefreshAuthPassportStrategy } from 'src/core/guards/passport/jwt-refresh.strategy';
 import { UpdateSecurityDeviceUseCase } from './application/usecases/security-devices/update-device.usecase';
 import { DeleteSecurityDeviceUseCase } from './application/usecases/security-devices/delete-device.usecase';
-import { DeleteSecurityDevicesUseCase } from './application/usecases/security-devices/delete-devices.usecase';
+import { DeleteOtherSecurityDevicesUseCase } from './application/usecases/security-devices/delete-devices.usecase';
 
 const adapters = [BcryptService];
 
@@ -50,7 +50,7 @@ const useCases = [
   RefreshTokenUserUseCase,
   UpdateSecurityDeviceUseCase,
   DeleteSecurityDeviceUseCase,
-  DeleteSecurityDevicesUseCase
+  DeleteOtherSecurityDevicesUseCase
 ];
 
 @Module({

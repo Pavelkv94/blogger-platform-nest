@@ -17,7 +17,6 @@ export class PostsTestManager {
 
   async getPostsWithAuth(blog_id: string, token: string): Promise<PaginatedViewDto<PostViewDto[]>> {
     const response = await request(this.app.getHttpServer()).get(`/posts`).set({ Authorization: "Bearer " + token }).expect(200);
-console.log("Authorization: ", "Bearer " + token);
 
     return response.body;
   }

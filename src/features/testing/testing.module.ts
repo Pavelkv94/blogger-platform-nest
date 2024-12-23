@@ -7,6 +7,7 @@ import { CommentEntity } from '../bloggers-platform/comments/domain/comment.enti
 import { CommentSchema } from '../bloggers-platform/comments/domain/comment.entity';
 import { LikeEntity, LikeSchema } from '../bloggers-platform/likes/domain/like.entity';
 import { UserEntity, UserSchema } from '../user-accounts/domain/user/user.entity';
+import { SecurityDeviceEntity, SecurityDeviceSchema } from '../user-accounts/domain/security-device/security-devices.schema';
 // import { CoreConfig } from 'src/core/core.config';
 
 @Module({
@@ -65,6 +66,7 @@ export class TestingModule {
             { name: PostEntity.name, schema: PostSchema },
             { name: CommentEntity.name, schema: CommentSchema },
             { name: LikeEntity.name, schema: LikeSchema },
+            { name: SecurityDeviceEntity.name, schema: SecurityDeviceSchema },
 
           ]),
         ],

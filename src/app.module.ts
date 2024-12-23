@@ -47,6 +47,14 @@ import { ThrottlerModule } from '@nestjs/throttler';
   ],
 })
 export class AppModule {}
+
+//? for logger
+// export class AppModule implements NestModule {
+//   configure(consumer: MiddlewareConsumer) {
+//     consumer.apply(LoggerMiddleware).forRoutes('*'); // Логировать для всех маршрутов
+//   }
+// }
+
 /*
 export class AppModule {
   //* такой мудрёный способ мы используем, чтобы добавить к основным модулям необязательный модуль.
