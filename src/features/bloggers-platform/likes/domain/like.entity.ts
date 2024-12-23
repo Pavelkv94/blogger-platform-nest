@@ -1,7 +1,7 @@
 import { HydratedDocument, Model } from 'mongoose';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { LikeStatus } from '../dto/like-status.dto';
-import { UserDocument } from 'src/features/user-accounts/domain/user.entity';
+import { UserDocument } from 'src/features/user-accounts/domain/user/user.entity';
 
 @Schema({ timestamps: true })
 export class LikeEntity {

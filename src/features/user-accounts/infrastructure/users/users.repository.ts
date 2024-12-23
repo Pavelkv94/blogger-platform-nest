@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { UserDocument, UserEntity, UserModelType } from '../domain/user.entity';
 import { InjectModel } from '@nestjs/mongoose';
 import { DeletionStatus } from 'src/core/dto/deletion-status';
+import { UserDocument, UserEntity, UserModelType } from '../../domain/user/user.entity';
 
 @Injectable()
 export class UsersRepository {

@@ -3,4 +3,5 @@ export enum DomainExceptionCode {
     BadRequest = 2,
     Forbidden = 3,
     Unauthorized = 4,
+    TooManyRequests=5
   }

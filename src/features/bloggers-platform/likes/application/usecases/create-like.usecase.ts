@@ -2,9 +2,9 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { InjectModel } from '@nestjs/mongoose';
 import { LikeStatus } from '../../dto/like-status.dto';
 import { LikesRepository } from '../../infrastructure/likes.repository';
-import { UsersRepository } from 'src/features/user-accounts/infrastructure/users.repository';
 import { LikeEntity, LikeModelType } from '../../domain/like.entity';
 import { NotFoundDomainException } from 'src/core/exeptions/domain-exceptions';
+import { UsersRepository } from 'src/features/user-accounts/infrastructure/users/users.repository';
 
 export class CreateLikeCommand {
   constructor(

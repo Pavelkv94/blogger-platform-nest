@@ -51,6 +51,11 @@ export const UnauthorizedDomainException = ConcreteDomainExceptionFactory(
   DomainExceptionCode.Unauthorized,
 );
 
+export const TooManyRequestsDomainException = ConcreteDomainExceptionFactory(
+  'TooManyRequests',
+  DomainExceptionCode.TooManyRequests,
+);
+
 //создание классов без миксинов
 
 // export class BadRequestDomainException extends DomainException {

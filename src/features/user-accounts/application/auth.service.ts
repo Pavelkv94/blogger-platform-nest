@@ -1,10 +1,10 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { UsersRepository } from '../infrastructure/users.repository';
 import { UnauthorizedDomainException } from 'src/core/exeptions/domain-exceptions';
 import { BcryptService } from './bcrypt.service';
-import { UserDocument } from '../domain/user.entity';
 import { LoginInputDto } from '../dto/login-user.dto';
 import {} from '../dto/create-user.dto';
+import { UserDocument } from '../domain/user/user.entity';
+import { UsersRepository } from '../infrastructure/users/users.repository';
 
 @Injectable()
 export class AuthService {

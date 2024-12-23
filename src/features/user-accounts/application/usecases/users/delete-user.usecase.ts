@@ -1,6 +1,6 @@
 import { NotFoundDomainException } from 'src/core/exeptions/domain-exceptions';
-import { UsersRepository } from '../../infrastructure/users.repository';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
+import { UsersRepository } from 'src/features/user-accounts/infrastructure/users/users.repository';
 
 export class DeleteUserCommand {
   constructor(public readonly id: string) {}

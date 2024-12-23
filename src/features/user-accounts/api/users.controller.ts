@@ -1,5 +1,4 @@
 import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, Query, UseGuards } from '@nestjs/common';
-import { UsersQueryRepository } from '../infrastructure/users.query-repository';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { GetUsersQueryParams } from '../dto/get-users-query-params.input-dto';
 import { UserViewDto } from '../dto/user-view.dto';
@@ -11,9 +10,10 @@ import { SwaggerDelete } from 'src/core/decorators/swagger/swagger-delete';
 import { Types } from 'mongoose';
 import { SwaggerAuthStatus } from 'src/core/decorators/swagger/swagger-options';
 import { SwaggerGet } from 'src/core/decorators/swagger/swagger-get';
-import { CreateUserCommand } from '../application/usecases/create-user.usecase';
+import { CreateUserCommand } from '../application/usecases/users/create-user.usecase';
 import { CommandBus } from '@nestjs/cqrs';
-import { DeleteUserCommand } from '../application/usecases/delete-user.usecase';
+import { DeleteUserCommand } from '../application/usecases/users/delete-user.usecase';
+import { UsersQueryRepository } from '../infrastructure/users/users.query-repository';
 
 @ApiTags('Users') //swagger
 @UseGuards(BasicAuthGuard)

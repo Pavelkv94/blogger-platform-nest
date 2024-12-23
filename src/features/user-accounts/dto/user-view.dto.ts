@@ -1,5 +1,5 @@
-import { UserDocument } from '../domain/user.entity';
 import { ApiProperty, OmitType } from '@nestjs/swagger';
+import { UserDocument } from '../domain/user/user.entity';
 
 export class UserViewDto {
   @ApiProperty({ example: 'email' })

@@ -35,7 +35,7 @@ import { UpdateLikeUseCase } from './likes/application/usecases/update-like.usec
 import { LikesRepository } from './likes/infrastructure/likes.repository';
 import { LikeEntity, LikeSchema } from './likes/domain/like.entity';
 import { PassportModule } from '@nestjs/passport';
-import { JwtStrategy } from 'src/core/guards/passport/jwt.strategy';
+import { JwtAccessStrategy } from 'src/core/guards/passport/jwt-access.strategy';
 import { BlogIsNotExistConstraint } from './posts/api/validation/blogIsExist.decorator';
 
 const useCases = [
@@ -90,7 +90,7 @@ const repositories = [
   providers: [
     ...useCases,
     ...repositories,
-    JwtStrategy,
+    JwtAccessStrategy,
     BlogIsNotExistConstraint
   ],
 })

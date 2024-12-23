@@ -2,7 +2,7 @@ import { Inject } from '@nestjs/common';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { EmailService } from 'src/features/notifications/email.service';
 import { BadRequestDomainException } from 'src/core/exeptions/domain-exceptions';
-import { UsersRepository } from '../../infrastructure/users.repository';
+import { UsersRepository } from 'src/features/user-accounts/infrastructure/users/users.repository';
 
 export class ResendEmailCommand {
   constructor(public readonly email: string) {}

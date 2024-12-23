@@ -7,6 +7,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { UserAccountsModule } from './features/user-accounts/user-accounts.module';
 import { BloggersPlatformModule } from './features/bloggers-platform/bloggers-platform.module.ts';
 import { TestingModule } from './features/testing/testing.module';
+import { ThrottlerModule } from '@nestjs/throttler';
 
 @Module({
   imports: [
@@ -20,6 +21,12 @@ import { TestingModule } from './features/testing/testing.module';
       }),
       inject: [CoreConfig],
     }),
+    ThrottlerModule.forRoot([
+      {
+        ttl: 10000,
+        limit: 5,
+      },
+    ]),
     UserAccountsModule,
     BloggersPlatformModule,
     TestingModule.register(process.env.INCLUDE_TESTING_MODULE!), //* см. ниже
@@ -31,7 +38,13 @@ import { TestingModule } from './features/testing/testing.module';
     // }),
   ],
   controllers: [],
-  providers: [],
+  providers: [
+    //* Global throttle
+    // {
+    //   provide: APP_GUARD,
+    //   useClass: ThrottlerGuard,
+    // },
+  ],
 })
 export class AppModule {}
 /*

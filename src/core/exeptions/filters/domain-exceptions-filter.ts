@@ -26,6 +26,9 @@ export class DomainExceptionsFilter extends BaseExceptionFilter {
       case DomainExceptionCode.Unauthorized: {
         return HttpStatus.UNAUTHORIZED;
       }
+      case DomainExceptionCode.TooManyRequests: {
+        return HttpStatus.TOO_MANY_REQUESTS;
+      }
       default: {
         return HttpStatus.I_AM_A_TEAPOT;
       }

@@ -1,11 +1,10 @@
-import { UserModelType } from '../../domain/user.entity';
 import { InjectModel } from '@nestjs/mongoose';
-import { CreateUserDto } from '../../dto/create-user.dto';
-import { UserEntity } from '../../domain/user.entity';
+import { CreateUserDto } from '../../../dto/create-user.dto';
 import { BadRequestDomainException } from 'src/core/exeptions/domain-exceptions';
-import { BcryptService } from '../bcrypt.service';
-import { UsersRepository } from '../../infrastructure/users.repository';
+import { BcryptService } from '../../bcrypt.service';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
+import { UserEntity, UserModelType } from 'src/features/user-accounts/domain/user/user.entity';
+import { UsersRepository } from 'src/features/user-accounts/infrastructure/users/users.repository';
 
 export class CreateUserCommand {
   constructor(public readonly payload: CreateUserDto) {}

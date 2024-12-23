@@ -2,7 +2,7 @@ import { Inject } from '@nestjs/common';
 import { CommandBus, CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { BadRequestDomainException } from 'src/core/exeptions/domain-exceptions';
 import { EmailService } from 'src/features/notifications/email.service';
-import { UsersRepository } from '../../infrastructure/users.repository';
+import { UsersRepository } from 'src/features/user-accounts/infrastructure/users/users.repository';
 
 export class RegisterConfirmCommand {
   constructor(public readonly code: string) {}

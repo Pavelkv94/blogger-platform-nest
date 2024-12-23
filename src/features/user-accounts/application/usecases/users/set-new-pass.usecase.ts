@@ -1,7 +1,7 @@
 import { Inject } from '@nestjs/common';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { UsersRepository } from '../../infrastructure/users.repository';
 import { BadRequestDomainException } from 'src/core/exeptions/domain-exceptions';
+import { UsersRepository } from 'src/features/user-accounts/infrastructure/users/users.repository';
 
 export class SetNewPassCommand {
   constructor(

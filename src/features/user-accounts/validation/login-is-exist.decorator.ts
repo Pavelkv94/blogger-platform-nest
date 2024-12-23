@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { registerDecorator, ValidationArguments, ValidationOptions, ValidatorConstraint, ValidatorConstraintInterface } from 'class-validator';
-import { UsersRepository } from 'src/features/user-accounts/infrastructure/users.repository';
+import { UsersRepository } from '../infrastructure/users/users.repository';
 
 // Внимание! Используем такой подход только в исключительных случаях.
 // Данный пример служит для демонстрации.

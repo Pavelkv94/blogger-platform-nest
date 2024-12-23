@@ -5,8 +5,8 @@ import { PostsRepository } from 'src/features/bloggers-platform/posts/infrastruc
 import { UserJwtPayloadDto } from 'src/features/user-accounts/dto/user-jwt-payload.dto';
 import { NotFoundDomainException } from 'src/core/exeptions/domain-exceptions';
 import { CommentEntity, CommentModelType } from '../../domain/comment.entity';
-import { UsersRepository } from 'src/features/user-accounts/infrastructure/users.repository';
 import { CommentsRepository } from '../../infrastructure/comments.repository';
+import { UsersRepository } from 'src/features/user-accounts/infrastructure/users/users.repository';
 
 export class CreateCommentCommand {
   constructor(

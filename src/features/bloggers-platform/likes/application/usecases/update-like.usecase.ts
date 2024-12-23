@@ -1,9 +1,9 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { LikeStatus } from '../../dto/like-status.dto';
 import { LikesRepository } from '../../infrastructure/likes.repository';
-import { UsersRepository } from 'src/features/user-accounts/infrastructure/users.repository';
 import { LikeDocument, LikeEntity, LikeModelType } from '../../domain/like.entity';
 import { InjectModel } from '@nestjs/mongoose';
+import { UsersRepository } from 'src/features/user-accounts/infrastructure/users/users.repository';
 
 export class UpdateLikeCommand {
   constructor(

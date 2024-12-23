@@ -57,6 +57,16 @@ export class CoreConfig {
   })
   accessTokenSecret: string = this.configService.get('JWT_ACCESS_SECRET');
 
+  @IsNotEmpty({
+    message: 'Set Env variable JWT_ACCESS_EXPIRATION_TIME, dangerous for security!',
+  })
+  accessTokenExpirationTime: string = this.configService.get('JWT_ACCESS_EXPIRATION_TIME');
+
+  @IsNotEmpty({
+    message: 'Set Env variable JWT_REFRESH_EXPIRATION_TIME, dangerous for security!',
+  })
+  refreshTokenExpirationTime: string = this.configService.get('JWT_REFRESH_EXPIRATION_TIME');
+
   constructor(private configService: ConfigService<any, true>) {
     configValidationUtility.validateConfig(this);
   }

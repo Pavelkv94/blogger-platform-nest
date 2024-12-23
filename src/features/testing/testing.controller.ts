@@ -1,11 +1,11 @@
 import { Controller, Delete, HttpCode } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { UserEntity, UserModelType } from '../user-accounts/domain/user.entity';
 import { ApiNoContentResponse, ApiOperation } from '@nestjs/swagger';
 import { BlogEntity, BlogModelType } from '../bloggers-platform/blogs/domain/blog.entity';
 import { PostEntity, PostModelType } from '../bloggers-platform/posts/domain/post.entity';
 import { CommentEntity, CommentModelType } from '../bloggers-platform/comments/domain/comment.entity';
 import { LikeEntity, LikeModelType } from '../bloggers-platform/likes/domain/like.entity';
+import { UserEntity, UserModelType } from '../user-accounts/domain/user/user.entity';
 
 @Controller('testing')
 export class TestingController {

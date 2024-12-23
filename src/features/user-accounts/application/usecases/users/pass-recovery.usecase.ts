@@ -1,8 +1,8 @@
 import { Inject } from '@nestjs/common';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { EmailService } from 'src/features/notifications/email.service';
-import { UsersRepository } from '../../infrastructure/users.repository';
 import { BadRequestDomainException } from 'src/core/exeptions/domain-exceptions';
+import { UsersRepository } from 'src/features/user-accounts/infrastructure/users/users.repository';
 
 export class PassRecoveryCommand {
   constructor(public readonly email: string) {}
