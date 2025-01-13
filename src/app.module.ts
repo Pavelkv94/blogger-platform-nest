@@ -8,6 +8,7 @@ import { UserAccountsModule } from './features/user-accounts/user-accounts.modul
 import { BloggersPlatformModule } from './features/bloggers-platform/bloggers-platform.module.ts';
 import { TestingModule } from './features/testing/testing.module';
 import { ThrottlerModule } from '@nestjs/throttler';
+import { LoggerModule } from './features/logger/logger.module';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { ThrottlerModule } from '@nestjs/throttler';
     ]),
     UserAccountsModule,
     BloggersPlatformModule,
+    LoggerModule.register(process.env.INCLUDE_ENDPOINTS_LOGGER!), // Include LoggerModule conditionally
     TestingModule.register(process.env.INCLUDE_TESTING_MODULE!), //* см. ниже
     // TestingModule.registerAsync({
     //   useFactory: (coreConfig: CoreConfig) => ({
@@ -47,13 +49,6 @@ import { ThrottlerModule } from '@nestjs/throttler';
   ],
 })
 export class AppModule {}
-
-//? for logger
-// export class AppModule implements NestModule {
-//   configure(consumer: MiddlewareConsumer) {
-//     consumer.apply(LoggerMiddleware).forRoutes('*'); // Логировать для всех маршрутов
-//   }
-// }
 
 /*
 export class AppModule {
