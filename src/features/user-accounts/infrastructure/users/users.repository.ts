@@ -46,25 +46,26 @@ export class UsersRepository {
   async createUser(login: string, email: string, passwordhash: string): Promise<string> {
     const confirmationCode = randomUUID();
     const expirationDate = getExpirationDate(30);
+
     const query = `
-    INSERT INTO users (login, email, password) VALUES ($1, $2, $3)
+    INSERT INTO users (login, email, password) VALUES ($1, $2, $3) RETURNING id
     `;
 
-    await this.datasourse.query(query, [login, email, passwordhash]); // insert user
-    const users = await this.datasourse.query(`SELECT * FROM users WHERE login = $1`, [login]); // select user
+    const newUser = await this.datasourse.query(query, [login, email, passwordhash]); // insert user
+    // const users = await this.datasourse.query(`SELECT * FROM users WHERE login = $1`, [login]); // select user
     await this.datasourse.query(
       `
       INSERT INTO confirmation_email (user_id, confirmation_code, confirmation_expiration_date) 
       VALUES ($1, $2, $3)`,
-      [users[0].id, confirmationCode, expirationDate],
+      [newUser[0].id, confirmationCode, expirationDate],
     );
     await this.datasourse.query(
       `INSERT INTO password_recovery (user_id) 
       VALUES ($1)`,
-      [users[0].id],
+      [newUser[0].id],
     );
 
-    return users[0].id;
+    return newUser[0].id;
   }
 
   async deleteUser(id: string) {

@@ -12,12 +12,11 @@ export class DeleteBlogUseCase implements ICommandHandler<DeleteBlogCommand> {
 
   async execute(command: DeleteBlogCommand): Promise<void> {
     const blog = await this.blogsRepository.findBlogById(command.id);
+
     if (!blog) {
       throw NotFoundDomainException.create('Blog not found');
     }
 
-    blog.makeDeleted();
-
-    await this.blogsRepository.save(blog);
+    await this.blogsRepository.deleteBlog(command.id);
   }
 }

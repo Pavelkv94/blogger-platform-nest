@@ -1,24 +1,44 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { PostsRepository } from '../../infrastructure/posts.repository';
-import { NotFoundDomainException } from 'src/core/exeptions/domain-exceptions';
+import { ForbiddenDomainException, NotFoundDomainException } from 'src/core/exeptions/domain-exceptions';
+import { BlogsRepository } from 'src/features/bloggers-platform/blogs/infrastructure/blogs.repository';
 
 export class DeletePostCommand {
-  constructor(public readonly id: string) {}
+  constructor(
+    public readonly postId: string,
+    public readonly blogId?: string,
+  ) {}
 }
 
 @CommandHandler(DeletePostCommand)
 export class DeletePostUseCase implements ICommandHandler<DeletePostCommand> {
-  constructor(private readonly postsRepository: PostsRepository) {}
+  constructor(
+    private readonly postsRepository: PostsRepository,
+    private readonly blogsRepository: BlogsRepository,
+  ) {}
 
   async execute(command: DeletePostCommand): Promise<void> {
-    const post = await this.postsRepository.findPostById(command.id);
+    if (command.blogId) {
+      const blog = await this.blogsRepository.findBlogById(command.blogId);
+
+      if (!blog) {
+        throw NotFoundDomainException.create('Blog not found');
+      }
+    }
+
+    const post = await this.postsRepository.findPostById(command.postId);
 
     if (!post) {
       throw NotFoundDomainException.create('Post not found');
     }
 
-    post.makeDeleted();
+    if (command.blogId) {
+      console.log(post.blog_id, command.blogId);
+      if (post.blog_id.toString() !== command.blogId) {
+        throw ForbiddenDomainException.create('You are not allowed to delete this post');
+      }
+    }
 
-    await this.postsRepository.save(post);
+    await this.postsRepository.deletePost(command.postId);
   }
 }

@@ -53,10 +53,10 @@ export class SecurityDevicesRepository {
     const query = `
     INSERT INTO security_devices(
 	title, ip, last_active_date, user_id, expiration_date, device_id)
-	VALUES ($1, $2, $3, $4, $5, $6);
+	VALUES ($1, $2, $3, $4, $5, $6) RETURNING device_id;
     `;
 
-    await this.datasourse.query(query, [
+    const device = await this.datasourse.query(query, [
       userAgent,
       ip,
       new Date(refreshToken.iat * 1000).toISOString(),
@@ -65,9 +65,7 @@ export class SecurityDevicesRepository {
       refreshToken.deviceId,
     ]);
 
-    const deviceId = await this.datasourse.query(`SELECT * FROM security_devices WHERE device_id = $1`, [refreshToken.deviceId]);
-
-    return deviceId;
+    return device[0].device_id;
   }
 
   async updateDevice(refreshDto: UserJwtPayloadDto, ip: string, userAgent: string): Promise<void> {

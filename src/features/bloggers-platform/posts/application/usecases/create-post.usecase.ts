@@ -26,14 +26,13 @@ export class CreatePostUseCase implements ICommandHandler<CreatePostCommand> {
     const targetBlogId = command.blogId ?? (command.payload as CreatePostDto).blogId;
     const blog = await this.blogsRepository.findBlogById(targetBlogId);
 
-    if(command.blogId && !blog) {
-      throw NotFoundDomainException.create("Blog not found")
+    if (command.blogId && !blog) {
+      throw NotFoundDomainException.create('Blog not found');
     }
     const postDtoWithBlogId = command.blogId ? { ...command.payload, blogId: command.blogId } : (command.payload as CreatePostDto);
 
-    const newPost = this.PostModel.buildInstance(postDtoWithBlogId, blog!.name);
-    await this.postsRepository.save(newPost);
+    const newPostId = await this.postsRepository.createPost(postDtoWithBlogId);
 
-    return newPost._id.toString();
+    return newPostId;
   }
 }

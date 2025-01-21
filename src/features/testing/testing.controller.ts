@@ -41,6 +41,9 @@ export class TestingController {
 
     DELETE FROM users; 
 
+    DELETE FROM posts;
+    DELETE FROM blogs;
+
   `;
 
     await this.datasourse.query(query);

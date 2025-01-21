@@ -1,4 +1,4 @@
 export enum PostsSortBy {
-  CreatedAt = 'createdAt',
+  CreatedAt = 'created_at',
 }
 

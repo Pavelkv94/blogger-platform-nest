@@ -1,21 +1,40 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { BlogDocument, BlogEntity, BlogModelType } from '../domain/blog.entity';
-import { DeletionStatus } from 'src/core/dto/deletion-status';
+import { InjectDataSource } from '@nestjs/typeorm';
+import { DataSource } from 'typeorm';
+import { BlogCreateDto } from '../dto/blog-create.dto';
+import { BlogUpdateDto } from '../dto/blog-update.dto';
 
 @Injectable()
 export class BlogsRepository {
-  constructor(@InjectModel(BlogEntity.name) private BlogModel: BlogModelType) {}
+  constructor(
+    @InjectModel(BlogEntity.name) private BlogModel: BlogModelType,
+    @InjectDataSource() private dataSource: DataSource,
+  ) {}
 
-  async findBlogById(id: string): Promise<BlogDocument | null> {
-    const blogDocument = await this.BlogModel.findOne({ _id: id, deletionStatus: DeletionStatus.NotDeleted });
-    if (!blogDocument) {
+  async findBlogById(id: string): Promise<any | null> {
+    const query = `SELECT * FROM blogs WHERE id = $1 AND deleted_at IS NULL`;
+    const blog = await this.dataSource.query(query, [id]);
+    if (!blog) {
       return null;
     }
-    return blogDocument;
+    return blog[0];
   }
 
-  async save(blog: BlogDocument) {
-    await blog.save();
+  async createBlog(payload: BlogCreateDto): Promise<string> {
+    const query = `INSERT INTO blogs (name, description, website_url) VALUES ($1, $2, $3) RETURNING id`;
+    const newBlog = await this.dataSource.query(query, [payload.name, payload.description, payload.websiteUrl]);
+    return newBlog[0].id;
+  }
+
+  async updateBlog(id: string, payload: BlogUpdateDto): Promise<void> {
+    const query = `UPDATE blogs SET name = $1, description = $2, website_url = $3 WHERE id = $4`;
+    await this.dataSource.query(query, [payload.name, payload.description, payload.websiteUrl, id]);
+  }
+
+  async deleteBlog(id: string): Promise<void> {
+    const query = `UPDATE blogs SET deleted_at = NOW() WHERE id = $1`;
+    await this.dataSource.query(query, [id]);
   }
 }

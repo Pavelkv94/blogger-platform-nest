@@ -37,6 +37,8 @@ import { LikeEntity, LikeSchema } from './likes/domain/like.entity';
 import { PassportModule } from '@nestjs/passport';
 import { JwtAccessStrategy } from 'src/core/guards/passport/jwt-access.strategy';
 import { BlogIsNotExistConstraint } from './posts/api/validation/blogIsExist.decorator';
+import { SaBlogsController } from './blogs/api/blogs.sa.controller';
+import { SaPostsController } from './posts/api/posts.sa.controller';
 
 const useCases = [
   CreateBlogUseCase,
@@ -86,7 +88,7 @@ const repositories = [
     UserAccountsModule
   ],
   exports: [],
-  controllers: [BlogsController, PostsController, CommentsController],
+  controllers: [BlogsController, PostsController, CommentsController, SaBlogsController, SaPostsController],
   providers: [
     ...useCases,
     ...repositories,

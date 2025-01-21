@@ -15,13 +15,13 @@ export class BlogViewDto {
   @ApiProperty({ example: new Date() })
   createdAt: Date;
 
-  constructor(model: BlogDocument) {
-    this.id = model._id.toString();
+  constructor(model: any) {
+    this.id = model.id.toString();
     this.name = model.name;
     this.description = model.description;
-    this.websiteUrl = model.websiteUrl;
-    this.isMembership = model.isMembership;
-    this.createdAt = model.createdAt;
+    this.websiteUrl = model.website_url;
+    this.isMembership = model.is_membership;
+    this.createdAt = model.created_at;
   }
 
   static mapToView(blog: BlogDocument): BlogViewDto {

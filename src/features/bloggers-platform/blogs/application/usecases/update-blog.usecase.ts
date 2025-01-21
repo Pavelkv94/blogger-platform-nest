@@ -16,12 +16,10 @@ export class UpdateBlogUseCase implements ICommandHandler<UpdateBlogCommand> {
 
   async execute(command: UpdateBlogCommand): Promise<void> {
     const blog = await this.blogsRepository.findBlogById(command.id);
-    if(!blog) {
-      throw NotFoundDomainException.create("Blog not found")
+    if (!blog) {
+      throw NotFoundDomainException.create('Blog not found');
     }
 
-    blog.update(command.payload);
-
-    await this.blogsRepository.save(blog);
+    await this.blogsRepository.updateBlog(command.id, command.payload);
   }
 }

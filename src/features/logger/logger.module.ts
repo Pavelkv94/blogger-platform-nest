@@ -1,5 +1,5 @@
 import { Module, MiddlewareConsumer, NestModule, DynamicModule, Inject } from '@nestjs/common';
-import { LoggerMiddleware } from 'src/logger.middleware';
+import { LoggerMiddleware } from './logger.middleware';
 
 @Module({})
 export class LoggerModule implements NestModule {
