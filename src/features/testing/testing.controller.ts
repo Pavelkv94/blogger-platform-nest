@@ -7,6 +7,8 @@ import { CommentEntity, CommentModelType } from '../bloggers-platform/comments/d
 import { LikeEntity, LikeModelType } from '../bloggers-platform/likes/domain/like.entity';
 import { UserEntity, UserModelType } from '../user-accounts/domain/user/user.entity';
 import { SecurityDeviceEntity, SecurityDeviceModelType } from '../user-accounts/domain/security-device/security-devices.schema';
+import { InjectDataSource } from '@nestjs/typeorm';
+import { DataSource } from 'typeorm';
 
 @Controller('testing')
 export class TestingController {
@@ -17,6 +19,7 @@ export class TestingController {
     @InjectModel(CommentEntity.name) private CommentModel: CommentModelType,
     @InjectModel(LikeEntity.name) private LikeModel: LikeModelType,
     @InjectModel(SecurityDeviceEntity.name) private SecurityDeviceModel: SecurityDeviceModelType,
+    @InjectDataSource() private datasourse: DataSource,
   ) {}
 
   @ApiOperation({ summary: 'Delete all data' }) //swagger
@@ -31,5 +34,15 @@ export class TestingController {
     await this.LikeModel.deleteMany({});
     await this.SecurityDeviceModel.deleteMany({});
 
+    const query = `
+    DELETE FROM confirmation_email;
+    DELETE FROM password_recovery;
+    DELETE FROM security_devices;
+
+    DELETE FROM users; 
+
+  `;
+
+    await this.datasourse.query(query);
   }
 }

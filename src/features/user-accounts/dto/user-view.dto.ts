@@ -1,29 +1,98 @@
 import { ApiProperty, OmitType } from '@nestjs/swagger';
 import { UserDocument } from '../domain/user/user.entity';
 
-export class UserViewDto {
+export class BaseUserViewDto {
   @ApiProperty({ example: 'email' })
   email: string;
-  @ApiProperty({ example: '123e4567-e89b-12d3-a456-426614174000' })
+  @ApiProperty({ example: '1' })
   id: string;
   @ApiProperty({ example: 'login' })
   login: string;
   @ApiProperty({ example: new Date() })
   createdAt: Date;
 
-  constructor(model: UserDocument) {
-    this.id = model._id.toString();
+  constructor(model: any) {
+    this.id = model.id.toString();
     this.login = model.login;
     this.email = model.email;
-    this.createdAt = model.createdAt;
+    this.createdAt = model.created_at;
   }
 
-  static mapToView(user: UserDocument): UserViewDto {
-    return new UserViewDto(user);
+  static mapToView(user: UserDocument): BaseUserViewDto {
+    return new BaseUserViewDto(user);
   }
 }
 
-export class MeViewDto extends OmitType(UserViewDto, ['createdAt', 'id'] as const) {
+export class UserViewDtoWithRecovery extends BaseUserViewDto {
+  recoveryConfirmation: {
+    confirmationCode: string;
+    expirationDate: Date;
+  };
+
+  constructor(model: any) {
+    super(model);
+    this.recoveryConfirmation = {
+      confirmationCode: model.recovery_code,
+      expirationDate: model.recovery_expiration_date,
+    };
+  }
+
+  static mapToView(user: UserDocument): UserViewDtoWithRecovery {
+    return new UserViewDtoWithRecovery(user);
+  }
+}
+
+export class UserViewDtoWithConfirmation extends BaseUserViewDto {
+  emailConfirmation: {
+    confirmationCode: string;
+    expirationDate: Date;
+    isConfirmed: boolean;
+  };
+
+  constructor(model: any) {
+    super(model);
+    this.emailConfirmation = {
+      confirmationCode: model.confirmation_code,
+      expirationDate: model.expiration_date,
+      isConfirmed: model.is_confirmed,
+    };
+  }
+
+  static mapToView(user: UserDocument): UserViewDtoWithConfirmation {
+    return new UserViewDtoWithConfirmation(user);
+  }
+}
+
+export class FullUserViewDto extends BaseUserViewDto {
+  emailConfirmation: {
+    confirmationCode: string;
+    expirationDate: Date;
+    isConfirmed: boolean;
+  };
+  recoveryConfirmation: {
+    confirmationCode: string;
+    expirationDate: Date;
+  };
+
+  constructor(model: any) {
+    super(model);
+    this.emailConfirmation = {
+      confirmationCode: model.confirmation_code,
+      expirationDate: model.expiration_date,
+      isConfirmed: model.is_confirmed,
+    };
+    this.recoveryConfirmation = {
+      confirmationCode: model.recovery_code,
+      expirationDate: model.recovery_expiration_date,
+    };
+  }
+
+  static mapToView(user: UserDocument): FullUserViewDto {
+    return new FullUserViewDto(user);
+  }
+}
+
+export class MeViewDto extends OmitType(BaseUserViewDto, ['createdAt', 'id'] as const) {
   userId: string;
 
   static mapToView(user: UserDocument): MeViewDto {
@@ -31,7 +100,7 @@ export class MeViewDto extends OmitType(UserViewDto, ['createdAt', 'id'] as cons
 
     dto.email = user.email;
     dto.login = user.login;
-    dto.userId = user._id.toString();
+    dto.userId = user.id.toString();
 
     return dto;
   }

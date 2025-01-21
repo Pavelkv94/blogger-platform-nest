@@ -29,8 +29,6 @@ export class DeleteSecurityDeviceUseCase implements ICommandHandler<DeleteSecuri
       throw ForbiddenDomainException.create('Access forbidden');
     }
 
-    currentDevice.makeDeleted();
-
-    await this.securityDevicesRepository.save(currentDevice);
+    await this.securityDevicesRepository.deleteDevice(command.deviceId);
   }
 }

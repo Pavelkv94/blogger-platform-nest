@@ -1,6 +1,6 @@
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { CreateUserDto } from 'src/features/user-accounts/dto/create-user.dto';
-import { MeViewDto, UserViewDto } from 'src/features/user-accounts/dto/user-view.dto';
+import { MeViewDto, BaseUserViewDto } from 'src/features/user-accounts/dto/user-view.dto';
 import request from 'supertest';
 import { delay } from './delay';
 import { PaginatedViewDto } from 'src/core/dto/base.paginated.view-dto';
@@ -8,19 +8,19 @@ import { PaginatedViewDto } from 'src/core/dto/base.paginated.view-dto';
 export class UsersTestManager {
   constructor(private app: INestApplication) {}
 
-  async getUsers(query: string): Promise<PaginatedViewDto<UserViewDto>> {
+  async getUsers(query: string): Promise<PaginatedViewDto<BaseUserViewDto>> {
     const response = await request(this.app.getHttpServer()).get(`/users${query}`).auth('admin', 'qwerty').expect(200);
 
     return response.body;
   }
 
-  async createUser(createModel: CreateUserDto, statusCode: number = HttpStatus.CREATED): Promise<UserViewDto> {
+  async createUser(createModel: CreateUserDto, statusCode: number = HttpStatus.CREATED): Promise<BaseUserViewDto> {
     const response = await request(this.app.getHttpServer()).post(`/users`).send(createModel).auth('admin', 'qwerty').expect(statusCode);
 
     return response.body;
   }
 
-  async deleteUser(userId: string, statusCode: number = HttpStatus.NO_CONTENT): Promise<UserViewDto> {
+  async deleteUser(userId: string, statusCode: number = HttpStatus.NO_CONTENT): Promise<BaseUserViewDto> {
     const response = await request(this.app.getHttpServer()).delete(`/users/${userId}`).auth('admin', 'qwerty').expect(statusCode);
 
     return response.body;
@@ -50,8 +50,8 @@ export class UsersTestManager {
     return response.body;
   }
 
-  async createSeveralUsers(count: number): Promise<UserViewDto[]> {
-    const usersPromises = [] as Promise<UserViewDto>[];
+  async createSeveralUsers(count: number): Promise<BaseUserViewDto[]> {
+    const usersPromises = [] as Promise<BaseUserViewDto>[];
 
     for (let i = 0; i < count; ++i) {
       await delay(100);
@@ -69,7 +69,7 @@ export class UsersTestManager {
 
   async createAndLoginSeveralUsers(count: number): Promise<{ accessToken: string }[]> {
     const users = await this.createSeveralUsers(count);
-    const loginPromises = users.map((user: UserViewDto) => this.login(user.login, '123456789'));
+    const loginPromises = users.map((user: BaseUserViewDto) => this.login(user.login, '123456789'));
 
     return await Promise.all(loginPromises);
   }

@@ -1,7 +1,7 @@
 import { Inject } from '@nestjs/common';
-import { CommandBus, CommandHandler, ICommandHandler } from '@nestjs/cqrs';
+import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { BadRequestDomainException } from 'src/core/exeptions/domain-exceptions';
-import { EmailService } from 'src/features/notifications/email.service';
+import { AuthRepository } from 'src/features/user-accounts/infrastructure/auth/auth.repository';
 import { UsersRepository } from 'src/features/user-accounts/infrastructure/users/users.repository';
 
 export class RegisterConfirmCommand {
@@ -12,8 +12,7 @@ export class RegisterConfirmCommand {
 export class RegisterConfirmUseCase implements ICommandHandler<RegisterConfirmCommand> {
   constructor(
     @Inject() private readonly usersRepository: UsersRepository,
-    @Inject() private readonly emailService: EmailService,
-    private readonly commandBus: CommandBus,
+    @Inject() private readonly authRepository: AuthRepository,
   ) {}
 
   async execute(command: RegisterConfirmCommand): Promise<void> {
@@ -22,6 +21,7 @@ export class RegisterConfirmUseCase implements ICommandHandler<RegisterConfirmCo
     }
 
     const user = await this.usersRepository.findUserByConfirmationCode(command.code);
+
     if (!user) {
       throw BadRequestDomainException.create('Code doesnt exist', 'code');
     }
@@ -29,7 +29,6 @@ export class RegisterConfirmUseCase implements ICommandHandler<RegisterConfirmCo
     if (user.emailConfirmation.isConfirmed) {
       throw BadRequestDomainException.create('User already confirmed', 'code');
     }
-    user.confirmRegistration();
-    await user.save();
+    await this.authRepository.confirmRegistration(user.id);
   }
 }

@@ -89,3 +89,12 @@ UserSchema.loadClass(UserEntity);
 export type UserDocument = HydratedDocument<UserEntity>;
 
 export type UserModelType = Model<UserDocument> & typeof UserEntity;
+
+export type UserEntityType = {
+  id: string;
+  login: string;
+  email: string;
+  password: string;
+  created_at: Date;
+  deleted_at: Date;
+};

@@ -1,85 +1,84 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
 import { PaginatedUserViewDto } from 'src/core/dto/base.paginated.view-dto';
-import { DeletionStatus } from 'src/core/dto/deletion-status';
 import { NotFoundDomainException } from 'src/core/exeptions/domain-exceptions';
 import { GetUsersQueryParams } from '../../dto/get-users-query-params.input-dto';
-import { UserEntity, UserModelType } from '../../domain/user/user.entity';
-import { MeViewDto, UserViewDto } from '../../dto/user-view.dto';
+import { MeViewDto, BaseUserViewDto } from '../../dto/user-view.dto';
+import { InjectDataSource } from '@nestjs/typeorm';
+import { DataSource } from 'typeorm';
 
 @Injectable()
 export class UsersQueryRepository {
-  constructor(@InjectModel(UserEntity.name) private UserModel: UserModelType) {}
+  constructor(@InjectDataSource() private datasourse: DataSource) {}
 
   async findUsers(queryData: GetUsersQueryParams): Promise<PaginatedUserViewDto> {
     const { pageSize, pageNumber, sortBy, sortDirection, searchLoginTerm, searchEmailTerm } = queryData;
 
-    let filter: any = {
-      $or: [],
-    };
+    const conditions: string[] = [];
+    const values: string[] = [];
 
     if (searchLoginTerm) {
-      filter.$or.push({ login: { $regex: searchLoginTerm, $options: 'i' }, deletionStatus: DeletionStatus.NotDeleted });
+      conditions.push(`login ILIKE $${conditions.length + 1}`);
+      values.push(`%${searchLoginTerm}%`);
     }
+
     if (searchEmailTerm) {
-      filter.$or.push({ email: { $regex: searchEmailTerm, $options: 'i' }, deletionStatus: DeletionStatus.NotDeleted });
+      conditions.push(`email ILIKE $${conditions.length + 1}`);
+      values.push(`%${searchEmailTerm}%`);
     }
 
-    if (filter.$or.length === 0) {
-      filter = { deletionStatus: DeletionStatus.NotDeleted };
-    }
+    const query = `
+SELECT * FROM users 
+WHERE deleted_at IS NULL ${conditions.length > 0 ? `AND ${conditions.join(' OR ')}` : ''}
+ORDER BY ${sortBy} ${sortDirection} 
+LIMIT ${pageSize} OFFSET ${queryData.calculateSkip()}
+`;
 
-    const usersFromDb = await this.UserModel.find({ ...filter, deletionStatus: DeletionStatus.NotDeleted })
-      .skip(queryData.calculateSkip())
-      .limit(pageSize)
-      .sort({ [sortBy]: sortDirection });
+    const users = await this.datasourse.query(query, values);
 
-    const usersView = usersFromDb.map((user) => UserViewDto.mapToView(user));
+    const usersCount = await this.datasourse.query(
+      `
+      SELECT COUNT(*) FROM users 
+      WHERE deleted_at IS NULL ${conditions.length > 0 ? `AND ${conditions.join(' OR ')}` : ''}
+    `,
+      values,
+    );
 
-    const usersCount = await this.getUsersCount(searchLoginTerm || '', searchEmailTerm || '');
+    const usersView = users.map((user) => BaseUserViewDto.mapToView(user));
 
     return PaginatedUserViewDto.mapToView({
       items: usersView,
       page: pageNumber,
       size: pageSize,
-      totalCount: usersCount,
+      totalCount: +usersCount[0].count,
     });
   }
 
-  async findUserByIdOrNotFound(userId: string): Promise<UserViewDto> {
-    const user = await this.UserModel.findOne({ _id: userId, deletionStatus: DeletionStatus.NotDeleted });
+  async findUserByIdOrNotFound(userId: string): Promise<BaseUserViewDto> {
+    const query = `
+    SELECT * FROM users 
+    WHERE deleted_at IS NULL AND id = $1
+    `;
 
-    if (!user) {
+    const users = await this.datasourse.query(query, [userId]);
+
+    if (!users.length) {
       throw NotFoundDomainException.create();
     }
 
-    return UserViewDto.mapToView(user);
+    return BaseUserViewDto.mapToView(users[0]);
   }
   async findMeByIdOrNotFound(userId: string): Promise<MeViewDto> {
-    const user = await this.UserModel.findOne({ _id: userId, deletionStatus: DeletionStatus.NotDeleted });
+    const query = `
+    SELECT * FROM users 
+    WHERE deleted_at IS NULL AND id = $1
+    `;
 
-    if (!user) {
+    const users = await this.datasourse.query(query, [userId]);
+
+    if (!users.length) {
       throw NotFoundDomainException.create();
     }
 
-    return MeViewDto.mapToView(user);
-  }
-  async getUsersCount(searchLoginTerm: string, searchEmailTerm: string): Promise<number> {
-    let filter: any = {
-      $or: [],
-    };
-
-    if (searchLoginTerm) {
-      filter.$or.push({ login: { $regex: searchLoginTerm, $options: 'i' }, deletionStatus: DeletionStatus.NotDeleted });
-    }
-    if (searchEmailTerm) {
-      filter.$or.push({ email: { $regex: searchEmailTerm, $options: 'i' }, deletionStatus: DeletionStatus.NotDeleted });
-    }
-
-    if (filter.$or.length === 0) {
-      filter = { deletionStatus: DeletionStatus.NotDeleted };
-    }
-
-    return this.UserModel.countDocuments(filter);
+    return MeViewDto.mapToView(users[0]);
   }
 }

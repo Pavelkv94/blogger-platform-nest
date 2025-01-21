@@ -11,14 +11,6 @@ export class DeleteOtherSecurityDevicesUseCase implements ICommandHandler<Delete
   constructor(private readonly securityDevicesRepository: SecurityDevicesRepository) {}
 
   async execute(command: DeleteOtherSecurityDevicesCommand): Promise<void> {
-    const devices = await this.securityDevicesRepository.findSecurityDevices(command.user.userId);
-
-    devices.forEach(async (device) => {
-      if (device.deviceId !== command.user.deviceId) {
-        device.makeDeleted();
-      }
-
-      await this.securityDevicesRepository.save(device);
-    });
+    await this.securityDevicesRepository.deleteOtherSecurityDevices(command.user.userId, command.user.deviceId);
   }
 }

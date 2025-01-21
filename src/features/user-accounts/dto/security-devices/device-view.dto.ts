@@ -6,11 +6,11 @@ export class DeviceViewDto {
   deviceId: string;
   lastActiveDate: Date;
 
-  constructor(model: SecurityDeviceDocument) {
+  constructor(model: any) {
     this.title = model.title;
     this.ip = model.ip;
-    this.deviceId = model.deviceId;
-    this.lastActiveDate = model.lastActiveDate;
+    this.deviceId = model.device_id;
+    this.lastActiveDate = model.last_active_date;
   }
 
   static mapToView(post: SecurityDeviceDocument): DeviceViewDto {

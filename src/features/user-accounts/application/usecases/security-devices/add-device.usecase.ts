@@ -20,10 +20,8 @@ export class AddSecurityDeviceUseCase implements ICommandHandler<AddSecurityDevi
   ) {}
 
   async execute(command: AddSecurityDeviceCommand): Promise<string> {
-    const newDevice = this.SecurityDeviceModel.buildInstance(command.refreshToken, command.ip, command.userAgent);
+    const newDeviceId = await this.securityDevicesRepository.addDevice(command.refreshToken, command.ip, command.userAgent);
 
-    await this.securityDevicesRepository.save(newDevice);
-
-    return newDevice._id.toString();
+    return newDeviceId;
   }
 }

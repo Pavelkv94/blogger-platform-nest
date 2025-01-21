@@ -3,7 +3,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { BlogViewDto } from 'src/features/bloggers-platform/blogs/dto/blog-view.dto';
 import { PostViewDto } from 'src/features/bloggers-platform/posts/dto/post-view.dto';
 import { CommentViewDto } from 'src/features/bloggers-platform/comments/dto/comment-view.dto';
-import { UserViewDto } from 'src/features/user-accounts/dto/user-view.dto';
+import { BaseUserViewDto } from 'src/features/user-accounts/dto/user-view.dto';
 
 export abstract class PaginatedViewDto<T> {
   @ApiProperty({ type: 'array', isArray: true })
@@ -44,7 +44,7 @@ export abstract class PaginatedCommentViewDto extends PaginatedViewDto<CommentVi
   items: CommentViewDto[];
 }
 
-export abstract class PaginatedUserViewDto extends PaginatedViewDto<UserViewDto[]> {
-  @ApiProperty({ type: [UserViewDto] })
-  items: UserViewDto[];
+export abstract class PaginatedUserViewDto extends PaginatedViewDto<BaseUserViewDto[]> {
+  @ApiProperty({ type: [BaseUserViewDto] })
+  items: BaseUserViewDto[];
 }

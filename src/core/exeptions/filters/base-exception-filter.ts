@@ -34,7 +34,7 @@ export abstract class BaseExceptionFilter implements ExceptionFilter {
 
     // Return standard error format for other types of errors
     return {
-      timestamp: new Date().toISOString(),
+      timestamp: new Date().getTime().toString(),
       path: url,
       message: (exception as any).message || 'Internal server error',
       code: exception instanceof DomainException ? exception.code.toString() : null,

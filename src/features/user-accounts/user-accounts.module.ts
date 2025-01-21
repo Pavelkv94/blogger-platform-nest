@@ -32,10 +32,17 @@ import { JwtRefreshAuthPassportStrategy } from 'src/core/guards/passport/jwt-ref
 import { UpdateSecurityDeviceUseCase } from './application/usecases/security-devices/update-device.usecase';
 import { DeleteSecurityDeviceUseCase } from './application/usecases/security-devices/delete-device.usecase';
 import { DeleteOtherSecurityDevicesUseCase } from './application/usecases/security-devices/delete-devices.usecase';
+import { AuthRepository } from './infrastructure/auth/auth.repository';
 
 const adapters = [BcryptService];
 
-const repositories = [UsersQueryRepository, UsersRepository, SecurityDevicesQueryRepository, SecurityDevicesRepository];
+const repositories = [
+  UsersQueryRepository,
+  UsersRepository,
+  SecurityDevicesQueryRepository,
+  SecurityDevicesRepository,
+  AuthRepository,
+];
 
 const useCases = [
   CreateUserUseCase,

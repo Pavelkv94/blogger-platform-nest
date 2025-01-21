@@ -1,5 +1,7 @@
 export enum UsersSortBy {
-  CreatedAt = 'createdAt',
+  CreatedAt = 'created_at',
   Login = 'login',
   Email = 'email',
+  Id = 'id',
 }
+

@@ -9,12 +9,24 @@ import { BloggersPlatformModule } from './features/bloggers-platform/bloggers-pl
 import { TestingModule } from './features/testing/testing.module';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { LoggerModule } from './features/logger/logger.module';
+import { TypeOrmModule } from '@nestjs/typeorm';
 
 @Module({
   imports: [
     //* CoreModule должен быть добавлен в первую очередь
     CoreModule,
     configModule,
+    TypeOrmModule.forRoot({
+      type: 'postgres',
+      host: 'localhost', // Адрес вашего сервера PostgreSQL
+      port: 5432, // Порт по умолчанию
+      username: 'admin', // Ваше имя пользователя
+      password: 'admin', // Ваш пароль
+      database: 'bloggers_platform', // Имя вашей базы данных 
+      entities: [], // Здесь укажите ваши сущности
+      autoLoadEntities: false, // Не загружать сущности автоматически
+      synchronize: false, // Для разработки, включите, чтобы синхронизировать с базой данных
+    }),
     MongooseModule.forRootAsync({
       useFactory: (coreConfig: CoreConfig) => ({
         uri: coreConfig.mongoUrl,

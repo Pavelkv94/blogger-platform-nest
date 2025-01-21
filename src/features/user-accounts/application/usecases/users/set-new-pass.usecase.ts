@@ -1,6 +1,7 @@
 import { Inject } from '@nestjs/common';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { BadRequestDomainException } from 'src/core/exeptions/domain-exceptions';
+import { AuthRepository } from 'src/features/user-accounts/infrastructure/auth/auth.repository';
 import { UsersRepository } from 'src/features/user-accounts/infrastructure/users/users.repository';
 
 export class SetNewPassCommand {
@@ -12,7 +13,10 @@ export class SetNewPassCommand {
 
 @CommandHandler(SetNewPassCommand)
 export class SetNewPassUseCase implements ICommandHandler<SetNewPassCommand> {
-  constructor(@Inject() private readonly usersRepository: UsersRepository) {}
+  constructor(
+    @Inject() private readonly usersRepository: UsersRepository,
+    @Inject() private readonly authRepository: AuthRepository,
+  ) {}
 
   async execute(command: SetNewPassCommand): Promise<void> {
     const user = await this.usersRepository.findUserByRecoveryCode(command.code);
@@ -21,7 +25,6 @@ export class SetNewPassUseCase implements ICommandHandler<SetNewPassCommand> {
       throw BadRequestDomainException.create('Code not found', 'code');
     }
 
-    user.setNewPassword(command.newPassword);
-    await user.save();
+    await this.authRepository.setNewPassword(user.id, command.newPassword);
   }
 }

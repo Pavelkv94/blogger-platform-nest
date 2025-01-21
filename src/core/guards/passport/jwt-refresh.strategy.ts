@@ -31,10 +31,8 @@ export class JwtRefreshAuthPassportStrategy extends PassportStrategy(Strategy, '
     if (!user) {
       throw UnauthorizedDomainException.create();
     }
-    //! проверка сессии в sec devices?
-    const lastActiveDate = new Date(payload.iat * 1000);
 
-    const device = await this.securityDevicesRepository.findDeviceByToken(payload.deviceId, lastActiveDate);
+    const device = await this.securityDevicesRepository.findDeviceByToken(payload);
 
     if (!device) {
       throw UnauthorizedDomainException.create();

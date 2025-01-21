@@ -17,8 +17,6 @@ export class DeleteUserUseCase implements ICommandHandler<DeleteUserCommand> {
       throw NotFoundDomainException.create('User not found');
     }
 
-    user.makeDeleted();
-
-    await this.usersRepository.save(user);
+    await this.usersRepository.deleteUser(command.id);
   }
 }

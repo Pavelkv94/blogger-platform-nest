@@ -41,9 +41,6 @@ export class AuthController {
   @UseGuards(ThrottlerGuard, LocalAuthGuard) //* порядок имеет значение
   @HttpCode(HttpStatus.OK)
   async login(@ExtractUserFromRequest() user: UserJwtPayloadDto, @Req() request: Request, @Res({ passthrough: true }) response: Response): Promise<LoginOuputDto> {
-    // в экспрессе делали так, здесь же валидация происходит в гварде
-    // const userId = await this.authService.validateUser(body);
-    // const accessToken = await this.authService.login(userId);
 
     const loginDto = {
       userId: user.userId,
