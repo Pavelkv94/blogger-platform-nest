@@ -54,10 +54,10 @@ export class CommentEntity {
   }
 
   countLikes(prevStatus: LikeStatus, newStatus: LikeStatus) {
-    if (prevStatus === 'Like') this.likesInfo.likesCount -= 1;
-    if (prevStatus === 'Dislike') this.likesInfo.dislikesCount -= 1;
-    if (newStatus === 'Like') this.likesInfo.likesCount += 1;
-    if (newStatus === 'Dislike') this.likesInfo.dislikesCount += 1;
+    // if (prevStatus === 'Like') this.likesInfo.likesCount -= 1;
+    // if (prevStatus === 'Dislike') this.likesInfo.dislikesCount -= 1;
+    // if (newStatus === 'Like') this.likesInfo.likesCount += 1;
+    // if (newStatus === 'Dislike') this.likesInfo.dislikesCount += 1;
   }
 }
 

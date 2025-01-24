@@ -17,12 +17,11 @@ export class PostsRepository {
     return post[0];
   }
 
-  async save(post: any): Promise<void> {
-    // await post.save();
-  }
-
   async createPost(payload: CreatePostDto): Promise<string> {
-    const query = `INSERT INTO posts (title, short_description, content, blog_id) VALUES ($1, $2, $3, $4) RETURNING id`;
+    const query = `
+    INSERT INTO posts (title, short_description, content, blog_id) 
+    VALUES ($1, $2, $3, $4)
+    RETURNING id`;
     const newPost = await this.dataSource.query(query, [payload.title, payload.shortDescription, payload.content, payload.blogId]);
     return newPost[0].id;
   }

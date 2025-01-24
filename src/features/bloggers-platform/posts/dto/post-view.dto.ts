@@ -26,7 +26,7 @@ export class PostViewDto {
     newestLikes: NewestLikes[];
   };
 
-  constructor(model: any, myStatus: LikeStatus, newestLikes: NewestLikes[]) {
+  constructor(model: any) {
     this.id = model.id.toString();
     this.title = model.title;
     this.shortDescription = model.short_description;
@@ -35,20 +35,14 @@ export class PostViewDto {
     this.blogName = model.blogName;
     this.createdAt = model.created_at;
     this.extendedLikesInfo = {
-      likesCount: 0,
-      dislikesCount: 0,
-      myStatus: myStatus, //external
-      newestLikes: newestLikes,
+      likesCount: +model.likes_count,
+      dislikesCount: +model.dislikes_count,
+      myStatus: model.my_status || LikeStatus.None,
+      newestLikes: model.newest_likes ? model.newest_likes.map((like) => ({ ...like, userId: like.userId.toString() })) : [],
     };
-    // this.extendedLikesInfo = {
-    //   likesCount: model.extendedLikesInfo.likesCount,
-    //   dislikesCount: model.extendedLikesInfo.dislikesCount,
-    //   myStatus: myStatus, //external
-    //   newestLikes: newestLikes,
-    // };
   }
 
-  static mapToView(post: PostDocument, myStatus: LikeStatus, newestLikes: NewestLikes[]): PostViewDto {
-    return new PostViewDto(post, myStatus, newestLikes);
+  static mapToView(post: PostDocument): PostViewDto {
+    return new PostViewDto(post);
   }
 }

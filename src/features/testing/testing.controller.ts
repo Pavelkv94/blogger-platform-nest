@@ -39,10 +39,13 @@ export class TestingController {
     DELETE FROM password_recovery;
     DELETE FROM security_devices;
 
-    DELETE FROM users; 
+    DELETE FROM likes;
 
+    DELETE FROM comments;
     DELETE FROM posts;
     DELETE FROM blogs;
+
+    DELETE FROM users; 
 
   `;
 

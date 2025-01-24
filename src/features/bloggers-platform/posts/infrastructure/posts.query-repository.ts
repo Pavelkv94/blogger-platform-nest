@@ -5,7 +5,6 @@ import { PostEntity } from '../domain/post.entity';
 import { GetPostsQueryParams } from '../dto/get-posts-query-params.input-dto';
 import { PostViewDto } from '../dto/post-view.dto';
 import { PaginatedPostViewDto } from 'src/core/dto/base.paginated.view-dto';
-import { LikeStatus } from '../../likes/dto/like-status.dto';
 import { NotFoundDomainException } from 'src/core/exeptions/domain-exceptions';
 import { LikeEntity, LikeModelType } from '../../likes/domain/like.entity';
 import { DataSource } from 'typeorm';
@@ -21,120 +20,115 @@ export class PostsQueryRepository {
   ) {}
 
   async findAllPosts(queryData: GetPostsQueryParams, userId: string | null, blog_id?: string): Promise<PaginatedPostViewDto> {
-    const { sortBy, sortDirection, pageNumber, pageSize } = queryData;
-    const values: string[] = [];
+    try {
+      const { sortBy, sortDirection, pageNumber, pageSize } = queryData;
+      const valuesForPosts: string[] = [];
+      const valuesForPostsCount: string[] = [];
 
-    if (blog_id) {
-      values.push(blog_id);
-    }
+      if (blog_id) {
+        valuesForPosts.push(blog_id);
+        valuesForPostsCount.push(blog_id);
+      }
 
-    const query = `
-    SELECT *, (SELECT name FROM blogs WHERE id = posts.blog_id) as "blogName" 
-    FROM posts 
-    WHERE deleted_at IS NULL ${blog_id ? `AND blog_id = $${values.length}` : ''}
+      if (userId) {
+        valuesForPosts.push(userId);
+      }
+
+      const query = `
+    WITH post_likes AS (
+    SELECT l.user_id, l.updated_at, (SELECT u.login FROM users u WHERE u.id = l.user_id) as user_login, l.parent_id
+    FROM likes l
+    WHERE l.parent_type = 'post' AND l.status = 'Like'
+    ORDER BY l.updated_at DESC
+    )
+    
+    SELECT p.*,
+    (SELECT b.name FROM blogs b WHERE b.id = p.blog_id) as "blogName",
+    (SELECT COUNT(*) FROM likes l WHERE l.parent_id = p.id AND l.parent_type = 'post' AND status = 'Like') as likes_count,
+    (SELECT COUNT(*) FROM likes l WHERE l.parent_id = p.id AND l.parent_type = 'post' AND status = 'Dislike') as dislikes_count,
+    ${userId ? `(SELECT l.status FROM likes l WHERE l.parent_type = 'post' AND l.parent_id = p.id AND l.user_id = $${valuesForPosts.indexOf(userId) + 1}) as my_status,` : ''}
+    (SELECT jsonb_agg(json_build_object('userId', pl.user_id, 'addedAt', pl.updated_at, 'login', pl.user_login))
+    FROM (
+      SELECT user_id, updated_at, user_login, parent_id 
+      FROM post_likes pl
+      WHERE pl.parent_id = p.id
+      ORDER BY pl.updated_at DESC
+      LIMIT 3
+    ) pl
+    ) AS newest_likes
+    FROM posts p 
+    WHERE p.deleted_at IS NULL ${blog_id ? `AND p.blog_id = $${valuesForPosts.indexOf(blog_id) + 1}` : ''}
     ORDER BY "${sortBy}" ${sortDirection} 
-    LIMIT ${pageSize} OFFSET ${queryData.calculateSkip()}
+    LIMIT ${pageSize} OFFSET ${queryData.calculateSkip()};
     `;
-    console.log(query);
+      console.log(query);
+      console.log('before posts');
 
-    const blogs = await this.datasourse.query(query, values);
+      const posts = await this.datasourse.query(query, valuesForPosts);
 
-    const blogsCount = await this.datasourse.query(
-      `
-      SELECT COUNT(*) FROM posts 
-      WHERE deleted_at IS NULL ${blog_id ? `AND blog_id = $1` : ''}
+      console.log('after posts');
+      const postsCount = await this.datasourse.query(
+        `
+      SELECT COUNT(*)
+      FROM posts p 
+      WHERE p.deleted_at IS NULL ${blog_id ? `AND p.blog_id = $${valuesForPosts.indexOf(blog_id) + 1}` : ''};
     `,
-      values,
-    );
+        valuesForPostsCount,
+      );
+      console.log('after postsCount');
 
-    const postsView = blogs.map((post) => PostViewDto.mapToView(post, LikeStatus.None, []));
+      const postsView = posts.map((post) => PostViewDto.mapToView(post));
 
-    return PaginatedPostViewDto.mapToView({
-      items: postsView,
-      page: pageNumber,
-      size: pageSize,
-      totalCount: +blogsCount[0].count,
-    });
-
-    // const filter: any = blog_id ? { blogId: blog_id } : {};
-
-    // const postsFromDb = await this.postModel
-    //   .find({ ...filter, deletionStatus: DeletionStatus.NotDeleted })
-    //   .skip(query.calculateSkip())
-    //   .limit(pageSize)
-    //   .sort({ [sortBy]: sortDirection });
-
-    // const postIds = postsFromDb.map((post) => post.id);
-
-    // const likes = await this.LikeModel.find({ parent_id: { $in: postIds } })
-    //   .sort({ updatedAt: 'desc' })
-    //   .lean();
-
-    // let postsView: PostViewDto[];
-
-    // if (!userId) {
-    //   postsView = postsFromDb.map((post) => {
-    //     const newestLikes = likes
-    //       .filter((like) => like.parent_id === post.id && like.status === LikeStatus.Like)
-    //       .slice(0, 3)
-    //       .map((like) => ({
-    //         addedAt: like.updatedAt,
-    //         userId: like.user_id,
-    //         login: like.user_login,
-    //       }));
-
-    //     return PostViewDto.mapToView(post, LikeStatus.None, newestLikes);
-    //   });
-    // } else {
-    //   const userLikes = likes.filter((like) => like.user_id === userId);
-
-    //   postsView = postsFromDb.map((post) => {
-    //     const postLikes = userLikes.filter((like) => like.parent_id === post.id);
-    //     const newestLikes = likes
-    //       .filter((like) => like.parent_id === post.id && like.status === LikeStatus.Like)
-    //       .slice(0, 3)
-    //       .map((like) => ({
-    //         addedAt: like.updatedAt,
-    //         userId: like.user_id,
-    //         login: like.user_login,
-    //       }));
-
-    //     const myStatus = postLikes.length > 0 ? postLikes[0].status : LikeStatus.None;
-
-    //     return PostViewDto.mapToView(post, myStatus, newestLikes);
-    //   });
-    // }
-    // return PaginatedPostViewDto.mapToView({
-    //   items: postsView,
-    //   page: pageNumber,
-    //   size: pageSize,
-    //   totalCount: postsFromDb.length,
-    // });
+      return PaginatedPostViewDto.mapToView({
+        items: postsView,
+        page: pageNumber,
+        size: pageSize,
+        totalCount: +postsCount[0].count,
+      });
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
   }
 
   async findPostByIdOrNotFoundFail(post_id: string, userId: string | null): Promise<PostViewDto> {
-    const posts = await this.datasourse.query(
-      `
-      SELECT *, (SELECT name FROM blogs WHERE id = posts.blog_id) as "blogName" 
-      FROM posts 
-      WHERE id = $1 AND deleted_at IS NULL
-    `,
-      [post_id],
-    );
+    const values: string[] = [post_id];
+    if (userId) {
+      values.push(userId);
+    }
+
+    const query = `
+    WITH post_likes AS (
+    SELECT l.user_id, l.updated_at, (SELECT u.login FROM users u WHERE u.id = l.user_id) as user_login, l.parent_id
+    FROM likes l
+    WHERE l.parent_type = 'post' AND l.status = 'Like'
+    ORDER BY l.updated_at DESC
+    )
+    
+    SELECT p.*,
+    (SELECT b.name FROM blogs b WHERE b.id = p.blog_id) as "blogName",
+    (SELECT COUNT(*) FROM likes l WHERE l.parent_id = p.id AND l.parent_type = 'post' AND status = 'Like') as likes_count,
+    (SELECT COUNT(*) FROM likes l WHERE l.parent_id = p.id AND l.parent_type = 'post' AND status = 'Dislike') as dislikes_count,
+    ${userId ? `(SELECT l.status FROM likes l WHERE l.parent_type = 'post' AND l.parent_id = p.id AND l.user_id = $2) as my_status,` : ''}
+    (SELECT jsonb_agg(json_build_object('userId', pl.user_id, 'addedAt', pl.updated_at, 'login', pl.user_login))
+    FROM (
+      SELECT user_id, updated_at, user_login, parent_id 
+      FROM post_likes pl
+      WHERE pl.parent_id = p.id
+      ORDER BY pl.updated_at DESC
+      LIMIT 3
+    ) pl
+    ) AS newest_likes
+    FROM posts p 
+    WHERE id = $1 AND deleted_at IS NULL
+    `;
+
+    const posts = await this.datasourse.query(query, values);
+
     if (!posts[0]) {
       throw NotFoundDomainException.create('Post not found');
     }
 
-    // const postLikes = await this.LikeModel.find({ parent_id: post_id }).sort({ updatedAt: 'desc' }).lean();
-
-    // const newestLikes = postLikes
-    //   .filter((like) => like.status === 'Like')
-    //   .slice(0, 3)
-    //   .map((like) => ({ addedAt: like.updatedAt, userId: like.user_id, login: like.user_login }));
-    // const currentUserLike = postLikes.find((like) => like.user_id === userId);
-    // const myStatus = currentUserLike ? currentUserLike.status : LikeStatus.None;
-    //    return PostViewDto.mapToView(post, myStatus, newestLikes);
-
-    return PostViewDto.mapToView(posts[0], LikeStatus.None, []);
+    return PostViewDto.mapToView(posts[0]);
   }
 }

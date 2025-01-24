@@ -5,12 +5,14 @@ import { LikesRepository } from '../../infrastructure/likes.repository';
 import { LikeEntity, LikeModelType } from '../../domain/like.entity';
 import { NotFoundDomainException } from 'src/core/exeptions/domain-exceptions';
 import { UsersRepository } from 'src/features/user-accounts/infrastructure/users/users.repository';
+import { LikeParent } from '../../dto/like-parent.dto';
 
 export class CreateLikeCommand {
   constructor(
     public readonly userId: string,
     public readonly parent_id: string,
     public readonly newStatus: LikeStatus,
+    public readonly parentType: LikeParent,
   ) {}
 }
 
@@ -29,8 +31,6 @@ export class CreateLikeUseCase implements ICommandHandler<CreateLikeCommand> {
       throw NotFoundDomainException.create('User not found');
     }
 
-    const newLike = this.LikeModel.buildInstance(user, command.parent_id, command.newStatus);
-
-    await this.likesRepository.save(newLike);
+    await this.likesRepository.createLike(command.parent_id, command.userId, command.newStatus, command.parentType);
   }
 }

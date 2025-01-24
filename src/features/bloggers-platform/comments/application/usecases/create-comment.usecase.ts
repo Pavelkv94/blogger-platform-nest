@@ -38,10 +38,8 @@ export class CreateCommentUseCase implements ICommandHandler<CreateCommentComman
       throw NotFoundDomainException.create('User not found');
     }
 
-    const newComment = this.CommentModel.buildInstance({ content: command.payload.content, postId: command.postId, user });
+    const newCommentId = await this.commentsRepository.createComment(command.payload, command.postId, command.user);
 
-    await this.commentsRepository.save(newComment);
-
-    return newComment._id.toString();
+    return newCommentId;
   }
 }

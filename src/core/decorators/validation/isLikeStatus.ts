@@ -10,7 +10,7 @@ export function IsLikeStatus(validationOptions?: ValidationOptions) {
       options: validationOptions,
       validator: {
         validate(value: any) {
-          return (value === LikeStatus.Dislike || value === LikeStatus.Like || value === LikeStatus.None);
+          return value === LikeStatus.Dislike || value === LikeStatus.Like || value === LikeStatus.None;
         },
         defaultMessage() {
           return `${propertyName} must be one of the following: ${LikeStatus.Dislike}, ${LikeStatus.Like}, or ${LikeStatus.None}`;
@@ -19,5 +19,3 @@ export function IsLikeStatus(validationOptions?: ValidationOptions) {
     });
   };
 }
-
-

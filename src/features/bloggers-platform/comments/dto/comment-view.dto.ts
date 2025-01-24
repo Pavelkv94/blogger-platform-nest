@@ -16,20 +16,22 @@ export class CommentViewDto {
   @ApiProperty({ example: 'Likes info', description: 'Likes info' })
   likesInfo: LikesInfo & { myStatus: LikeStatus };
 
-  constructor(model: CommentDocument, myStatus: LikeStatus) {
-    this.id = model._id.toString();
+  constructor(model: any) {
+    this.id = model.id.toString();
     this.content = model.content;
-    this.content = model.content;
-    this.createdAt = model.createdAt;
-    this.commentatorInfo = model.commentatorInfo;
+    this.createdAt = model.created_at;
+    this.commentatorInfo = {
+      userId: model.commentator_id.toString(),
+      userLogin: model.commentator_login,
+    };
     this.likesInfo = {
-      likesCount: model.likesInfo.likesCount,
-      dislikesCount: model.likesInfo.dislikesCount,
-      myStatus: myStatus, //external
+      likesCount: +model.likes_count,
+      dislikesCount: +model.dislikes_count,
+      myStatus: model.my_status || LikeStatus.None,
     };
   }
 
-  static mapToView(comment: CommentDocument, myStatus: LikeStatus): CommentViewDto {
-    return new CommentViewDto(comment, myStatus);
+  static mapToView(comment: CommentDocument): CommentViewDto {
+    return new CommentViewDto(comment);
   }
 }
