@@ -20,21 +20,20 @@ export class PostsQueryRepository {
   ) {}
 
   async findAllPosts(queryData: GetPostsQueryParams, userId: string | null, blog_id?: string): Promise<PaginatedPostViewDto> {
-    try {
-      const { sortBy, sortDirection, pageNumber, pageSize } = queryData;
-      const valuesForPosts: string[] = [];
-      const valuesForPostsCount: string[] = [];
+    const { sortBy, sortDirection, pageNumber, pageSize } = queryData;
+    const valuesForPosts: string[] = [];
+    const valuesForPostsCount: string[] = [];
 
-      if (blog_id) {
-        valuesForPosts.push(blog_id);
-        valuesForPostsCount.push(blog_id);
-      }
+    if (blog_id) {
+      valuesForPosts.push(blog_id);
+      valuesForPostsCount.push(blog_id);
+    }
 
-      if (userId) {
-        valuesForPosts.push(userId);
-      }
+    if (userId) {
+      valuesForPosts.push(userId);
+    }
 
-      const query = `
+    const query = `
     WITH post_likes AS (
     SELECT l.user_id, l.updated_at, (SELECT u.login FROM users u WHERE u.id = l.user_id) as user_login, l.parent_id
     FROM likes l
@@ -61,34 +60,26 @@ export class PostsQueryRepository {
     ORDER BY "${sortBy}" ${sortDirection} 
     LIMIT ${pageSize} OFFSET ${queryData.calculateSkip()};
     `;
-      console.log(query);
-      console.log('before posts');
 
-      const posts = await this.datasourse.query(query, valuesForPosts);
+    const posts = await this.datasourse.query(query, valuesForPosts);
 
-      console.log('after posts');
-      const postsCount = await this.datasourse.query(
-        `
+    const postsCount = await this.datasourse.query(
+      `
       SELECT COUNT(*)
       FROM posts p 
       WHERE p.deleted_at IS NULL ${blog_id ? `AND p.blog_id = $${valuesForPosts.indexOf(blog_id) + 1}` : ''};
     `,
-        valuesForPostsCount,
-      );
-      console.log('after postsCount');
+      valuesForPostsCount,
+    );
 
-      const postsView = posts.map((post) => PostViewDto.mapToView(post));
+    const postsView = posts.map((post) => PostViewDto.mapToView(post));
 
-      return PaginatedPostViewDto.mapToView({
-        items: postsView,
-        page: pageNumber,
-        size: pageSize,
-        totalCount: +postsCount[0].count,
-      });
-    } catch (error) {
-      console.log(error);
-      throw error;
-    }
+    return PaginatedPostViewDto.mapToView({
+      items: postsView,
+      page: pageNumber,
+      size: pageSize,
+      totalCount: +postsCount[0].count,
+    });
   }
 
   async findPostByIdOrNotFoundFail(post_id: string, userId: string | null): Promise<PostViewDto> {

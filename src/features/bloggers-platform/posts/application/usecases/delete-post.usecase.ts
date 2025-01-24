@@ -33,7 +33,6 @@ export class DeletePostUseCase implements ICommandHandler<DeletePostCommand> {
     }
 
     if (command.blogId) {
-      console.log(post.blog_id, command.blogId);
       if (post.blog_id.toString() !== command.blogId) {
         throw ForbiddenDomainException.create('You are not allowed to delete this post');
       }

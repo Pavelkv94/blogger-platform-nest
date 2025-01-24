@@ -6,6 +6,7 @@ import { CreateLikeCommand } from 'src/features/bloggers-platform/likes/applicat
 import { UpdateLikeCommand } from 'src/features/bloggers-platform/likes/application/usecases/update-like.usecase';
 import { LikeParent } from 'src/features/bloggers-platform/likes/dto/like-parent.dto';
 import { CommentsRepository } from '../../infrastructure/comments.repository';
+import { ResultStatus } from 'src/core/dto/result-object.dto';
 
 export class LikeCommentCommand {
   constructor(
@@ -32,9 +33,9 @@ export class LikeCommentUseCase implements ICommandHandler<LikeCommentCommand> {
       throw NotFoundDomainException.create('Comment not found');
     }
 
-    const comments = await this.commentsRepository.findCommentById(command.commentId);
+    const commentsResultObject = await this.commentsRepository.findCommentById(command.commentId);
 
-    if (!comments) {
+    if (commentsResultObject.status === ResultStatus.NOT_FOUND) {
       throw NotFoundDomainException.create('Comment not found');
     }
 
