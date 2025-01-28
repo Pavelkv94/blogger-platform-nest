@@ -1,6 +1,4 @@
-import { InjectModel } from '@nestjs/mongoose';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { SecurityDeviceEntity, SecurityDeviceModelType } from 'src/features/user-accounts/domain/security-device/security-devices.schema';
 import { SecurityDevicesRepository } from 'src/features/user-accounts/infrastructure/security-devices/security-devices.repository';
 import { UserJwtPayloadDto } from 'src/features/user-accounts/dto/user-jwt-payload.dto';
 
@@ -14,10 +12,7 @@ export class AddSecurityDeviceCommand {
 
 @CommandHandler(AddSecurityDeviceCommand)
 export class AddSecurityDeviceUseCase implements ICommandHandler<AddSecurityDeviceCommand> {
-  constructor(
-    @InjectModel(SecurityDeviceEntity.name) private SecurityDeviceModel: SecurityDeviceModelType,
-    private readonly securityDevicesRepository: SecurityDevicesRepository,
-  ) {}
+  constructor(private readonly securityDevicesRepository: SecurityDevicesRepository) {}
 
   async execute(command: AddSecurityDeviceCommand): Promise<string> {
     const newDeviceId = await this.securityDevicesRepository.addDevice(command.refreshToken, command.ip, command.userAgent);

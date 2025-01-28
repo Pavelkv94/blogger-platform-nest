@@ -1,10 +1,8 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { InjectModel } from '@nestjs/mongoose';
 import { CreateCommentInputDto } from '../../dto/create-comment.dto';
 import { PostsRepository } from 'src/features/bloggers-platform/posts/infrastructure/posts.repository';
 import { UserJwtPayloadDto } from 'src/features/user-accounts/dto/user-jwt-payload.dto';
 import { NotFoundDomainException } from 'src/core/exeptions/domain-exceptions';
-import { CommentEntity, CommentModelType } from '../../domain/comment.entity';
 import { CommentsRepository } from '../../infrastructure/comments.repository';
 import { UsersRepository } from 'src/features/user-accounts/infrastructure/users/users.repository';
 
@@ -22,7 +20,6 @@ export class CreateCommentUseCase implements ICommandHandler<CreateCommentComman
     private readonly postsRepository: PostsRepository,
     private readonly usersRepository: UsersRepository,
     private readonly commentsRepository: CommentsRepository,
-    @InjectModel(CommentEntity.name) private CommentModel: CommentModelType,
   ) {}
 
   async execute(command: CreateCommentCommand): Promise<string> {

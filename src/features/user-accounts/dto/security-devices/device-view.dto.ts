@@ -1,4 +1,4 @@
-import { SecurityDeviceDocument } from '../../domain/security-device/security-devices.schema';
+// import { SecurityDeviceDocument } from '../../domain/security-device/security-devices.schema';
 
 export class DeviceViewDto {
   title: string;
@@ -13,7 +13,7 @@ export class DeviceViewDto {
     this.lastActiveDate = model.last_active_date;
   }
 
-  static mapToView(post: SecurityDeviceDocument): DeviceViewDto {
+  static mapToView(post: any): DeviceViewDto {
     return new DeviceViewDto(post);
   }
 }

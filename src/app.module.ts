@@ -1,36 +1,31 @@
 //* configModule должен импортироваться в первую очередь
 import { configModule } from './config';
-import { CoreConfig } from './core/core.config';
 import { CoreModule } from './core/core.module';
 import { Module } from '@nestjs/common';
-import { MongooseModule } from '@nestjs/mongoose';
 import { UserAccountsModule } from './features/user-accounts/user-accounts.module';
 import { BloggersPlatformModule } from './features/bloggers-platform/bloggers-platform.module.ts';
 import { TestingModule } from './features/testing/testing.module';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { LoggerModule } from './features/logger/logger.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { CoreConfig } from './core/core.config';
 
 @Module({
   imports: [
     //* CoreModule должен быть добавлен в первую очередь
     CoreModule,
     configModule,
-    TypeOrmModule.forRoot({
-      type: 'postgres',
-      host: 'localhost', // Адрес вашего сервера PostgreSQL
-      port: 5432, // Порт по умолчанию
-      username: 'admin', // Ваше имя пользователя
-      password: 'admin', // Ваш пароль
-      database: 'bloggers_platform', // Имя вашей базы данных 
-      entities: [], // Здесь укажите ваши сущности
-      autoLoadEntities: false, // Не загружать сущности автоматически
-      synchronize: false, // Для разработки, включите, чтобы синхронизировать с базой данных
-    }),
-    MongooseModule.forRootAsync({
+    TypeOrmModule.forRootAsync({
       useFactory: (coreConfig: CoreConfig) => ({
-        uri: coreConfig.mongoUrl,
-        dbName: coreConfig.dbName,
+        type: 'postgres',
+        host: coreConfig.dbHost, // Адрес вашего сервера PostgreSQL
+        port: coreConfig.dbPort, // Порт по умолчанию
+        username: coreConfig.dbUsername, // Ваше имя пользователя
+        password: coreConfig.dbPassword, // Ваш пароль
+        database: coreConfig.dbName, // Имя вашей базы данных
+        entities: [], // Здесь укажите ваши сущности
+        autoLoadEntities: true, // Не загружать сущности автоматически - можно true для разработки
+        synchronize: true, // Для разработки, включите, чтобы синхронизировать с базой данных - можно true для разработки
       }),
       inject: [CoreConfig],
     }),

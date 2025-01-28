@@ -3,7 +3,7 @@ import { UnauthorizedDomainException } from 'src/core/exeptions/domain-exception
 import { BcryptService } from './bcrypt.service';
 import { LoginInputDto } from '../dto/login-user.dto';
 import {} from '../dto/create-user.dto';
-import { UserDocument } from '../domain/user/user.entity';
+// import { UserDocument } from '../domain/user/user.entity';
 import { UsersRepository } from '../infrastructure/users/users.repository';
 
 @Injectable()
@@ -14,7 +14,7 @@ export class AuthService {
   ) {}
 
   //* вспомогательный(утилитарный) метод а не основной(команда)
-  async validateUser(payload: LoginInputDto): Promise<UserDocument> {
+  async validateUser(payload: LoginInputDto): Promise<any> {
     const user = await this.usersRepository.findUserByLoginOrEmail(payload.loginOrEmail);
     if (!user) {
       throw UnauthorizedDomainException.create();

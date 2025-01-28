@@ -1,5 +1,5 @@
 import { ApiProperty, OmitType } from '@nestjs/swagger';
-import { UserDocument } from '../domain/user/user.entity';
+// import { UserDocument } from '../domain/user/user.entity';
 
 export class BaseUserViewDto {
   @ApiProperty({ example: 'email' })
@@ -18,7 +18,7 @@ export class BaseUserViewDto {
     this.createdAt = model.created_at;
   }
 
-  static mapToView(user: UserDocument): BaseUserViewDto {
+  static mapToView(user: any): BaseUserViewDto {
     return new BaseUserViewDto(user);
   }
 }
@@ -37,7 +37,7 @@ export class UserViewDtoWithRecovery extends BaseUserViewDto {
     };
   }
 
-  static mapToView(user: UserDocument): UserViewDtoWithRecovery {
+  static mapToView(user: any): UserViewDtoWithRecovery {
     return new UserViewDtoWithRecovery(user);
   }
 }
@@ -58,7 +58,7 @@ export class UserViewDtoWithConfirmation extends BaseUserViewDto {
     };
   }
 
-  static mapToView(user: UserDocument): UserViewDtoWithConfirmation {
+  static mapToView(user: any): UserViewDtoWithConfirmation {
     return new UserViewDtoWithConfirmation(user);
   }
 }
@@ -87,7 +87,7 @@ export class FullUserViewDto extends BaseUserViewDto {
     };
   }
 
-  static mapToView(user: UserDocument): FullUserViewDto {
+  static mapToView(user: any): FullUserViewDto {
     return new FullUserViewDto(user);
   }
 }
@@ -95,7 +95,7 @@ export class FullUserViewDto extends BaseUserViewDto {
 export class MeViewDto extends OmitType(BaseUserViewDto, ['createdAt', 'id'] as const) {
   userId: string;
 
-  static mapToView(user: UserDocument): MeViewDto {
+  static mapToView(user: any): MeViewDto {
     const dto = new MeViewDto();
 
     dto.email = user.email;

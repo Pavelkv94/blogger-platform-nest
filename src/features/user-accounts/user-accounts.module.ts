@@ -1,5 +1,4 @@
 import { Module } from '@nestjs/common';
-import { MongooseModule } from '@nestjs/mongoose';
 import { UsersController } from './api/users.controller';
 import { BcryptService } from './application/bcrypt.service';
 import { AuthController } from './api/auth.controller';
@@ -19,14 +18,12 @@ import { CqrsModule } from '@nestjs/cqrs';
 import { PassportModule } from '@nestjs/passport';
 import { JwtAccessStrategy } from 'src/core/guards/passport/jwt-access.strategy';
 import { LocalStrategy } from './api/guards/passport/local.strategy';
-import { UserEntity, UserSchema } from './domain/user/user.entity';
 import { UsersRepository } from './infrastructure/users/users.repository';
 import { UsersQueryRepository } from './infrastructure/users/users.query-repository';
 import { SecurityDevicesController } from './api/security-devices.controller';
 import { AddSecurityDeviceUseCase } from './application/usecases/security-devices/add-device.usecase';
 import { SecurityDevicesQueryRepository } from './infrastructure/security-devices/security-devices.query-repository';
 import { SecurityDevicesRepository } from './infrastructure/security-devices/security-devices.repository';
-import { SecurityDeviceEntity, SecurityDeviceSchema } from './domain/security-device/security-devices.schema';
 import { RefreshTokenUserUseCase } from './application/usecases/users/refresh-token.usecase';
 import { JwtRefreshAuthPassportStrategy } from 'src/core/guards/passport/jwt-refresh.strategy';
 import { UpdateSecurityDeviceUseCase } from './application/usecases/security-devices/update-device.usecase';
@@ -72,14 +69,10 @@ const useCases = [
       }),
       inject: [CoreConfig],
     }),
-    MongooseModule.forFeature([
-      { name: UserEntity.name, schema: UserSchema },
-      { name: SecurityDeviceEntity.name, schema: SecurityDeviceSchema },
-    ]),
     NotificationsModule,
     CqrsModule,
   ],
-  exports: [MongooseModule, UsersRepository],
+  exports: [UsersRepository],
   controllers: [UsersController, AuthController, SecurityDevicesController],
   providers: [
     ...repositories,

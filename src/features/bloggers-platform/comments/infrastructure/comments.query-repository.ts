@@ -1,23 +1,14 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { CommentEntity, CommentModelType } from '../domain/comment.entity';
 import { CommentViewDto } from '../dto/comment-view.dto';
 import { GetPostsQueryParams } from '../../posts/dto/get-posts-query-params.input-dto';
 import { PaginatedCommentViewDto } from 'src/core/dto/base.paginated.view-dto';
 import { NotFoundDomainException } from 'src/core/exeptions/domain-exceptions';
-import { LikeEntity, LikeModelType } from '../../likes/domain/like.entity';
-import { PostEntity, PostModelType } from '../../posts/domain/post.entity';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 
 @Injectable()
 export class CommentsQueryRepository {
-  constructor(
-    @InjectModel(CommentEntity.name) private CommentModel: CommentModelType,
-    @InjectModel(LikeEntity.name) private LikeModel: LikeModelType,
-    @InjectModel(PostEntity.name) private PostModel: PostModelType,
-    @InjectDataSource() private dataSource: DataSource,
-  ) {}
+  constructor(@InjectDataSource() private dataSource: DataSource) {}
 
   async findAllComments(postId: string, queryData: GetPostsQueryParams, userId: string | null): Promise<PaginatedCommentViewDto> {
     const posts = await this.dataSource.query(`SELECT * FROM posts WHERE id = $1`, [postId]);

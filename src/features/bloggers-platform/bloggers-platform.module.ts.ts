@@ -1,6 +1,4 @@
 import { Module } from '@nestjs/common';
-import { MongooseModule } from '@nestjs/mongoose';
-import { BlogEntity, BlogSchema } from './blogs/domain/blog.entity';
 import { BlogsController } from './blogs/api/blogs.controller';
 import { BlogsRepository } from './blogs/infrastructure/blogs.repository';
 import { BlogsQueryRepository } from './blogs/infrastructure/blogs.query-repository';
@@ -8,10 +6,6 @@ import { ApiTags } from '@nestjs/swagger';
 import { PostsQueryRepository } from './posts/infrastructure/posts.query-repository';
 import { PostsRepository } from './posts/infrastructure/posts.repository';
 import { PostsController } from './posts/api/posts.controller';
-import { PostSchema } from './posts/domain/post.entity';
-import { PostEntity } from './posts/domain/post.entity';
-import { CommentSchema } from './comments/domain/comment.entity';
-import { CommentEntity } from './comments/domain/comment.entity';
 import { CommentsQueryRepository } from './comments/infrastructure/comments.query-repository';
 import { CqrsModule } from '@nestjs/cqrs';
 import { CreateBlogUseCase } from './blogs/application/usecases/create-blog.usecase';
@@ -33,7 +27,6 @@ import { LikePostUseCase } from './posts/application/usecases/like-post.usecase'
 import { CreateLikeUseCase } from './likes/application/usecases/create-like.usecase';
 import { UpdateLikeUseCase } from './likes/application/usecases/update-like.usecase';
 import { LikesRepository } from './likes/infrastructure/likes.repository';
-import { LikeEntity, LikeSchema } from './likes/domain/like.entity';
 import { PassportModule } from '@nestjs/passport';
 import { JwtAccessStrategy } from 'src/core/guards/passport/jwt-access.strategy';
 import { BlogIsNotExistConstraint } from './posts/api/validation/blogIsExist.decorator';
@@ -70,13 +63,6 @@ const repositories = [
 @Module({
   imports: [
     PassportModule,
-    MongooseModule.forFeature([
-      { name: BlogEntity.name, schema: BlogSchema },
-      { name: PostEntity.name, schema: PostSchema },
-      { name: CommentEntity.name, schema: CommentSchema },
-      { name: LikeEntity.name, schema: LikeSchema },
-
-    ]),
     JwtModule.registerAsync({
       useFactory: (coreConfig: CoreConfig) => ({
         secret: coreConfig.accessTokenSecret,

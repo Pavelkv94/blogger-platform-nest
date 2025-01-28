@@ -1,15 +1,15 @@
-import { Prop, SchemaFactory, Schema } from '@nestjs/mongoose';
+// import { Prop, SchemaFactory, Schema } from '@nestjs/mongoose';
 
-@Schema({ _id: false })
-export class EmailConfirmation {
-  @Prop({ type: String, required: true })
-  confirmationCode: string;
+// @Schema({ _id: false })
+// export class EmailConfirmation {
+//   @Prop({ type: String, required: true })
+//   confirmationCode: string;
 
-  @Prop({ type: String, required: true })
-  expirationDate: string;
+//   @Prop({ type: String, required: true })
+//   expirationDate: string;
 
-  @Prop({ type: Boolean, required: true })
-  isConfirmed: boolean;
-}
+//   @Prop({ type: Boolean, required: true })
+//   isConfirmed: boolean;
+// }
 
-export const EmailConfirmationSchema = SchemaFactory.createForClass(EmailConfirmation);
+// export const EmailConfirmationSchema = SchemaFactory.createForClass(EmailConfirmation);

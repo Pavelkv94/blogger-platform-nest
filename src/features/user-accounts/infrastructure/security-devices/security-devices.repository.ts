@@ -1,17 +1,13 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { SecurityDeviceDocument, SecurityDeviceEntity, SecurityDeviceModelType } from '../../domain/security-device/security-devices.schema';
+// import { SecurityDeviceDocument } from '../../domain/security-device/security-devices.schema';
 import { UserJwtPayloadDto } from '../../dto/user-jwt-payload.dto';
 import { DataSource } from 'typeorm';
 
 @Injectable()
 export class SecurityDevicesRepository {
-  constructor(
-    @InjectModel(SecurityDeviceEntity.name) private SecurityDeviceModel: SecurityDeviceModelType,
-    @Inject() private datasourse: DataSource,
-  ) {}
+  constructor(@Inject() private datasourse: DataSource) {}
 
-  async findSecurityDevices(userId: string): Promise<SecurityDeviceDocument[]> {
+  async findSecurityDevices(userId: string): Promise<any[]> {
     const query = `
     SELECT * FROM security_devices WHERE user_id = $1 AND deleted_at IS NULL
     `;
@@ -20,7 +16,7 @@ export class SecurityDevicesRepository {
     return devices;
   }
 
-  async findDevice(device_id: string): Promise<SecurityDeviceDocument | null> {
+  async findDevice(device_id: string): Promise<any | null> {
     const query = `
     SELECT * FROM security_devices WHERE device_id = $1 AND deleted_at IS NULL
     `;
@@ -32,7 +28,7 @@ export class SecurityDevicesRepository {
     return devices[0];
   }
 
-  async findDeviceByToken(payload: UserJwtPayloadDto): Promise<SecurityDeviceDocument | null> {
+  async findDeviceByToken(payload: UserJwtPayloadDto): Promise<any | null> {
     const lastActiveDate = new Date(payload.iat * 1000).toISOString();
 
     const query = `
@@ -45,7 +41,7 @@ export class SecurityDevicesRepository {
     return devices[0];
   }
 
-  async save(securityDevice: SecurityDeviceDocument): Promise<void> {
+  async save(securityDevice: any): Promise<void> {
     await securityDevice.save();
   }
 
@@ -73,7 +69,7 @@ export class SecurityDevicesRepository {
       ip,
       userAgent,
       new Date(refreshDto.iat * 1000).toISOString(),
-      refreshDto.deviceId
+      refreshDto.deviceId,
     ]);
   }
 

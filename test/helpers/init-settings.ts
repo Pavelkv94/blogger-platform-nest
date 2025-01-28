@@ -1,6 +1,6 @@
-import { getConnectionToken } from '@nestjs/mongoose';
+// import { getConnectionToken } from '@nestjs/mongoose';
 import { Test, TestingModuleBuilder } from '@nestjs/testing';
-import { Connection } from 'mongoose';
+// import { Connection } from 'mongoose';
 import { AppModule } from '../../src/app.module';
 import { UsersTestManager } from './users-test-manager';
 import { deleteAllData } from './delete-all-data';
@@ -38,22 +38,22 @@ export const initSettings = async (
 
   await app.init();
 
-  const databaseConnection = app.get<Connection>(getConnectionToken());
+  // const databaseConnection = app.get<Connection>(getConnectionToken());
   const httpServer = app.getHttpServer();
-  const userTestManger = new UsersTestManager(app);
+  // const userTestManger = new UsersTestManager(app);
   const blogsTestManager = new BlogsTestManager(app);
-  const postsTestManager = new PostsTestManager(app);
-  const devicesTestManager = new DevicesTestManager(app);
+  // const postsTestManager = new PostsTestManager(app);
+  // const devicesTestManager = new DevicesTestManager(app);
 
   await deleteAllData(app);
 
   return {
     app,
-    databaseConnection,
+    // databaseConnection,
     httpServer,
-    userTestManger,
+    // userTestManger,
     blogsTestManager,
-    postsTestManager,
-    devicesTestManager,
+    // postsTestManager,
+    // devicesTestManager,
   };
 };

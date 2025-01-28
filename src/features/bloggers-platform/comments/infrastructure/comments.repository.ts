@@ -1,6 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { CommentDocument, CommentEntity, CommentModelType } from '../domain/comment.entity';
 import { ResultObject, ResultStatus } from 'src/core/dto/result-object.dto';
 import { DataSource } from 'typeorm';
 import { InjectDataSource } from '@nestjs/typeorm';
@@ -10,11 +8,10 @@ import { UserJwtPayloadDto } from 'src/features/user-accounts/dto/user-jwt-paylo
 @Injectable()
 export class CommentsRepository {
   constructor(
-    @InjectModel(CommentEntity.name) private CommentModel: CommentModelType,
     @InjectDataSource() private dataSource: DataSource,
   ) {}
 
-  async findCommentById(commentId: string, userId?: string): Promise<ResultObject<CommentDocument | null>> {
+  async findCommentById(commentId: string, userId?: string): Promise<ResultObject<any | null>> {
     const query = `
     SELECT * FROM comments WHERE id = $1 AND deleted_at IS NULL
     `;

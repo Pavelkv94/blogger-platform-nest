@@ -1,8 +1,6 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { InjectModel } from '@nestjs/mongoose';
 import { LikeStatus } from '../../dto/like-status.dto';
 import { LikesRepository } from '../../infrastructure/likes.repository';
-import { LikeEntity, LikeModelType } from '../../domain/like.entity';
 import { NotFoundDomainException } from 'src/core/exeptions/domain-exceptions';
 import { UsersRepository } from 'src/features/user-accounts/infrastructure/users/users.repository';
 import { LikeParent } from '../../dto/like-parent.dto';
@@ -21,7 +19,6 @@ export class CreateLikeUseCase implements ICommandHandler<CreateLikeCommand> {
   constructor(
     private readonly likesRepository: LikesRepository,
     private readonly usersRepository: UsersRepository,
-    @InjectModel(LikeEntity.name) private LikeModel: LikeModelType,
   ) {}
 
   async execute(command: CreateLikeCommand): Promise<void> {

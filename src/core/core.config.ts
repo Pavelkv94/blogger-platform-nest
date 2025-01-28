@@ -32,6 +32,27 @@ export class CoreConfig {
   })
   dbName: string = this.configService.get('DB_NAME');
 
+  @IsNotEmpty({
+    message: 'Set Env variable DB_HOST, example: localhost',
+  })
+  dbHost: string = this.configService.get('DB_HOST');
+
+  @IsNotEmpty({
+    message: 'Set Env variable DB_PORT, example: 5432',
+  })
+  dbPort: number = Number(this.configService.get('DB_PORT'));
+
+
+  @IsNotEmpty({
+    message: 'Set Env variable DB_USERNAME, example: admin',
+  })
+  dbUsername: string = this.configService.get('DB_USERNAME');
+
+  @IsNotEmpty({
+    message: 'Set Env variable DB_PASSWORD, example: admin',
+  })
+  dbPassword: string = this.configService.get('DB_PASSWORD');
+
   @IsEnum(Environments, {
     message: 'Ser correct NODE_ENV value, available values: ' + configValidationUtility.getEnumValues(Environments).join(', '),
   })

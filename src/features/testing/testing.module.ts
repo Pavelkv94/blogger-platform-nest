@@ -1,13 +1,13 @@
 import { DynamicModule, Module } from '@nestjs/common';
 import { TestingController } from './testing.controller';
-import { MongooseModule } from '@nestjs/mongoose';
-import { BlogEntity, BlogSchema } from '../bloggers-platform/blogs/domain/blog.entity';
-import { PostEntity, PostSchema } from '../bloggers-platform/posts/domain/post.entity';
-import { CommentEntity } from '../bloggers-platform/comments/domain/comment.entity';
-import { CommentSchema } from '../bloggers-platform/comments/domain/comment.entity';
-import { LikeEntity, LikeSchema } from '../bloggers-platform/likes/domain/like.entity';
-import { UserEntity, UserSchema } from '../user-accounts/domain/user/user.entity';
-import { SecurityDeviceEntity, SecurityDeviceSchema } from '../user-accounts/domain/security-device/security-devices.schema';
+// import { MongooseModule } from '@nestjs/mongoose';
+// import { BlogEntity, BlogSchema } from '../bloggers-platform/blogs/domain/blog.entity';
+// import { PostEntity, PostSchema } from '../bloggers-platform/posts/domain/post.entity';
+// import { CommentEntity } from '../bloggers-platform/comments/domain/comment.entity';
+// import { CommentSchema } from '../bloggers-platform/comments/domain/comment.entity';
+// import { LikeEntity, LikeSchema } from '../bloggers-platform/likes/domain/like.entity';
+// import { UserEntity, UserSchema } from '../user-accounts/domain/user/user.entity';
+// import { SecurityDeviceEntity, SecurityDeviceSchema } from '../user-accounts/domain/security-device/security-devices.schema';
 // import { CoreConfig } from 'src/core/core.config';
 
 @Module({
@@ -60,15 +60,15 @@ export class TestingModule {
       return {
         module: TestingModule,
         imports: [
-          MongooseModule.forFeature([
-            { name: UserEntity.name, schema: UserSchema },
-            { name: BlogEntity.name, schema: BlogSchema },
-            { name: PostEntity.name, schema: PostSchema },
-            { name: CommentEntity.name, schema: CommentSchema },
-            { name: LikeEntity.name, schema: LikeSchema },
-            { name: SecurityDeviceEntity.name, schema: SecurityDeviceSchema },
+          // MongooseModule.forFeature([
+          //   { name: UserEntity.name, schema: UserSchema },
+          //   { name: BlogEntity.name, schema: BlogSchema },
+          //   { name: PostEntity.name, schema: PostSchema },
+          //   { name: CommentEntity.name, schema: CommentSchema },
+          //   { name: LikeEntity.name, schema: LikeSchema },
+          //   { name: SecurityDeviceEntity.name, schema: SecurityDeviceSchema },
 
-          ]),
+          // ]),
         ],
         controllers: [TestingController],
       };

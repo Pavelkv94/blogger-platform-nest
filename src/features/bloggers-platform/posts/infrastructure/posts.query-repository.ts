@@ -1,23 +1,14 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { PostEntity } from '../domain/post.entity';
 import { GetPostsQueryParams } from '../dto/get-posts-query-params.input-dto';
 import { PostViewDto } from '../dto/post-view.dto';
 import { PaginatedPostViewDto } from 'src/core/dto/base.paginated.view-dto';
 import { NotFoundDomainException } from 'src/core/exeptions/domain-exceptions';
-import { LikeEntity, LikeModelType } from '../../likes/domain/like.entity';
 import { DataSource } from 'typeorm';
 import { InjectDataSource } from '@nestjs/typeorm';
 
 @Injectable()
 export class PostsQueryRepository {
-  constructor(
-    @InjectModel(PostEntity.name)
-    private readonly postModel: Model<PostEntity>,
-    @InjectModel(LikeEntity.name) private LikeModel: LikeModelType,
-    @InjectDataSource() private datasourse: DataSource,
-  ) {}
+  constructor(@InjectDataSource() private datasourse: DataSource) {}
 
   async findAllPosts(queryData: GetPostsQueryParams, userId: string | null, blog_id?: string): Promise<PaginatedPostViewDto> {
     const { sortBy, sortDirection, pageNumber, pageSize } = queryData;

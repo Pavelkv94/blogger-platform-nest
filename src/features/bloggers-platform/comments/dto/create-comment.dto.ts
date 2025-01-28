@@ -3,7 +3,7 @@ import { IsString } from 'class-validator';
 import { Length } from 'class-validator';
 import { commentContentConstraints } from '../domain/comment.entity';
 import { IsNotEmptyString } from 'src/core/decorators/validation/IsNotEmptyString';
-import { UserDocument } from 'src/features/user-accounts/domain/user/user.entity';
+// import { UserDocument } from 'src/features/user-accounts/domain/user/user.entity';
 
 export class CreateCommentUriParams {
   @ApiProperty({ example: 'Post ID', description: 'ID of the post' })
@@ -21,5 +21,5 @@ export class CreateCommentInputDto {
 export class CreateCommentDto {
   content: string;
   postId: string;
-  user: UserDocument;
+  user: any;
 }

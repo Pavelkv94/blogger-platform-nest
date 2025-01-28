@@ -1,11 +1,11 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { LikeStatus } from '../../dto/like-status.dto';
 import { LikesRepository } from '../../infrastructure/likes.repository';
-import { LikeDocument } from '../../domain/like.entity';
+// import { LikeDocument } from '../../domain/like.entity';
 
 export class UpdateLikeCommand {
   constructor(
-    public readonly like: LikeDocument,
+    public readonly like: any,
     public readonly newStatus: LikeStatus,
   ) {}
 }

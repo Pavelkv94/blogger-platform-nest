@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { LikeDocument, LikeEntity, LikeModelType } from '../domain/like.entity';
+// import { LikeDocument, LikeEntity, LikeModelType } from '../domain/like.entity';
 import { DataSource } from 'typeorm';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { LikeStatus } from '../dto/like-status.dto';
@@ -9,7 +9,7 @@ import { LikeParent } from '../dto/like-parent.dto';
 export class LikesRepository {
   constructor(@InjectDataSource() private dataSource: DataSource) {}
 
-  async findLike(userId: string, parent_id: string): Promise<LikeDocument | null> {
+  async findLike(userId: string, parent_id: string): Promise<any | null> {
     const query = `
       SELECT * FROM likes
       WHERE user_id = $1 AND parent_id = $2
