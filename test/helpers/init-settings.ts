@@ -2,24 +2,34 @@
 import { Test, TestingModuleBuilder } from '@nestjs/testing';
 // import { Connection } from 'mongoose';
 import { AppModule } from '../../src/app.module';
-import { UsersTestManager } from './users-test-manager';
 import { deleteAllData } from './delete-all-data';
 import { EmailService } from '../../src/features/notifications/email.service';
 import { EmailServiceMock } from '../mock/email-service.mock';
 import { configApp } from 'src/setup/app.setup';
 import { CoreConfig } from 'src/core/core.config';
-import { BlogsTestManager } from './blogs-test-manager';
-import { PostsTestManager } from './posts-test-manager';
-import { DevicesTestManager } from './devices-test-manager';
+
+import { TypeOrmModule } from '@nestjs/typeorm';
 
 export const initSettings = async (
   //передаем callback, который получает ModuleBuilder, если хотим изменить настройку тестового модуля
   addSettingsToModuleBuilder?: (moduleBuilder: TestingModuleBuilder) => void,
 ) => {
-  // const dynamicAppModule = await initAppModule();
 
   const testingModuleBuilder: TestingModuleBuilder = Test.createTestingModule({
-    imports: [AppModule],
+    imports: [AppModule, TypeOrmModule.forRootAsync({
+      useFactory: (coreConfig: CoreConfig) => ({
+        type: 'postgres',
+        host: coreConfig.dbHost, // Адрес вашего сервера PostgreSQL
+        port: coreConfig.dbPort, // Порт по умолчанию
+        username: coreConfig.dbUsername, // Ваше имя пользователя
+        password: coreConfig.dbPassword, // Ваш пароль
+        database: coreConfig.dbName, // Имя вашей базы данных
+        entities: [], // Здесь укажите ваши сущности
+        autoLoadEntities: true, // Не загружать сущности автоматически - можно true для разработки
+        synchronize: true, // Для разработки, включите, чтобы синхронизировать с базой данных - можно true для разработки
+      }),
+      inject: [CoreConfig],
+    }),],
   })
 
     .overrideProvider(EmailService)
@@ -41,7 +51,7 @@ export const initSettings = async (
   // const databaseConnection = app.get<Connection>(getConnectionToken());
   const httpServer = app.getHttpServer();
   // const userTestManger = new UsersTestManager(app);
-  const blogsTestManager = new BlogsTestManager(app);
+  // const blogsTestManager = new BlogsTestManager(app);
   // const postsTestManager = new PostsTestManager(app);
   // const devicesTestManager = new DevicesTestManager(app);
 
@@ -52,7 +62,7 @@ export const initSettings = async (
     // databaseConnection,
     httpServer,
     // userTestManger,
-    blogsTestManager,
+    // blogsTestManager,
     // postsTestManager,
     // devicesTestManager,
   };

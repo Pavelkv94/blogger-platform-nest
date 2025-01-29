@@ -22,7 +22,7 @@ describe('users', () => {
       ),
     );
     app = result.app;
-    userTestManger = result.userTestManger;
+    // userTestManger = result.userTestManger;
   });
 
   afterAll(async () => {

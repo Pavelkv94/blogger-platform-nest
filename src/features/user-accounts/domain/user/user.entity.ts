@@ -1,16 +1,8 @@
-// import { HydratedDocument, Model } from 'mongoose';
-// import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-// import { DeletionStatus } from 'src/core/dto/deletion-status';
-// import { randomUUID } from 'crypto';
-// import { getExpirationDate } from 'src/core/utils/date/getExpirationDate';
-// import { EmailConfirmationSchema } from './email-confirmation.schema';
-// import { EmailConfirmation } from './email-confirmation.schema';
-// import { RecoveryConfirmationSchema } from './recovery-confirmation.schema';
-// import { RecoveryConfirmation } from './recovery-confirmation.schema';
-
-import { Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Entity, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 
 import { Column } from "typeorm";
+import { Profile } from "./profile.entity";
+import { Wallet } from "./wallet.entity";
 
 export const loginConstraints = {
   minLength: 3,
@@ -24,8 +16,14 @@ export class User {
 
   @Column()
   login: string;
-}
 
+  //* не обязательное поле, для того чтобы понимать что пользователь связан с профилем
+  @OneToOne(() => Profile, (profile) => profile.user)
+  profile: Profile;
+
+  @OneToMany(() => Wallet, (wallet) => wallet.owner)
+  wallets: Wallet[];
+}
 
 
 //   @Prop({ type: String, required: true, unique: true })

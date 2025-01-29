@@ -30,6 +30,10 @@ import { UpdateSecurityDeviceUseCase } from './application/usecases/security-dev
 import { DeleteSecurityDeviceUseCase } from './application/usecases/security-devices/delete-device.usecase';
 import { DeleteOtherSecurityDevicesUseCase } from './application/usecases/security-devices/delete-devices.usecase';
 import { AuthRepository } from './infrastructure/auth/auth.repository';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { User } from './domain/user/user.entity';
+import { Profile } from './domain/user/profile.entity';
+import { Wallet } from './domain/user/wallet.entity';
 
 const adapters = [BcryptService];
 
@@ -69,6 +73,7 @@ const useCases = [
       }),
       inject: [CoreConfig],
     }),
+    TypeOrmModule.forFeature([User, Profile, Wallet]),
     NotificationsModule,
     CqrsModule,
   ],
