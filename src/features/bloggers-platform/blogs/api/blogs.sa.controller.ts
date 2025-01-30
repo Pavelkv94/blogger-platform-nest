@@ -23,7 +23,7 @@ import { CreatePostCommand } from '../../posts/application/usecases/create-post.
 import { BasicAuthGuard } from 'src/core/guards/basic-auth.guard';
 import { JwtOptionalAuthGuard } from 'src/core/guards/jwt-optional-auth.guard';
 import { ExtractAnyUserFromRequest } from 'src/core/decorators/param/extract-user-from-request';
-import { UserJwtPayloadDto } from 'src/features/user-accounts/dto/user-jwt-payload.dto';
+import { UserJwtPayloadDto } from 'src/features/user-accounts/dto/users/user-jwt-payload.dto';
 import { DeletePostCommand } from '../../posts/application/usecases/delete-post.usecase';
 import { UpdatePostCommand } from '../../posts/application/usecases/update-post.usecase';
 import { UpdateBlogPostDto } from '../../posts/dto/post-update.dto';

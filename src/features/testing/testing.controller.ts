@@ -12,21 +12,27 @@ export class TestingController {
   @Delete('all-data')
   @HttpCode(204)
   async removeAll() {
-    const query = `
-    DELETE FROM confirmation_email;
-    DELETE FROM password_recovery;
-    DELETE FROM security_devices;
+    const createFunctionQuery = `
+  CREATE OR REPLACE FUNCTION truncate_tables(username IN VARCHAR) RETURNS void AS $$
+DECLARE
+    statements CURSOR FOR
+        SELECT tablename FROM pg_tables
+        WHERE tableowner = username AND schemaname = 'public';
+BEGIN
+    FOR stmt IN statements LOOP
+        EXECUTE 'TRUNCATE TABLE ' || quote_ident(stmt.tablename) || ' CASCADE;';
+    END LOOP;
+END;
+$$ LANGUAGE plpgsql;
 
-    DELETE FROM likes;
+`;
 
-    DELETE FROM comments;
-    DELETE FROM posts;
-    DELETE FROM blogs;
+    const callFunctionQuery = `
+SELECT truncate_tables($1);
+`;
 
-    DELETE FROM users; 
+    await this.datasourse.query(createFunctionQuery);
 
-  `;
-
-    await this.datasourse.query(query);
+    await this.datasourse.query(callFunctionQuery, ['admin']);
   }
 }

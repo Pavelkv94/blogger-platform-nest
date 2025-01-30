@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 // import { SecurityDeviceDocument } from '../../domain/security-device/security-devices.schema';
-import { UserJwtPayloadDto } from '../../dto/user-jwt-payload.dto';
+import { UserJwtPayloadDto } from '../../dto/users/user-jwt-payload.dto';
 import { DataSource } from 'typeorm';
 
 @Injectable()

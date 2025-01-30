@@ -1,6 +1,6 @@
 import { Inject } from '@nestjs/common';
 import { CommandBus, CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { RegistrationInputDto } from '../../dto/create-user.dto';
+import { RegistrationInputDto } from '../../dto/users/create-user.dto';
 import { BadRequestDomainException, NotFoundDomainException } from 'src/core/exeptions/domain-exceptions';
 import { EmailService } from 'src/features/notifications/email.service';
 import { CreateUserCommand } from './users/create-user.usecase';

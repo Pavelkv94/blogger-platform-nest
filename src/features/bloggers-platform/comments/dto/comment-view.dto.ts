@@ -19,7 +19,7 @@ export class CommentViewDto {
   constructor(model: any) {
     this.id = model.id.toString();
     this.content = model.content;
-    this.createdAt = model.created_at;
+    this.createdAt = model.createdAt;
     this.commentatorInfo = {
       userId: model.commentator_id.toString(),
       userLogin: model.commentator_login,

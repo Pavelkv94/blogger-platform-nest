@@ -21,7 +21,7 @@ export class BlogViewDto {
     this.description = model.description;
     this.websiteUrl = model.website_url;
     this.isMembership = model.is_membership;
-    this.createdAt = model.created_at;
+    this.createdAt = model.createdAt;
   }
 
   static mapToView(blog: BlogDocument): BlogViewDto {

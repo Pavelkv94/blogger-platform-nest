@@ -8,7 +8,7 @@ import { SecurityDevicesQueryRepository } from '../infrastructure/security-devic
 import { DeviceViewDto } from '../dto/security-devices/device-view.dto';
 import { JwtRefreshAuthPassportGuard } from 'src/core/guards/passport/jwt-refresh-passport.guard';
 import { ExtractUserFromRequest } from 'src/core/decorators/param/extract-user-from-request';
-import { UserJwtPayloadDto } from '../dto/user-jwt-payload.dto';
+import { UserJwtPayloadDto } from '../dto/users/user-jwt-payload.dto';
 import { DeleteSecurityDeviceCommand } from '../application/usecases/security-devices/delete-device.usecase';
 import { DeleteOtherSecurityDevicesCommand } from '../application/usecases/security-devices/delete-devices.usecase';
 

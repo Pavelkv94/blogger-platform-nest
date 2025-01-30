@@ -5,7 +5,7 @@ import { UsersRepository } from 'src/features/user-accounts/infrastructure/users
 import { CoreConfig } from 'src/core/core.config';
 import { UnauthorizedDomainException } from 'src/core/exeptions/domain-exceptions';
 import { SecurityDevicesRepository } from 'src/features/user-accounts/infrastructure/security-devices/security-devices.repository';
-import { UserJwtPayloadDto } from 'src/features/user-accounts/dto/user-jwt-payload.dto';
+import { UserJwtPayloadDto } from 'src/features/user-accounts/dto/users/user-jwt-payload.dto';
 
 @Injectable()
 export class JwtRefreshAuthPassportStrategy extends PassportStrategy(Strategy, 'jwt-refresh') {

@@ -7,7 +7,7 @@ import { SwaggerAuthStatus } from 'src/core/decorators/swagger/swagger-options';
 import { DeleteCommentCommand } from '../application/usecases/delete-comment.usecase';
 import { CommandBus } from '@nestjs/cqrs';
 import { ExtractAnyUserFromRequest, ExtractUserFromRequest } from 'src/core/decorators/param/extract-user-from-request';
-import { UserJwtPayloadDto } from 'src/features/user-accounts/dto/user-jwt-payload.dto';
+import { UserJwtPayloadDto } from 'src/features/user-accounts/dto/users/user-jwt-payload.dto';
 import { UpdateCommentInputDto } from '../dto/update-comment.dto';
 import { UpdateCommentCommand } from '../application/usecases/update-comment.usecase';
 import { SwaggerPut } from 'src/core/decorators/swagger/swagger-put';

@@ -1,7 +1,7 @@
 import { Inject } from '@nestjs/common';
 import { CommandBus, CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { JwtService } from '@nestjs/jwt';
-import { LoginTransferDto } from 'src/features/user-accounts/dto/login-user.dto';
+import { LoginTransferDto } from 'src/features/user-accounts/dto/users/login-user.dto';
 import { AddSecurityDeviceCommand } from '../security-devices/add-device.usecase';
 import { CoreConfig } from 'src/core/core.config';
 

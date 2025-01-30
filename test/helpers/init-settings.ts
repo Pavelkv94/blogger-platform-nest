@@ -9,6 +9,7 @@ import { configApp } from 'src/setup/app.setup';
 import { CoreConfig } from 'src/core/core.config';
 
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { UsersTestManager } from './users-test-manager';
 
 export const initSettings = async (
   //передаем callback, который получает ModuleBuilder, если хотим изменить настройку тестового модуля
@@ -50,7 +51,7 @@ export const initSettings = async (
 
   // const databaseConnection = app.get<Connection>(getConnectionToken());
   const httpServer = app.getHttpServer();
-  // const userTestManger = new UsersTestManager(app);
+  const userTestManger = new UsersTestManager(app);
   // const blogsTestManager = new BlogsTestManager(app);
   // const postsTestManager = new PostsTestManager(app);
   // const devicesTestManager = new DevicesTestManager(app);
@@ -61,7 +62,7 @@ export const initSettings = async (
     app,
     // databaseConnection,
     httpServer,
-    // userTestManger,
+    userTestManger,
     // blogsTestManager,
     // postsTestManager,
     // devicesTestManager,

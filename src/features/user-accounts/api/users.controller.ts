@@ -1,7 +1,7 @@
 import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, Query, UseGuards } from '@nestjs/common';
-import { CreateUserDto } from '../dto/create-user.dto';
-import { GetUsersQueryParams } from '../dto/get-users-query-params.input-dto';
-import { BaseUserViewDto } from '../dto/user-view.dto';
+import { CreateUserDto } from '../dto/users/create-user.dto';
+import { GetUsersQueryParams } from '../dto/users/get-users-query-params.input-dto';
+import { BaseUserViewDto } from '../dto/users/user-view.dto';
 import { PaginatedUserViewDto } from 'src/core/dto/base.paginated.view-dto';
 import { ApiBasicAuth, ApiTags } from '@nestjs/swagger';
 import { BasicAuthGuard } from 'src/core/guards/basic-auth.guard';
@@ -33,7 +33,7 @@ export class UsersController {
   }
 
   @SwaggerPostCreate('Create a new user', BaseUserViewDto, SwaggerAuthStatus.WithAuth)
-  @ApiBasicAuth()
+  @ApiBasicAuth() //swagger
   @Post()
   @HttpCode(HttpStatus.CREATED)
   async createUser(@Body() body: CreateUserDto) {

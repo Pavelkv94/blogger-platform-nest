@@ -1,8 +1,8 @@
-import { Entity, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Entity, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 
-import { Column } from "typeorm";
-import { Profile } from "./profile.entity";
-import { Wallet } from "./wallet.entity";
+import { Column } from 'typeorm';
+import { EmailConfirmation } from './email-confirmation.entity';
+import { RecoveryConfirmation } from './recovery-confirmation.entity';
 
 export const loginConstraints = {
   minLength: 3,
@@ -10,21 +10,47 @@ export const loginConstraints = {
 };
 
 @Entity()
+//@Unique(['login', 'email']) //todo  2 колонки уникальные
 export class User {
   @PrimaryGeneratedColumn()
-  id: string;
+  id: number;
 
-  @Column()
+  @Column({ unique: true })
   login: string;
 
-  //* не обязательное поле, для того чтобы понимать что пользователь связан с профилем
-  @OneToOne(() => Profile, (profile) => profile.user)
-  profile: Profile;
+  @Column({ unique: true })
+  email: string;
 
-  @OneToMany(() => Wallet, (wallet) => wallet.owner)
-  wallets: Wallet[];
+  @Column()
+  password: string;
+
+  @Column({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
+  createdAt: Date;
+
+  @Column({ type: 'timestamptz', nullable: true })
+  deletedAt: Date;
+
+  @OneToOne(() => EmailConfirmation, (emailConfirmation) => emailConfirmation.user)
+  emailConfirmation: EmailConfirmation;
+
+  @OneToOne(() => RecoveryConfirmation, (recoveryConfirmation) => recoveryConfirmation.user)
+  recoveryConfirmation: RecoveryConfirmation;
+
+
+  static buildInstance(login: string, email: string, passwordHash: string): User {
+    const user = new this();
+    user.login = login;
+    user.email = email;
+    user.password = passwordHash;
+    return user;
+  }
+
+  markDeleted() {
+    this.deletedAt = new Date();
+  }
+  // @OneToMany(() => Wallet, (wallet) => wallet.owner)
+  // wallets: Wallet[];
 }
-
 
 //   @Prop({ type: String, required: true, unique: true })
 //   email: string;

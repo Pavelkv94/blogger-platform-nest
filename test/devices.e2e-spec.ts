@@ -3,7 +3,7 @@ import { initSettings } from './helpers/init-settings';
 import { JwtService } from '@nestjs/jwt';
 import { deleteAllData } from './helpers/delete-all-data';
 import { DevicesTestManager } from './helpers/devices-test-manager';
-import { CreateUserDto } from 'src/features/user-accounts/dto/create-user.dto';
+import { CreateUserDto } from 'src/features/user-accounts/dto/users/create-user.dto';
 import { UsersTestManager } from './helpers/users-test-manager';
 
 describe('devices', () => {

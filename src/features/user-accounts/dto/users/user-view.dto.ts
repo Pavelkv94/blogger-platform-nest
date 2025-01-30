@@ -15,7 +15,7 @@ export class BaseUserViewDto {
     this.id = model.id.toString();
     this.login = model.login;
     this.email = model.email;
-    this.createdAt = model.created_at;
+    this.createdAt = model.createdAt;
   }
 
   static mapToView(user: any): BaseUserViewDto {

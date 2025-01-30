@@ -1,7 +1,7 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { CreateCommentInputDto } from '../../dto/create-comment.dto';
 import { PostsRepository } from 'src/features/bloggers-platform/posts/infrastructure/posts.repository';
-import { UserJwtPayloadDto } from 'src/features/user-accounts/dto/user-jwt-payload.dto';
+import { UserJwtPayloadDto } from 'src/features/user-accounts/dto/users/user-jwt-payload.dto';
 import { NotFoundDomainException } from 'src/core/exeptions/domain-exceptions';
 import { CommentsRepository } from '../../infrastructure/comments.repository';
 import { UsersRepository } from 'src/features/user-accounts/infrastructure/users/users.repository';

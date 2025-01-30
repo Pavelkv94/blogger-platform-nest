@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEmail, IsString, Length } from 'class-validator';
 import { Trim } from 'src/core/decorators/transform/trim';
-import { loginConstraints } from '../domain/user/user.entity';
+import { loginConstraints } from '../../domain/user/user.entity';
 
 export class CreateUserDto {
   @ApiProperty({ example: 'login' })

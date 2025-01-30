@@ -13,7 +13,7 @@ import { CreatePostCommand } from '../application/usecases/create-post.usecase';
 import { UpdatePostCommand } from '../application/usecases/update-post.usecase';
 import { DeletePostCommand } from '../application/usecases/delete-post.usecase';
 import { BasicAuthGuard } from 'src/core/guards/basic-auth.guard';
-import { UserJwtPayloadDto } from 'src/features/user-accounts/dto/user-jwt-payload.dto';
+import { UserJwtPayloadDto } from 'src/features/user-accounts/dto/users/user-jwt-payload.dto';
 import { ExtractAnyUserFromRequest } from 'src/core/decorators/param/extract-user-from-request';
 import { JwtOptionalAuthGuard } from 'src/core/guards/jwt-optional-auth.guard';
 import { SwaggerPostCreate } from 'src/core/decorators/swagger/swagger-post';

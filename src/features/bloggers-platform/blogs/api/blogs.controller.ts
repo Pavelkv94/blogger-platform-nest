@@ -9,7 +9,7 @@ import { SwaggerAuthStatus } from 'src/core/decorators/swagger/swagger-options';
 import { SwaggerGet, SwaggerGetWith404 } from 'src/core/decorators/swagger/swagger-get';
 import { JwtOptionalAuthGuard } from 'src/core/guards/jwt-optional-auth.guard';
 import { ExtractAnyUserFromRequest } from 'src/core/decorators/param/extract-user-from-request';
-import { UserJwtPayloadDto } from 'src/features/user-accounts/dto/user-jwt-payload.dto';
+import { UserJwtPayloadDto } from 'src/features/user-accounts/dto/users/user-jwt-payload.dto';
 import { ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Blogs') //swagger

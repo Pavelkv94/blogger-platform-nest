@@ -1,8 +1,9 @@
-import { CreateUserDto } from '../../../dto/create-user.dto';
+import { CreateUserDto } from '../../../dto/users/create-user.dto';
 import { BadRequestDomainException } from 'src/core/exeptions/domain-exceptions';
 import { BcryptService } from '../../bcrypt.service';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { UsersRepository } from 'src/features/user-accounts/infrastructure/users/users.repository';
+import { User } from 'src/features/user-accounts/domain/user/user.entity';
 
 export class CreateUserCommand {
   constructor(public readonly payload: CreateUserDto) {}
@@ -28,8 +29,10 @@ export class CreateUserUseCase implements ICommandHandler<CreateUserCommand> {
     }
 
     const passwordhash = await this.bcryptService.generateHash(command.payload.password);
-    const newUserId = await this.usersRepository.createUser(command.payload.login, command.payload.email, passwordhash);
 
-    return newUserId;
+    const user = User.buildInstance(command.payload.login, command.payload.email, passwordhash);
+
+    const newUserId = await this.usersRepository.createUser(user);
+    return newUserId.toString();
   }
 }

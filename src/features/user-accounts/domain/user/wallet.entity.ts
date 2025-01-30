@@ -1,27 +1,27 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
-import { User } from './user.entity';
+// import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+// import { User } from './user.entity';
 
-type Currency = 'USD' | 'EUR' | 'GBP';
-@Entity()
-export class Wallet {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
+// type Currency = 'USD' | 'EUR' | 'GBP';
+// @Entity()
+// export class Wallet {
+//   @PrimaryGeneratedColumn('uuid')
+//   id: string;
 
-  @Column()
-  title: string;
+//   @Column()
+//   title: string;
 
-  @Column()
-  currency: Currency;
+//   @Column()
+//   currency: Currency;
 
-  @Column()
-  balance: number;
+//   @Column()
+//   balance: number;
 
-  @Column()
-  ownerId: number;
+//   @Column()
+//   ownerId: number;
 
-  @ManyToOne(() => User, (user) => user.wallets)
-  owner: User;
+//   @ManyToOne(() => User, (user) => user.wallets)
+//   owner: User;
 
-  @Column()
-  addedAt: Date;
-}
+//   @Column()
+//   addedAt: Date;
+// }

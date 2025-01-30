@@ -1,31 +1,46 @@
 import { Injectable } from '@nestjs/common';
-import { DataSource } from 'typeorm';
-import { InjectDataSource } from '@nestjs/typeorm';
-import { BaseUserViewDto, FullUserViewDto, UserViewDtoWithConfirmation, UserViewDtoWithRecovery } from '../../dto/user-view.dto';
-import { randomUUID } from 'crypto';
-import { getExpirationDate } from 'src/core/utils/date/getExpirationDate';
+import { DataSource, EntityManager, IsNull, Repository } from 'typeorm';
+import { InjectDataSource, InjectEntityManager, InjectRepository } from '@nestjs/typeorm';
+import { BaseUserViewDto, UserViewDtoWithConfirmation, UserViewDtoWithRecovery } from '../../dto/users/user-view.dto';
+import { User } from '../../domain/user/user.entity';
+import { EmailConfirmation } from '../../domain/user/email-confirmation.entity';
+import { RecoveryConfirmation } from '../../domain/user/recovery-confirmation.entity';
 
 @Injectable()
 export class UsersRepository {
-  constructor(@InjectDataSource() private datasourse: DataSource) {}
+  constructor(
+    @InjectDataSource() private datasourse: DataSource,
+    @InjectRepository(User) private userRepositoryTypeOrm: Repository<User>,
+    @InjectRepository(EmailConfirmation) private emailConfirmationRepositoryTypeOrm: Repository<EmailConfirmation>,
+    @InjectRepository(RecoveryConfirmation) private recoveryConfirmationRepositoryTypeOrm: Repository<RecoveryConfirmation>,
+    @InjectEntityManager() private readonly entityManager: EntityManager,
+  ) {}
 
-  async findUserById(id: string): Promise<any | null> {
-    const query = `
-    SELECT u.*, ce.*, pr.*
-	  FROM users u
-	  LEFT JOIN confirmation_email ce
-	  ON u.id = ce.user_id
-	  LEFT JOIN password_recovery pr
-	  ON u.id = pr.user_id
-	  WHERE u.deleted_at IS NULL AND id = $1
-    `;
-    const users = await this.datasourse.query(query, [id]);
+  async findUserById(id: string): Promise<User | null> {
+    const user = await this.userRepositoryTypeOrm.findOne({ where: { id: Number(id), deletedAt: IsNull() }, relations: ['emailConfirmation', 'recoveryConfirmation'] });
 
-    if (!users.length || !id) {
+    if (!user) {
       return null;
     }
-    //?json_build_object may use
-    return FullUserViewDto.mapToView(users[0]);
+
+    return user;
+
+    // const query = `
+    // SELECT u.*, ce.*, pr.*
+    // FROM users u
+    // LEFT JOIN confirmation_email ce
+    // ON u.id = ce.user_id
+    // LEFT JOIN password_recovery pr
+    // ON u.id = pr.user_id
+    // WHERE u.deleted_at IS NULL AND id = $1
+    // `;
+    // const users = await this.datasourse.query(query, [id]);
+
+    // if (!users.length || !id) {
+    //   return null;
+    // }
+    // //?json_build_object may use
+    // return FullUserViewDto.mapToView(users[0]);
   }
 
   async findUserByLoginOrEmail(loginOrEmail: string): Promise<any | null> {
@@ -43,29 +58,34 @@ export class UsersRepository {
     return users[0];
   }
 
-  async createUser(login: string, email: string, passwordhash: string): Promise<string> {
-    const confirmationCode = randomUUID();
-    const expirationDate = getExpirationDate(30);
+  // async createUser(user: User): Promise<number> {
+  //   const result = await this.userRepositoryTypeOrm.save(user);
+  //   return result.id;
+  // }
 
-    const query = `
-    INSERT INTO users (login, email, password) VALUES ($1, $2, $3) RETURNING id
-    `;
+  async createEmailConfirmation(emailConfirmation: EmailConfirmation): Promise<EmailConfirmation> {
+    return await this.emailConfirmationRepositoryTypeOrm.save(emailConfirmation);
+  }
 
-    const newUser = await this.datasourse.query(query, [login, email, passwordhash]); // insert user
-    // const users = await this.datasourse.query(`SELECT * FROM users WHERE login = $1`, [login]); // select user
-    await this.datasourse.query(
-      `
-      INSERT INTO confirmation_email (user_id, confirmation_code, confirmation_expiration_date) 
-      VALUES ($1, $2, $3)`,
-      [newUser[0].id, confirmationCode, expirationDate],
-    );
-    await this.datasourse.query(
-      `INSERT INTO password_recovery (user_id) 
-      VALUES ($1)`,
-      [newUser[0].id],
-    );
+  async createRecoveryConfirmation(recoveryConfirmation: RecoveryConfirmation): Promise<RecoveryConfirmation> {
+    return await this.recoveryConfirmationRepositoryTypeOrm.save(recoveryConfirmation);
+  }
 
-    return newUser[0].id;
+  async save(entity: any): Promise<any> {
+    return await this.entityManager.save(entity);
+  }
+  async createUser(user: User): Promise<number> {
+    //* transaction for create user, emailConfirmation and recoveryConfirmation
+    return await this.entityManager.transaction(async (transactionalEntityManager) => {
+      const newUser = await transactionalEntityManager.save(User, user);
+      const emailConfirmation = EmailConfirmation.buildInstance(newUser.id);
+      await transactionalEntityManager.save(EmailConfirmation, emailConfirmation);
+
+      const recoveryConfirmation = RecoveryConfirmation.buildInstance(newUser.id);
+      await transactionalEntityManager.save(RecoveryConfirmation, recoveryConfirmation);
+
+      return newUser.id;
+    });
   }
 
   async deleteUser(id: string) {
@@ -73,29 +93,39 @@ export class UsersRepository {
   }
 
   async findUserByLogin(login: string): Promise<boolean> {
-    const query = `
-    SELECT * FROM users 
-    WHERE deleted_at IS NULL AND login = $1
-    `;
+    const user = await this.userRepositoryTypeOrm.findOne({ where: { login } });
+    return !!user;
 
-    const users = await this.datasourse.query(query, [login]);
+    // const query = `
+    // SELECT * FROM users
+    // WHERE deleted_at IS NULL AND login = $1
+    // `;
 
-    return !!users.length;
+    // const users = await this.datasourse.query(query, [login]);
+
+    // return !!users.length;
   }
 
   async findUserByEmail(email: string): Promise<any | null> {
-    const query = `
-    SELECT * FROM users 
-    WHERE deleted_at IS NULL AND email = $1
-    `;
-
-    const users = await this.datasourse.query(query, [email]);
-
-    if (!users.length || !email) {
+    const user = await this.userRepositoryTypeOrm.findOne({ where: { email } });
+    if (!user) {
       return null;
     }
 
-    return BaseUserViewDto.mapToView(users[0]);
+    return BaseUserViewDto.mapToView(user);
+
+    // const query = `
+    // SELECT * FROM users
+    // WHERE deleted_at IS NULL AND email = $1
+    // `;
+
+    //const users = await this.datasourse.query(query, [email]);
+
+    // if (!users.length || !email) {
+    //   return null;
+    // }
+
+    // return BaseUserViewDto.mapToView(users[0]);
   }
 
   async findUserByEmailWithConfirmation(email: string): Promise<UserViewDtoWithConfirmation | null> {

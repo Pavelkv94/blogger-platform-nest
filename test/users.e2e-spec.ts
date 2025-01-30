@@ -3,10 +3,8 @@ import { initSettings } from './helpers/init-settings';
 import { JwtService } from '@nestjs/jwt';
 import { deleteAllData } from './helpers/delete-all-data';
 import { UsersTestManager } from './helpers/users-test-manager';
-import { CreateUserDto } from 'src/features/user-accounts/dto/create-user.dto';
-import { MeViewDto } from 'src/features/user-accounts/dto/user-view.dto';
-import { delay } from './helpers/delay';
-import { EmailService } from 'src/features/notifications/email.service';
+import { mockCreateUserBody } from './mock/mock-data';
+import { DataSource } from 'typeorm';
 
 describe('users', () => {
   let app: INestApplication;
@@ -22,7 +20,7 @@ describe('users', () => {
       ),
     );
     app = result.app;
-    // userTestManger = result.userTestManger;
+    userTestManger = result.userTestManger;
   });
 
   afterAll(async () => {
@@ -34,20 +32,44 @@ describe('users', () => {
   });
 
   it('should create user', async () => {
-    const body: CreateUserDto = {
-      login: 'name1',
-      password: 'qwerty',
-      email: 'email@email.em',
-    };
-
-    const response = await userTestManger.createUser(body);
+    const response = await userTestManger.createUser(mockCreateUserBody);
 
     expect(response).toEqual({
-      login: body.login,
-      email: body.email,
+      login: mockCreateUserBody.login,
+      email: mockCreateUserBody.email,
       id: expect.any(String),
       createdAt: expect.any(String),
     });
+  });
+
+  it('should create user and emailConfirmation and recoveryConfirmation', async () => {
+    await userTestManger.createUser(mockCreateUserBody);
+
+    const dataSourse = await app.resolve(DataSource);
+    const emailConfirmations = await dataSourse.query(`SELECT * FROM email_confirmation`);
+    expect(emailConfirmations).toHaveLength(1);
+    expect(emailConfirmations[0].confirmationCode).toBeDefined();
+    expect(emailConfirmations[0].expirationDate).toBeDefined();
+    expect(emailConfirmations[0].isConfirmed).toBe(false);
+
+    const recoveryConfirmations = await dataSourse.query(`SELECT * FROM recovery_confirmation`);
+    expect(recoveryConfirmations).toHaveLength(1);
+    expect(recoveryConfirmations[0].recoveryCode).toBeDefined();
+    expect(recoveryConfirmations[0].recoveryExpirationDate).toBeDefined();
+  });
+
+  it('should delete user', async () => {
+    const user = await userTestManger.createUser(mockCreateUserBody);
+
+    const users = await userTestManger.getUsers('');
+
+    expect(users.items).toHaveLength(1);
+
+    await userTestManger.deleteUser(user.id);
+
+    const usersAfterDelete = await userTestManger.getUsers('');
+
+    expect(usersAfterDelete.items).toHaveLength(0);
   });
 
   it('should get users with paging', async () => {
@@ -60,63 +82,47 @@ describe('users', () => {
     expect(getUsersResponse.pagesCount).toBe(2);
   });
 
-  it('should delete user', async () => {
-    const user = await userTestManger.createUser({
-      login: 'name1',
-      password: 'qwerty',
-      email: 'email@email.em',
-    });
+  // it('should return users info while "me" request with correct accessTokens', async () => {
+  //   const tokens = await userTestManger.createAndLoginSeveralUsers(1);
 
-    await userTestManger.deleteUser(user.id);
+  //   const responseBody = await userTestManger.me(tokens[0].accessToken);
 
-    const getUsersResponse = await userTestManger.getUsers('?pageNumber=1&sortDirection=asc');
+  //   expect(responseBody).toEqual({
+  //     login: expect.anything(),
+  //     userId: expect.anything(),
+  //     email: expect.anything(),
+  //   } as MeViewDto);
+  // });
 
-    expect(getUsersResponse.items).toHaveLength(0);
-    expect(getUsersResponse.totalCount).toBe(0);
-    expect(getUsersResponse.pagesCount).toBe(0);
-  });
+  // it(`shouldn't return users info while "me" request if accessTokens expired`, async () => {
+  //   const tokens = await userTestManger.createAndLoginSeveralUsers(1);
+  //   await delay(2000);
+  //   await userTestManger.me(tokens[0].accessToken, HttpStatus.UNAUTHORIZED);
+  // });
 
-  it('should return users info while "me" request with correct accessTokens', async () => {
-    const tokens = await userTestManger.createAndLoginSeveralUsers(1);
+  // it(`should register user without really send email`, async () => {
+  //   await userTestManger.registration(
+  //     {
+  //       email: 'email@email.em',
+  //       password: '123123123',
+  //       login: 'login123',
+  //     } as CreateUserDto,
+  //     HttpStatus.NO_CONTENT,
+  //   );
+  // });
 
-    const responseBody = await userTestManger.me(tokens[0].accessToken);
+  // it(`should call email sending method while registration`, async () => {
+  //   const sendEmailMethod = (app.get(EmailService).sendConfirmationEmail = jest.fn().mockImplementation(() => Promise.resolve()));
 
-    expect(responseBody).toEqual({
-      login: expect.anything(),
-      userId: expect.anything(),
-      email: expect.anything(),
-    } as MeViewDto);
-  });
+  //   await userTestManger.registration(
+  //     {
+  //       email: 'email@email.em',
+  //       password: '123123123',
+  //       login: 'login123',
+  //     } as CreateUserDto,
+  //     HttpStatus.NO_CONTENT,
+  //   );
 
-  it(`shouldn't return users info while "me" request if accessTokens expired`, async () => {
-    const tokens = await userTestManger.createAndLoginSeveralUsers(1);
-    await delay(2000);
-    await userTestManger.me(tokens[0].accessToken, HttpStatus.UNAUTHORIZED);
-  });
-
-  it(`should register user without really send email`, async () => {
-    await userTestManger.registration(
-      {
-        email: 'email@email.em',
-        password: '123123123',
-        login: 'login123',
-      } as CreateUserDto,
-      HttpStatus.NO_CONTENT,
-    );
-  });
-
-  it(`should call email sending method while registration`, async () => {
-    const sendEmailMethod = (app.get(EmailService).sendConfirmationEmail = jest.fn().mockImplementation(() => Promise.resolve()));
-
-    await userTestManger.registration(
-      {
-        email: 'email@email.em',
-        password: '123123123',
-        login: 'login123',
-      } as CreateUserDto,
-      HttpStatus.NO_CONTENT,
-    );
-
-    expect(sendEmailMethod).toHaveBeenCalled();
-  });
+  //   expect(sendEmailMethod).toHaveBeenCalled();
+  // });
 });

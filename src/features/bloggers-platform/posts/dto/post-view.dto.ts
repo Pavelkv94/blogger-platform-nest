@@ -33,7 +33,7 @@ export class PostViewDto {
     this.content = model.content;
     this.blogId = model.blog_id.toString();
     this.blogName = model.blogName;
-    this.createdAt = model.created_at;
+    this.createdAt = model.createdAt;
     this.extendedLikesInfo = {
       likesCount: +model.likes_count,
       dislikesCount: +model.dislikes_count,

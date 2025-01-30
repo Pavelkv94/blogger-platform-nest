@@ -1,6 +1,6 @@
 import { HttpStatus, INestApplication } from '@nestjs/common';
-import { CreateUserDto } from 'src/features/user-accounts/dto/create-user.dto';
-import { MeViewDto, BaseUserViewDto } from 'src/features/user-accounts/dto/user-view.dto';
+import { CreateUserDto } from 'src/features/user-accounts/dto/users/create-user.dto';
+import { MeViewDto, BaseUserViewDto } from 'src/features/user-accounts/dto/users/user-view.dto';
 import request from 'supertest';
 import { delay } from './delay';
 import { PaginatedViewDto } from 'src/core/dto/base.paginated.view-dto';
@@ -9,19 +9,19 @@ export class UsersTestManager {
   constructor(private app: INestApplication) {}
 
   async getUsers(query: string): Promise<PaginatedViewDto<BaseUserViewDto>> {
-    const response = await request(this.app.getHttpServer()).get(`/users${query}`).auth('admin', 'qwerty').expect(200);
+    const response = await request(this.app.getHttpServer()).get(`/sa/users${query}`).auth('admin', 'qwerty').expect(200);
 
     return response.body;
   }
 
   async createUser(createModel: CreateUserDto, statusCode: number = HttpStatus.CREATED): Promise<BaseUserViewDto> {
-    const response = await request(this.app.getHttpServer()).post(`/users`).send(createModel).auth('admin', 'qwerty').expect(statusCode);
+    const response = await request(this.app.getHttpServer()).post(`/sa/users`).send(createModel).auth('admin', 'qwerty').expect(statusCode);
 
     return response.body;
   }
 
   async deleteUser(userId: string, statusCode: number = HttpStatus.NO_CONTENT): Promise<BaseUserViewDto> {
-    const response = await request(this.app.getHttpServer()).delete(`/users/${userId}`).auth('admin', 'qwerty').expect(statusCode);
+    const response = await request(this.app.getHttpServer()).delete(`/sa/users/${userId}`).auth('admin', 'qwerty').expect(statusCode);
 
     return response.body;
   }

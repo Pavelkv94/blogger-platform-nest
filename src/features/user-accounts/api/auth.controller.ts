@@ -1,12 +1,12 @@
 import { Body, Controller, Get, HttpCode, HttpStatus, Inject, Post, Req, Res, UseGuards } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { LoginOuputDto } from '../dto/login-user.dto';
-import { MeViewDto } from '../dto/user-view.dto';
+import { LoginOuputDto } from '../dto/users/login-user.dto';
+import { MeViewDto } from '../dto/users/user-view.dto';
 import { LocalAuthGuard } from './guards/local-auth.guard';
-import { UserJwtPayloadDto } from '../dto/user-jwt-payload.dto';
+import { UserJwtPayloadDto } from '../dto/users/user-jwt-payload.dto';
 import { ExtractUserFromRequest } from 'src/core/decorators/param/extract-user-from-request';
-import { RegistrationInputDto } from '../dto/create-user.dto';
-import { NewPasswordInputDto, PasswordRecoveryInputDto, RegistrationConfirmationInputDto, ResendConfirmationInputDto } from '../dto/confirmation-input.dto';
+import { RegistrationInputDto } from '../dto/users/create-user.dto';
+import { NewPasswordInputDto, PasswordRecoveryInputDto, RegistrationConfirmationInputDto, ResendConfirmationInputDto } from '../dto/users/confirmation-input.dto';
 import { SwaggerGet } from 'src/core/decorators/swagger/swagger-get';
 import { SwaggerAuthStatus } from 'src/core/decorators/swagger/swagger-options';
 import { SwaggerPostForLogin } from 'src/core/decorators/swagger/swagger-post';

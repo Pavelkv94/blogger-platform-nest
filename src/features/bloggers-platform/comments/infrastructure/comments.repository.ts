@@ -3,7 +3,7 @@ import { ResultObject, ResultStatus } from 'src/core/dto/result-object.dto';
 import { DataSource } from 'typeorm';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { CreateCommentInputDto } from '../dto/create-comment.dto';
-import { UserJwtPayloadDto } from 'src/features/user-accounts/dto/user-jwt-payload.dto';
+import { UserJwtPayloadDto } from 'src/features/user-accounts/dto/users/user-jwt-payload.dto';
 
 @Injectable()
 export class CommentsRepository {
