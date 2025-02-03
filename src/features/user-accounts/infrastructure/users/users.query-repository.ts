@@ -3,64 +3,57 @@ import { PaginatedUserViewDto } from 'src/core/dto/base.paginated.view-dto';
 import { NotFoundDomainException } from 'src/core/exeptions/domain-exceptions';
 import { GetUsersQueryParams } from '../../dto/users/get-users-query-params.input-dto';
 import { MeViewDto, BaseUserViewDto } from '../../dto/users/user-view.dto';
-import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
-import { DataSource, IsNull, Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { User } from '../../domain/user/user.entity';
 
 @Injectable()
 export class UsersQueryRepository {
-  constructor(
-    @InjectDataSource() private datasourse: DataSource,
-    @InjectRepository(User) private userRepositoryTypeOrm: Repository<User>,
-  ) {}
+  constructor(@InjectRepository(User) private userRepositoryTypeOrm: Repository<User>) {}
 
   async findUsers(queryData: GetUsersQueryParams): Promise<PaginatedUserViewDto> {
     const { pageSize, pageNumber, sortBy, sortDirection, searchLoginTerm, searchEmailTerm } = queryData;
 
-//     const conditions: string[] = [];
-//     const values: string[] = [];
+    const queryBuilder = this.userRepositoryTypeOrm.createQueryBuilder('user').where('user.deletedAt IS NULL');
 
-//     if (searchLoginTerm) {
-//       conditions.push(`login ILIKE $${conditions.length + 1}`);
-//       values.push(`%${searchLoginTerm}%`);
-//     }
+    // if (searchLoginTerm) {
+    //   queryBuilder.andWhere('login ILIKE :searchLoginTerm', { searchLoginTerm: `%${searchLoginTerm}%` });
+    // }
 
-//     if (searchEmailTerm) {
-//       conditions.push(`email ILIKE $${conditions.length + 1}`);
-//       values.push(`%${searchEmailTerm}%`);
-//     }
+    // if (searchEmailTerm) {
+    //   queryBuilder.andWhere('email ILIKE :searchEmailTerm', { searchEmailTerm: `%${searchEmailTerm}%` });
+    // }
 
-//     const query = `
-// SELECT * FROM users 
-// WHERE deleted_at IS NULL ${conditions.length > 0 ? `AND ${conditions.join(' OR ')}` : ''}
-// ORDER BY ${sortBy} ${sortDirection} 
-// LIMIT ${pageSize} OFFSET ${queryData.calculateSkip()}
-// `;
+    if (searchLoginTerm || searchEmailTerm) {
+      queryBuilder.andWhere(
+        '(login ILIKE :searchLoginTerm OR email ILIKE :searchEmailTerm)',
+        {
+          searchLoginTerm: searchLoginTerm ? `%${searchLoginTerm}%` : '%',
+          searchEmailTerm: searchEmailTerm ? `%${searchEmailTerm}%` : '%',
+        }
+      );
+    }
 
-//     const users = await this.datasourse.query(query, values);
-
-//     const usersCount = await this.datasourse.query(
-//       `
-//       SELECT COUNT(*) FROM users 
-//       WHERE deleted_at IS NULL ${conditions.length > 0 ? `AND ${conditions.join(' OR ')}` : ''}
-//     `,
-//       values,
-//     );
-
-const users = await this.userRepositoryTypeOrm.find({ where: { deletedAt: IsNull() } });
+    const users = await queryBuilder
+      .orderBy(`user.${sortBy}`, sortDirection.toUpperCase() as 'ASC' | 'DESC')
+      .skip(queryData.calculateSkip())
+      .take(pageSize)
+      .getMany();
 
     const usersView = users.map((user) => BaseUserViewDto.mapToView(user));
+
+    const usersCount = await queryBuilder.getCount();
 
     return PaginatedUserViewDto.mapToView({
       items: usersView,
       page: pageNumber,
       size: pageSize,
-      totalCount: users.length,
+      totalCount: usersCount,
     });
   }
 
   async findUserByIdOrNotFound(userId: string): Promise<BaseUserViewDto> {
-    const user = await this.userRepositoryTypeOrm.findOne({ where: { id: +userId } });
+    const user = await this.userRepositoryTypeOrm.createQueryBuilder('user').where('user.deletedAt IS NULL').andWhere('user.id = :userId', { userId: +userId }).getOne();
 
     if (!user) {
       throw NotFoundDomainException.create();
@@ -69,7 +62,7 @@ const users = await this.userRepositoryTypeOrm.find({ where: { deletedAt: IsNull
     return BaseUserViewDto.mapToView(user);
 
     // const query = `
-    // SELECT * FROM users 
+    // SELECT * FROM users
     // WHERE deleted_at IS NULL AND id = $1
     // `;
 
@@ -82,17 +75,23 @@ const users = await this.userRepositoryTypeOrm.find({ where: { deletedAt: IsNull
     // return BaseUserViewDto.mapToView(users[0]);
   }
   async findMeByIdOrNotFound(userId: string): Promise<MeViewDto> {
-    const query = `
-    SELECT * FROM users 
-    WHERE deleted_at IS NULL AND id = $1
-    `;
+    const user = await this.userRepositoryTypeOrm.createQueryBuilder('user').where('user.deletedAt IS NULL').andWhere('user.id = :userId', { userId: +userId }).getOne();
 
-    const users = await this.datasourse.query(query, [userId]);
-
-    if (!users.length) {
+    if (!user) {
       throw NotFoundDomainException.create();
     }
 
-    return MeViewDto.mapToView(users[0]);
+    // const query = `
+    // SELECT * FROM users
+    // WHERE deleted_at IS NULL AND id = $1
+    // `;
+
+    // const users = await this.datasourse.query(query, [userId]);
+
+    // if (!users.length) {
+    //   throw NotFoundDomainException.create();
+    // }
+
+    return MeViewDto.mapToView(user);
   }
 }

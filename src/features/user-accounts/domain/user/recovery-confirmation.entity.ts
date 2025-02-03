@@ -23,4 +23,9 @@ export class RecoveryConfirmation {
     recoveryConfirmation.userId = userId;
     return recoveryConfirmation;
   }
+
+  setNewCode(recoveryCode: string, recoveryExpirationDate: Date) {
+    this.recoveryCode = recoveryCode;
+    this.recoveryExpirationDate = recoveryExpirationDate;
+  }
 }

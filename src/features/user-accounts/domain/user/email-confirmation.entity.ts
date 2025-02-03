@@ -30,4 +30,13 @@ export class EmailConfirmation {
     emailConfirmation.expirationDate = getExpirationDate(30);
     return emailConfirmation;
   }
+
+  markConfirmed() {
+    this.isConfirmed = true;
+  }
+
+  setNewCode(confirmationCode: string, expirationDate: Date) {
+    this.confirmationCode = confirmationCode;
+    this.expirationDate = expirationDate;
+  }
 }

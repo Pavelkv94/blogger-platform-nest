@@ -1,8 +1,9 @@
-import { Entity, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { CreateDateColumn, Entity, OneToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 import { Column } from 'typeorm';
 import { EmailConfirmation } from './email-confirmation.entity';
 import { RecoveryConfirmation } from './recovery-confirmation.entity';
+import { SecurityDevice } from '../security-device/security-devices.entity';
 
 export const loginConstraints = {
   minLength: 3,
@@ -15,16 +16,16 @@ export class User {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ unique: true })
+  @Column({ unique: true, collation: 'C' })
   login: string;
 
-  @Column({ unique: true })
+  @Column({ unique: true, collation: 'C' })
   email: string;
 
   @Column()
   password: string;
 
-  @Column({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
+  @CreateDateColumn({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
   createdAt: Date;
 
   @Column({ type: 'timestamptz', nullable: true })
@@ -36,6 +37,8 @@ export class User {
   @OneToOne(() => RecoveryConfirmation, (recoveryConfirmation) => recoveryConfirmation.user)
   recoveryConfirmation: RecoveryConfirmation;
 
+  @OneToMany(() => SecurityDevice, (securityDevice) => securityDevice.user)
+  securityDevices: SecurityDevice[];
 
   static buildInstance(login: string, email: string, passwordHash: string): User {
     const user = new this();
@@ -46,10 +49,15 @@ export class User {
   }
 
   markDeleted() {
+    if (this.deletedAt) {
+      throw new Error('Entity already deleted');
+    }
+
     this.deletedAt = new Date();
   }
-  // @OneToMany(() => Wallet, (wallet) => wallet.owner)
-  // wallets: Wallet[];
+  updatePassword(newPassword: string) {
+    this.password = newPassword;
+  }
 }
 
 //   @Prop({ type: String, required: true, unique: true })

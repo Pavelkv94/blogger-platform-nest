@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { DataSource, EntityManager, IsNull, Repository } from 'typeorm';
-import { InjectDataSource, InjectEntityManager, InjectRepository } from '@nestjs/typeorm';
+import { EntityManager, IsNull, Repository } from 'typeorm';
+import { InjectEntityManager, InjectRepository } from '@nestjs/typeorm';
 import { BaseUserViewDto, UserViewDtoWithConfirmation, UserViewDtoWithRecovery } from '../../dto/users/user-view.dto';
 import { User } from '../../domain/user/user.entity';
 import { EmailConfirmation } from '../../domain/user/email-confirmation.entity';
@@ -9,7 +9,6 @@ import { RecoveryConfirmation } from '../../domain/user/recovery-confirmation.en
 @Injectable()
 export class UsersRepository {
   constructor(
-    @InjectDataSource() private datasourse: DataSource,
     @InjectRepository(User) private userRepositoryTypeOrm: Repository<User>,
     @InjectRepository(EmailConfirmation) private emailConfirmationRepositoryTypeOrm: Repository<EmailConfirmation>,
     @InjectRepository(RecoveryConfirmation) private recoveryConfirmationRepositoryTypeOrm: Repository<RecoveryConfirmation>,
@@ -44,24 +43,18 @@ export class UsersRepository {
   }
 
   async findUserByLoginOrEmail(loginOrEmail: string): Promise<any | null> {
-    const query = `
-    SELECT * FROM users 
-    WHERE deleted_at IS NULL AND ($1 = email OR $1 = login)
-  `;
+    const user = await this.userRepositoryTypeOrm
+      .createQueryBuilder('user')
+      .where('user.deletedAt IS NULL')
+      .andWhere('user.login = :loginOrEmail OR user.email = :loginOrEmail', { loginOrEmail })
+      .getOne();
 
-    const users = await this.datasourse.query(query, [loginOrEmail]);
-
-    if (!users.length || !loginOrEmail) {
+    if (!user) {
       return null;
     }
 
-    return users[0];
+    return user;
   }
-
-  // async createUser(user: User): Promise<number> {
-  //   const result = await this.userRepositoryTypeOrm.save(user);
-  //   return result.id;
-  // }
 
   async createEmailConfirmation(emailConfirmation: EmailConfirmation): Promise<EmailConfirmation> {
     return await this.emailConfirmationRepositoryTypeOrm.save(emailConfirmation);
@@ -71,9 +64,6 @@ export class UsersRepository {
     return await this.recoveryConfirmationRepositoryTypeOrm.save(recoveryConfirmation);
   }
 
-  async save(entity: any): Promise<any> {
-    return await this.entityManager.save(entity);
-  }
   async createUser(user: User): Promise<number> {
     //* transaction for create user, emailConfirmation and recoveryConfirmation
     return await this.entityManager.transaction(async (transactionalEntityManager) => {
@@ -89,7 +79,9 @@ export class UsersRepository {
   }
 
   async deleteUser(id: string) {
-    await this.datasourse.query(`UPDATE users SET deleted_at = NOW() WHERE id = $1`, [id]);
+    await this.userRepositoryTypeOrm.update(id, { deletedAt: new Date() });
+
+    // await this.datasourse.query(`UPDATE users SET deleted_at = NOW() WHERE id = $1`, [id]);
   }
 
   async findUserByLogin(login: string): Promise<boolean> {
@@ -129,56 +121,80 @@ export class UsersRepository {
   }
 
   async findUserByEmailWithConfirmation(email: string): Promise<UserViewDtoWithConfirmation | null> {
-    const query = `
-    SELECT u.*, ce.*
-	  FROM users u
-	  LEFT JOIN confirmation_email ce
-	  ON u.id = ce.user_id
-    WHERE u.deleted_at IS NULL AND u.email = $1
-    `;
+    const user = await this.userRepositoryTypeOrm.findOne({ where: { email, deletedAt: IsNull() }, relations: ['emailConfirmation'] });
 
-    const users = await this.datasourse.query(query, [email]);
-
-    if (!users.length || !email) {
+    if (!user) {
       return null;
     }
 
-    return UserViewDtoWithConfirmation.mapToView(users[0]);
+    return UserViewDtoWithConfirmation.mapToView(user);
+
+    // const query = `
+    // SELECT u.*, ce.*
+    // FROM users u
+    // LEFT JOIN confirmation_email ce
+    // ON u.id = ce.user_id
+    // WHERE u.deleted_at IS NULL AND u.email = $1
+    // `;
+
+    // const users = await this.datasourse.query(query, [email]);
+
+    // if (!users.length || !email) {
+    //   return null;
+    // }
+
+    // return UserViewDtoWithConfirmation.mapToView(users[0]);
   }
 
   async findUserByConfirmationCode(code: string): Promise<UserViewDtoWithConfirmation | null> {
-    const query = `
-    SELECT u.*, ce.*
-	  FROM users u
-	  LEFT JOIN confirmation_email ce
-	  ON u.id = ce.user_id
-    WHERE u.deleted_at IS NULL AND ce.confirmation_code = $1
-    `;
+    const user = await this.userRepositoryTypeOrm.findOne({ where: { emailConfirmation: { confirmationCode: code }, deletedAt: IsNull() }, relations: ['emailConfirmation'] });
 
-    const users = await this.datasourse.query(query, [code]);
-
-    if (!users.length || !code) {
+    if (!user) {
       return null;
     }
 
-    return UserViewDtoWithConfirmation.mapToView(users[0]);
+    return UserViewDtoWithConfirmation.mapToView(user);
+
+    // const query = `
+    // SELECT u.*, ce.*
+    // FROM users u
+    // LEFT JOIN confirmation_email ce
+    // ON u.id = ce.user_id
+    // WHERE u.deleted_at IS NULL AND ce.confirmation_code = $1
+    //`;
+
+    // const users = await this.datasourse.query(query, [code]);
+
+    // if (!users.length || !code) {
+    //   return null;
+    // }
+
+    // return UserViewDtoWithConfirmation.mapToView(users[0]);
   }
 
   async findUserByRecoveryCode(code: string): Promise<UserViewDtoWithRecovery | null> {
-    const query = `
-    SELECT u.*, pr.*
-	  FROM users u
-	  LEFT JOIN password_recovery pr
-	  ON u.id = pr.user_id
-    WHERE u.deleted_at IS NULL AND pr.recovery_code = $1
-    `;
+    const user = await this.userRepositoryTypeOrm.findOne({ where: { recoveryConfirmation: { recoveryCode: code }, deletedAt: IsNull() }, relations: ['recoveryConfirmation'] });
 
-    const users = await this.datasourse.query(query, [code]);
-
-    if (!users.length || !code) {
+    if (!user) {
       return null;
     }
 
-    return UserViewDtoWithRecovery.mapToView(users[0]);
+    return UserViewDtoWithRecovery.mapToView(user);
+
+    // const query = `
+    // SELECT u.*, pr.*
+    // FROM users u
+    // LEFT JOIN password_recovery pr
+    // ON u.id = pr.user_id
+    // WHERE u.deleted_at IS NULL AND pr.recovery_code = $1
+    // `;
+
+    // const users = await this.datasourse.query(query, [code]);
+
+    // if (!users.length || !code) {
+    //   return null;
+    // }
+
+    // return UserViewDtoWithRecovery.mapToView(users[0]);
   }
 }

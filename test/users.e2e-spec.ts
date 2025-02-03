@@ -1,10 +1,11 @@
-import { HttpStatus, INestApplication } from '@nestjs/common';
+import { INestApplication } from '@nestjs/common';
 import { initSettings } from './helpers/init-settings';
 import { JwtService } from '@nestjs/jwt';
 import { deleteAllData } from './helpers/delete-all-data';
 import { UsersTestManager } from './helpers/users-test-manager';
 import { mockCreateUserBody } from './mock/mock-data';
 import { DataSource } from 'typeorm';
+import { MeViewDto } from 'src/features/user-accounts/dto/users/user-view.dto';
 
 describe('users', () => {
   let app: INestApplication;
@@ -82,17 +83,17 @@ describe('users', () => {
     expect(getUsersResponse.pagesCount).toBe(2);
   });
 
-  // it('should return users info while "me" request with correct accessTokens', async () => {
-  //   const tokens = await userTestManger.createAndLoginSeveralUsers(1);
+  it('should return users info while "me" request with correct accessTokens', async () => {
+    const tokens = await userTestManger.createAndLoginSeveralUsers(1);
 
-  //   const responseBody = await userTestManger.me(tokens[0].accessToken);
+    const responseBody = await userTestManger.me(tokens[0].accessToken);
 
-  //   expect(responseBody).toEqual({
-  //     login: expect.anything(),
-  //     userId: expect.anything(),
-  //     email: expect.anything(),
-  //   } as MeViewDto);
-  // });
+    expect(responseBody).toEqual({
+      login: expect.anything(),
+      userId: expect.anything(),
+      email: expect.anything(),
+    } as MeViewDto);
+  });
 
   // it(`shouldn't return users info while "me" request if accessTokens expired`, async () => {
   //   const tokens = await userTestManger.createAndLoginSeveralUsers(1);

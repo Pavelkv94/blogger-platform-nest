@@ -1,5 +1,3 @@
-// import { SecurityDeviceDocument } from '../../domain/security-device/security-devices.schema';
-
 export class DeviceViewDto {
   title: string;
   ip: string;
@@ -9,8 +7,8 @@ export class DeviceViewDto {
   constructor(model: any) {
     this.title = model.title;
     this.ip = model.ip;
-    this.deviceId = model.device_id;
-    this.lastActiveDate = model.last_active_date;
+    this.deviceId = model.deviceId;
+    this.lastActiveDate = model.lastActiveDate;
   }
 
   static mapToView(post: any): DeviceViewDto {

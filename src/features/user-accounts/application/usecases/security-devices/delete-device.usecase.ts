@@ -23,7 +23,7 @@ export class DeleteSecurityDeviceUseCase implements ICommandHandler<DeleteSecuri
       throw NotFoundDomainException.create('Device not found');
     }
 
-    const isOwner = currentDevice.user_id === command.userId;
+    const isOwner = currentDevice.userId === +command.userId;
 
     if (!isOwner) {
       throw ForbiddenDomainException.create('Access forbidden');

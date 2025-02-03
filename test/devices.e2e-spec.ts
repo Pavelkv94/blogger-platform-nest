@@ -16,7 +16,7 @@ describe('devices', () => {
       moduleBuilder.overrideProvider(JwtService).useValue(
         new JwtService({
           secret: 'secret_key',
-          signOptions: { expiresIn: '2s' },
+          signOptions: { expiresIn: '10s' },
         }),
       ),
     );
@@ -44,6 +44,7 @@ describe('devices', () => {
 
     const loginResponse = await userTestManger.loginWithAgent(userData.login, userData.password, 'winda');
     const cookies = loginResponse.headers['set-cookie'];
+    console.log("cookies", cookies);
     expect(cookies).toBeDefined();
 
     const refreshToken = cookies[0].split(' ')[0].split('=')[1];

@@ -34,6 +34,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './domain/user/user.entity';
 import { EmailConfirmation } from './domain/user/email-confirmation.entity';
 import { RecoveryConfirmation } from './domain/user/recovery-confirmation.entity';
+import { SecurityDevice } from './domain/security-device/security-devices.entity';
 
 const adapters = [BcryptService];
 
@@ -73,7 +74,7 @@ const useCases = [
       }),
       inject: [CoreConfig],
     }),
-    TypeOrmModule.forFeature([User, EmailConfirmation, RecoveryConfirmation]),
+    TypeOrmModule.forFeature([User, EmailConfirmation, RecoveryConfirmation, SecurityDevice]),
     NotificationsModule,
     CqrsModule,
   ],
@@ -86,7 +87,7 @@ const useCases = [
     ...useCases,
     LocalStrategy, //* for passport
     JwtAccessStrategy, //* for passport
-    JwtRefreshAuthPassportStrategy
+    JwtRefreshAuthPassportStrategy  //* for passport
   ],
 })
 export class UserAccountsModule {}

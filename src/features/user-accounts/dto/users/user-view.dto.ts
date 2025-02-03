@@ -32,8 +32,8 @@ export class UserViewDtoWithRecovery extends BaseUserViewDto {
   constructor(model: any) {
     super(model);
     this.recoveryConfirmation = {
-      confirmationCode: model.recovery_code,
-      expirationDate: model.recovery_expiration_date,
+      confirmationCode: model.recoveryConfirmation.recoveryCode,
+      expirationDate: model.recoveryConfirmation.recoveryExpirationDate,
     };
   }
 
@@ -52,9 +52,9 @@ export class UserViewDtoWithConfirmation extends BaseUserViewDto {
   constructor(model: any) {
     super(model);
     this.emailConfirmation = {
-      confirmationCode: model.confirmation_code,
-      expirationDate: model.expiration_date,
-      isConfirmed: model.is_confirmed,
+      confirmationCode: model.emailConfirmation.confirmationCode,
+      expirationDate: model.emailConfirmation.expirationDate,
+      isConfirmed: model.emailConfirmation.isConfirmed,
     };
   }
 
@@ -77,13 +77,13 @@ export class FullUserViewDto extends BaseUserViewDto {
   constructor(model: any) {
     super(model);
     this.emailConfirmation = {
-      confirmationCode: model.confirmation_code,
-      expirationDate: model.expiration_date,
-      isConfirmed: model.is_confirmed,
+      confirmationCode: model.emailConfirmation.confirmationCode,
+      expirationDate: model.emailConfirmation.expirationDate,
+      isConfirmed: model.emailConfirmation.isConfirmed,
     };
     this.recoveryConfirmation = {
-      confirmationCode: model.recovery_code,
-      expirationDate: model.recovery_expiration_date,
+      confirmationCode: model.recoveryConfirmation.recoveryCode,
+      expirationDate: model.recoveryConfirmation.recoveryExpirationDate,
     };
   }
 

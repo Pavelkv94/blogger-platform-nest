@@ -8,7 +8,7 @@ export class DevicesTestManager {
     const response = await request(this.app.getHttpServer())
       .get('/security/devices')
       .set("Cookie", [`refreshToken=${refreshToken}`])
-      // .expect(statusCode);
+      .expect(statusCode);
 
     return response.body;
   }

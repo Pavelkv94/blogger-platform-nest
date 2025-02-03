@@ -10,6 +10,7 @@ import { CoreConfig } from 'src/core/core.config';
 
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersTestManager } from './users-test-manager';
+import { DevicesTestManager } from './devices-test-manager';
 
 export const initSettings = async (
   //передаем callback, который получает ModuleBuilder, если хотим изменить настройку тестового модуля
@@ -54,7 +55,7 @@ export const initSettings = async (
   const userTestManger = new UsersTestManager(app);
   // const blogsTestManager = new BlogsTestManager(app);
   // const postsTestManager = new PostsTestManager(app);
-  // const devicesTestManager = new DevicesTestManager(app);
+  const devicesTestManager = new DevicesTestManager(app);
 
   await deleteAllData(app);
 
@@ -65,6 +66,6 @@ export const initSettings = async (
     userTestManger,
     // blogsTestManager,
     // postsTestManager,
-    // devicesTestManager,
+    devicesTestManager,
   };
 };

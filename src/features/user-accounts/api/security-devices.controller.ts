@@ -13,7 +13,7 @@ import { DeleteSecurityDeviceCommand } from '../application/usecases/security-de
 import { DeleteOtherSecurityDevicesCommand } from '../application/usecases/security-devices/delete-devices.usecase';
 
 @ApiTags('SecurityDevices') //swagger
-//* @UseGuards(BasicAuthGuard)
+@UseGuards(JwtRefreshAuthPassportGuard)
 @Controller('security/devices')
 export class SecurityDevicesController {
   constructor(
@@ -22,17 +22,17 @@ export class SecurityDevicesController {
   ) {}
 
   @SwaggerGet('Get all security devices', PaginatedUserViewDto, SwaggerAuthStatus.WithAuth)
-  @UseGuards(JwtRefreshAuthPassportGuard)
+  // @UseGuards(JwtRefreshAuthPassportGuard)
   @Get()
   getSecurityDevices(@ExtractUserFromRequest() user: UserJwtPayloadDto): Promise<DeviceViewDto[]> {
-    
+    console.log("user", user);
     const users = this.securityDevicesQueryRepository.findSecurityDevices(user.userId);
 
     return users;
   }
 
   //   @SwaggerDelete('Delete a device by id', 'Device ID')
-  @UseGuards(JwtRefreshAuthPassportGuard)
+  // @UseGuards(JwtRefreshAuthPassportGuard)
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   async deleteDevice(@Param('id') id: string, @ExtractUserFromRequest() user: UserJwtPayloadDto): Promise<void> {
@@ -41,7 +41,7 @@ export class SecurityDevicesController {
   }
 
   // @SwaggerDelete('Delete a user by ID', 'User ID')
-  @UseGuards(JwtRefreshAuthPassportGuard)
+  // @UseGuards(JwtRefreshAuthPassportGuard)
   @Delete()
   @HttpCode(HttpStatus.NO_CONTENT)
   async deleteOtherDevices(@ExtractUserFromRequest() user: UserJwtPayloadDto): Promise<void> {

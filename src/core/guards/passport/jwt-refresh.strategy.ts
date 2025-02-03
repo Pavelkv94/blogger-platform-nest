@@ -27,6 +27,8 @@ export class JwtRefreshAuthPassportStrategy extends PassportStrategy(Strategy, '
   }
 
   async validate(payload: UserJwtPayloadDto) {
+    console.log("Starting validation process"); // Add this log
+
     const user = await this.usersRepository.findUserById(payload.userId);
     if (!user) {
       throw UnauthorizedDomainException.create();
