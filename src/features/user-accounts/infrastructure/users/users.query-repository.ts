@@ -16,22 +16,11 @@ export class UsersQueryRepository {
 
     const queryBuilder = this.userRepositoryTypeOrm.createQueryBuilder('user').where('user.deletedAt IS NULL');
 
-    // if (searchLoginTerm) {
-    //   queryBuilder.andWhere('login ILIKE :searchLoginTerm', { searchLoginTerm: `%${searchLoginTerm}%` });
-    // }
-
-    // if (searchEmailTerm) {
-    //   queryBuilder.andWhere('email ILIKE :searchEmailTerm', { searchEmailTerm: `%${searchEmailTerm}%` });
-    // }
-
     if (searchLoginTerm || searchEmailTerm) {
-      queryBuilder.andWhere(
-        '(login ILIKE :searchLoginTerm OR email ILIKE :searchEmailTerm)',
-        {
-          searchLoginTerm: searchLoginTerm ? `%${searchLoginTerm}%` : '%',
-          searchEmailTerm: searchEmailTerm ? `%${searchEmailTerm}%` : '%',
-        }
-      );
+      queryBuilder.andWhere('(login ILIKE :searchLoginTerm OR email ILIKE :searchEmailTerm)', {
+        searchLoginTerm: searchLoginTerm ? `%${searchLoginTerm}%` : '%',
+        searchEmailTerm: searchEmailTerm ? `%${searchEmailTerm}%` : '%',
+      });
     }
 
     const users = await queryBuilder
@@ -60,19 +49,6 @@ export class UsersQueryRepository {
     }
 
     return BaseUserViewDto.mapToView(user);
-
-    // const query = `
-    // SELECT * FROM users
-    // WHERE deleted_at IS NULL AND id = $1
-    // `;
-
-    // const users = await this.datasourse.query(query, [userId]);
-
-    // if (!users.length) {
-    //   throw NotFoundDomainException.create();
-    // }
-
-    // return BaseUserViewDto.mapToView(users[0]);
   }
   async findMeByIdOrNotFound(userId: string): Promise<MeViewDto> {
     const user = await this.userRepositoryTypeOrm.createQueryBuilder('user').where('user.deletedAt IS NULL').andWhere('user.id = :userId', { userId: +userId }).getOne();
@@ -80,17 +56,6 @@ export class UsersQueryRepository {
     if (!user) {
       throw NotFoundDomainException.create();
     }
-
-    // const query = `
-    // SELECT * FROM users
-    // WHERE deleted_at IS NULL AND id = $1
-    // `;
-
-    // const users = await this.datasourse.query(query, [userId]);
-
-    // if (!users.length) {
-    //   throw NotFoundDomainException.create();
-    // }
 
     return MeViewDto.mapToView(user);
   }

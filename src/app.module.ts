@@ -26,14 +26,15 @@ import { CoreConfig } from './core/core.config';
         entities: [], // Здесь укажите ваши сущности
         autoLoadEntities: true, // Не загружать сущности автоматически - можно true для разработки
         synchronize: true, // Для разработки, включите, чтобы синхронизировать с базой данных - можно true для разработки
-        logging: true,
+        logging: false,
       }),
       inject: [CoreConfig],
     }),
     ThrottlerModule.forRoot([
       {
         ttl: 10000,
-        limit: 5,
+        // limit: 5,
+        limit: 5000,
       },
     ]),
     UserAccountsModule,

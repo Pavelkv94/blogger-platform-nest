@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { LikeStatus } from '../../likes/dto/like-status.dto';
-import { PostDocument } from '../domain/post.entity';
 import { NewestLikes } from '../domain/newest-likes-schema';
+import { Post } from '../domain/post.entity';
 
 export class PostViewDto {
   @ApiProperty({ example: 'Post ID', description: 'ID of the post' })
@@ -27,22 +27,26 @@ export class PostViewDto {
   };
 
   constructor(model: any) {
-    this.id = model.id.toString();
-    this.title = model.title;
-    this.shortDescription = model.short_description;
-    this.content = model.content;
-    this.blogId = model.blog_id.toString();
+    this.id = model.p_id.toString();
+    this.title = model.p_title;
+    this.shortDescription = model.p_shortDescription;
+    this.content = model.p_content;
+    this.blogId = model.p_blogId.toString();
     this.blogName = model.blogName;
-    this.createdAt = model.createdAt;
+    this.createdAt = model.p_createdAt;
     this.extendedLikesInfo = {
-      likesCount: +model.likes_count,
-      dislikesCount: +model.dislikes_count,
-      myStatus: model.my_status || LikeStatus.None,
-      newestLikes: model.newest_likes ? model.newest_likes.map((like) => ({ ...like, userId: like.userId.toString() })) : [],
+      // likesCount: +model.likes_count,
+      // dislikesCount: +model.dislikes_count,
+      // myStatus: model.my_status || LikeStatus.None,
+      // newestLikes: model.newest_likes ? model.newest_likes.map((like) => ({ ...like, userId: like.userId.toString() })) : [],
+      likesCount: 0,
+      dislikesCount: 0,
+      myStatus: LikeStatus.None,
+      newestLikes: [],
     };
   }
 
-  static mapToView(post: PostDocument): PostViewDto {
+  static mapToView(post: Post): PostViewDto {
     return new PostViewDto(post);
   }
 }

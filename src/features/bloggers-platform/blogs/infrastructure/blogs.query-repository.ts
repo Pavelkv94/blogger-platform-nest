@@ -2,39 +2,31 @@ import { Injectable } from '@nestjs/common';
 import { BlogViewDto } from '../dto/blog-view.dto';
 import { GetBlogsQueryParams } from '../dto/get-blogs-query-params.input-dto';
 import { PaginatedBlogViewDto } from 'src/core/dto/base.paginated.view-dto';
-import { DataSource } from 'typeorm';
-import { InjectDataSource } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
 import { NotFoundDomainException } from 'src/core/exeptions/domain-exceptions';
+import { Blog } from '../domain/blog.entity';
 
 @Injectable()
 export class BlogsQueryRepository {
-  constructor(@InjectDataSource() private datasourse: DataSource) {}
+  constructor(@InjectRepository(Blog) private blogRepositoryTypeOrm: Repository<Blog>) {}
 
   async findBlogs(queryData: GetBlogsQueryParams): Promise<PaginatedBlogViewDto> {
     const { pageSize, pageNumber, searchNameTerm, sortBy, sortDirection } = queryData;
 
-    const values: string[] = [];
+    const queryBuilder = this.blogRepositoryTypeOrm.createQueryBuilder('blog').where('blog.deletedAt IS NULL');
 
     if (searchNameTerm) {
-      values.push(`%${searchNameTerm}%`);
+      queryBuilder.andWhere('blog.name ILIKE :searchNameTerm', { searchNameTerm: `%${searchNameTerm}%` });
     }
 
-    const query = `
-    SELECT * FROM blogs 
-    WHERE deleted_at IS NULL ${searchNameTerm ? `AND name ILIKE $${values.length}` : ''}
-    ORDER BY ${sortBy} ${sortDirection} 
-    LIMIT ${pageSize} OFFSET ${queryData.calculateSkip()}
-    `;
+    const blogs = await queryBuilder
+      .orderBy(`blog.${sortBy}`, sortDirection.toUpperCase() as 'ASC' | 'DESC')
+      .skip(queryData.calculateSkip())
+      .take(pageSize)
+      .getMany();
 
-    const blogs = await this.datasourse.query(query, values);
-
-    const blogsCount = await this.datasourse.query(
-      `
-      SELECT COUNT(*) FROM blogs 
-      WHERE deleted_at IS NULL ${searchNameTerm ? `AND name ILIKE $${values.length}` : ''}
-    `,
-      values,
-    );
+    const blogsCount = await queryBuilder.getCount();
 
     const blogsView = blogs.map((blog) => BlogViewDto.mapToView(blog));
 
@@ -42,23 +34,21 @@ export class BlogsQueryRepository {
       items: blogsView,
       page: pageNumber,
       size: pageSize,
-      totalCount: +blogsCount[0].count,
+      totalCount: blogsCount,
     });
   }
 
   async findBlogByIdOrNotFoundFail(blogId: string): Promise<BlogViewDto> {
-    const blogs = await this.datasourse.query(
-      `
-      SELECT * FROM blogs 
-      WHERE id = $1 AND deleted_at IS NULL
-    `,
-      [blogId],
-    );
+    const blog = await this.blogRepositoryTypeOrm
+      .createQueryBuilder('blog')
+      .where('blog.id = :id', { id: Number(blogId) })
+      .andWhere('blog.deletedAt IS NULL')
+      .getOne();
 
-    if (!blogs[0]) {
+    if (!blog) {
       throw NotFoundDomainException.create('Blog not found');
     }
 
-    return BlogViewDto.mapToView(blogs[0]);
+    return BlogViewDto.mapToView(blog);
   }
 }

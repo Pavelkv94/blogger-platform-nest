@@ -1,10 +1,9 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument, Model } from 'mongoose';
-import { DeletionStatus } from 'src/core/dto/deletion-status';
+import { CreateDateColumn, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column } from 'typeorm';
+import { Entity } from 'typeorm';
+import { Blog } from '../../blogs/domain/blog.entity';
 import { CreatePostDto } from '../dto/post-create.dto';
-import { UpdatePostDto } from '../dto/post-update.dto';
-import { ExtendedLikes } from './extended-likes.schema';
-import { ExtendedLikesSchema } from './extended-likes.schema';
+import { UpdateBlogPostDto, UpdatePostDto } from '../dto/post-update.dto';
 
 export const titleConstraints = {
   minLength: 1,
@@ -21,67 +20,61 @@ export const contentConstraints = {
   maxLength: 1000,
 };
 
-@Schema({ timestamps: true })
-export class PostEntity {
-  @Prop({ type: String, required: true, ...titleConstraints })
+@Entity()
+export class Post {
+  @PrimaryGeneratedColumn()
+  id: number;
+
+  @Column({ collation: 'C', length: titleConstraints.maxLength })
   title: string;
 
-  @Prop({ type: String, required: true, ...shortDescriptionConstraints })
+  @Column({ collation: 'C', length: shortDescriptionConstraints.maxLength })
   shortDescription: string;
 
-  @Prop({ type: String, required: true, ...contentConstraints })
+  @Column({ collation: 'C', length: contentConstraints.maxLength })
   content: string;
 
-  @Prop({ type: String, required: true })
-  blogId: string;
-
-  @Prop({ type: String, required: true })
-  blogName: string;
-
-  @Prop({ type: Date })
+  @CreateDateColumn({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
   createdAt: Date;
 
-  @Prop({ type: String, required: true, default: DeletionStatus.NotDeleted })
-  deletionStatus: DeletionStatus;
+  @Column({ type: 'timestamptz', nullable: true })
+  deletedAt: Date;
 
-  @Prop({
-    type: ExtendedLikesSchema,
-    required: true,
-    default: {
-      likesCount: 0,
-      dislikesCount: 0,
-      newestLikes: [],
-    },
-  })
-  extendedLikesInfo: ExtendedLikes;
+  @ManyToOne(() => Blog, (blog) => blog.posts)
+  @JoinColumn({ name: 'blogId' })
+  blog: Blog;
 
-  static buildInstance(dto: CreatePostDto, blogName: string): PostDocument {
-    const post = new this(); //PostModel!
+  @Column({ type: 'int' })
+  blogId: number;
 
+  static buildInstance(dto: CreatePostDto): Post {
+    const post = new this();
     post.title = dto.title;
     post.shortDescription = dto.shortDescription;
     post.content = dto.content;
-    post.blogId = dto.blogId;
-    post.blogName = blogName;
+    post.blogId = Number(dto.blogId);
 
-    return post as PostDocument;
+    return post;
   }
 
-  update(dto: UpdatePostDto): void {
+  update(dto: UpdatePostDto | UpdateBlogPostDto): void {
     this.title = dto.title;
     this.shortDescription = dto.shortDescription;
     this.content = dto.content;
   }
 
   makeDeleted(): void {
-    this.deletionStatus = DeletionStatus.PermanentDeleted;
+    this.deletedAt = new Date();
   }
 }
 
-export const PostSchema = SchemaFactory.createForClass(PostEntity);
-
-PostSchema.loadClass(PostEntity);
-
-export type PostDocument = HydratedDocument<PostEntity>;
-
-export type PostModelType = Model<PostDocument> & typeof PostEntity;
+//   @Prop({
+//     type: ExtendedLikesSchema,
+//     required: true,
+//     default: {
+//       likesCount: 0,
+//       dislikesCount: 0,
+//       newestLikes: [],
+//     },
+//   })
+//   extendedLikesInfo: ExtendedLikes;

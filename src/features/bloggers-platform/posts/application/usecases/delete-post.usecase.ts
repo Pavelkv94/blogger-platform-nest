@@ -33,11 +33,11 @@ export class DeletePostUseCase implements ICommandHandler<DeletePostCommand> {
     }
 
     if (command.blogId) {
-      if (post.blog_id.toString() !== command.blogId) {
+      if (post.blogId.toString() !== command.blogId) {
         throw ForbiddenDomainException.create('You are not allowed to delete this post');
       }
     }
 
-    await this.postsRepository.deletePost(command.postId);
+    await this.postsRepository.deletePost(post);
   }
 }

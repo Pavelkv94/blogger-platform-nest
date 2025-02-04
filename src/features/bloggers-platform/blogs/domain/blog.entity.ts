@@ -1,9 +1,15 @@
-import { HydratedDocument, Model } from 'mongoose';
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { BlogCreateDto } from '../dto/blog-create.dto';
-import { BlogUpdateDto } from '../dto/blog-update.dto';
-import { DeletionStatus } from 'src/core/dto/deletion-status';
+// import { HydratedDocument, Model } from 'mongoose';
+// import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+// import { BlogCreateDto } from '../dto/blog-create.dto';
+// import { BlogUpdateDto } from '../dto/blog-update.dto';
+// import { DeletionStatus } from 'src/core/dto/deletion-status';
 
+import { Column, CreateDateColumn, OneToMany } from 'typeorm';
+
+import { PrimaryGeneratedColumn } from 'typeorm';
+
+import { Entity } from 'typeorm';
+import { Post } from '../../posts/domain/post.entity';
 
 export const nameConstraints = {
   minLength: 1,
@@ -20,51 +26,47 @@ export const websiteUrlConstraints = {
   maxLength: 100,
 };
 
-@Schema({ timestamps: true })
-export class BlogEntity {
-  @Prop({ type: String, required: true, ...nameConstraints })
+@Entity()
+export class Blog {
+  @PrimaryGeneratedColumn()
+  id: number;
+
+  @Column({ collation: 'C', length: nameConstraints.maxLength })
   name: string;
 
-  @Prop({ type: String, required: true, ...descriptionConstraints })
+  @Column({ collation: 'C', length: descriptionConstraints.maxLength })
   description: string;
 
-  @Prop({ type: String, required: true, ...websiteUrlConstraints })
+  @Column({ collation: 'C', length: websiteUrlConstraints.maxLength })
   websiteUrl: string;
 
-  @Prop({ type: Boolean, required: true, default: false })
+  @Column({ default: false })
   isMembership: boolean;
 
-  @Prop({ type: Date })
+  @CreateDateColumn({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
   createdAt: Date;
 
-  @Prop({ type: String, required: true, default: DeletionStatus.NotDeleted })
-  deletionStatus: DeletionStatus;
+  @Column({ type: 'timestamptz', nullable: true })
+  deletedAt: Date;
 
-  static buildInstance(dto: BlogCreateDto): BlogDocument {
-    const blog = new this(); //UserModel!
+  @OneToMany(() => Post, (post) => post.blog)
+  posts: Post[];
 
-    blog.name = dto.name;
-    blog.description = dto.description;
-    blog.websiteUrl = dto.websiteUrl;
-
-    return blog as BlogDocument;
+  static buildInstance(name: string, description: string, websiteUrl: string): Blog {
+    const blog = new this();
+    blog.name = name;
+    blog.description = description;
+    blog.websiteUrl = websiteUrl;
+    return blog;
   }
 
-  makeDeleted() {
-    this.deletionStatus = DeletionStatus.PermanentDeleted;
+  markDeleted() {
+    this.deletedAt = new Date();
   }
 
-  update(dto: BlogUpdateDto) {
-    this.name = dto.name;
-    this.description = dto.description;
-    this.websiteUrl = dto.websiteUrl;
+  update(name: string, description: string, websiteUrl: string) {
+    this.name = name;
+    this.description = description;
+    this.websiteUrl = websiteUrl;
   }
 }
-
-export const BlogSchema = SchemaFactory.createForClass(BlogEntity);
-
-BlogSchema.loadClass(BlogEntity);
-
-export type BlogDocument = HydratedDocument<BlogEntity>;
-
-export type BlogModelType = Model<BlogDocument> & typeof BlogEntity;

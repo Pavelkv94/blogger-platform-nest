@@ -1,38 +1,35 @@
 import { Injectable } from '@nestjs/common';
 import { CreatePostDto } from '../dto/post-create.dto';
-import { DataSource } from 'typeorm';
-import { InjectDataSource } from '@nestjs/typeorm';
+import { IsNull, Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
 import { UpdateBlogPostDto, UpdatePostDto } from '../dto/post-update.dto';
+import { Post } from '../domain/post.entity';
 
 @Injectable()
 export class PostsRepository {
-  constructor(@InjectDataSource() private dataSource: DataSource) {}
+  constructor(@InjectRepository(Post) private postRepositoryTypeOrm: Repository<Post>) {}
 
   async findPostById(id: string): Promise<any | null> {
-    const query = `SELECT * FROM posts WHERE id = $1 AND deleted_at IS NULL`;
-    const post = await this.dataSource.query(query, [id]);
+    const post = await this.postRepositoryTypeOrm.findOne({ where: { id: Number(id), deletedAt: IsNull() } });
     if (!post) {
       return null;
     }
-    return post[0];
+    return post;
   }
 
   async createPost(payload: CreatePostDto): Promise<string> {
-    const query = `
-    INSERT INTO posts (title, short_description, content, blog_id) 
-    VALUES ($1, $2, $3, $4)
-    RETURNING id`;
-    const newPost = await this.dataSource.query(query, [payload.title, payload.shortDescription, payload.content, payload.blogId]);
-    return newPost[0].id;
+    const post = Post.buildInstance(payload);
+    const newPost = await this.postRepositoryTypeOrm.save(post);
+    return newPost.id.toString();
   }
 
-  async updatePost(id: string, payload: UpdatePostDto | UpdateBlogPostDto): Promise<void> {
-    const query = `UPDATE posts SET title = $1, short_description = $2, content = $3 WHERE id = $4`;
-    await this.dataSource.query(query, [payload.title, payload.shortDescription, payload.content, id]);
+  async updatePost(post: Post, payload: UpdatePostDto | UpdateBlogPostDto): Promise<void> {
+    post.update(payload);
+    await this.postRepositoryTypeOrm.save(post);
   }
 
-  async deletePost(id: string): Promise<void> {
-    const query = `UPDATE posts SET deleted_at = NOW() WHERE id = $1`;
-    await this.dataSource.query(query, [id]);
+  async deletePost(post: Post): Promise<void> {
+    post.makeDeleted();
+    await this.postRepositoryTypeOrm.save(post);
   }
 }

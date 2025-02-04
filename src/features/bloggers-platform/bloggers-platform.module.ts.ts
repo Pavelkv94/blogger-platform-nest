@@ -32,7 +32,9 @@ import { JwtAccessStrategy } from 'src/core/guards/passport/jwt-access.strategy'
 import { BlogIsNotExistConstraint } from './posts/api/validation/blogIsExist.decorator';
 import { SaBlogsController } from './blogs/api/blogs.sa.controller';
 import { SaPostsController } from './posts/api/posts.sa.controller';
-
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { Blog } from './blogs/domain/blog.entity';
+import { Post } from './posts/domain/post.entity';
 const useCases = [
   CreateBlogUseCase,
   UpdateBlogUseCase,
@@ -70,8 +72,8 @@ const repositories = [
       inject: [CoreConfig],
     }),
     CqrsModule,
-    //! так можно делать чтобы получить доступ к UserRepository???
-    UserAccountsModule
+    UserAccountsModule,
+    TypeOrmModule.forFeature([Blog, Post]),
   ],
   exports: [],
   controllers: [BlogsController, PostsController, CommentsController, SaBlogsController, SaPostsController],

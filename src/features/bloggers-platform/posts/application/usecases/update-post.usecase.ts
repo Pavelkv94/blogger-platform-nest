@@ -35,11 +35,11 @@ export class UpdatePostUseCase implements ICommandHandler<UpdatePostCommand> {
     }
 
     if (command.blogId) {
-      if (post.blog_id.toString() !== command.blogId) {
+      if (post.blogId.toString() !== command.blogId) {
         throw ForbiddenDomainException.create('You are not allowed to update this post');
       }
     }
 
-    await this.postsRepository.updatePost(command.id, command.payload);
+    await this.postsRepository.updatePost(post, command.payload);
   }
 }

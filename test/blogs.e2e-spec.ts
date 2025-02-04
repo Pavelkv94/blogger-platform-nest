@@ -3,7 +3,7 @@ import { initSettings } from './helpers/init-settings';
 import { JwtService } from '@nestjs/jwt';
 import { deleteAllData } from './helpers/delete-all-data';
 import { BlogsTestManager } from './helpers/blogs-test-manager';
-import { BlogCreateDto } from 'src/features/bloggers-platform/blogs/dto/blog-create.dto';
+import { mockCreateBlogBody, mockUpdateBlogBody } from './mock/mock-data';
 
 describe('blogs', () => {
   let app: INestApplication;
@@ -31,18 +31,12 @@ describe('blogs', () => {
   });
 
   it('should create blog', async () => {
-    const body: BlogCreateDto = {
-      name: 'name1',
-      description: 'qwerty',
-      websiteUrl: 'email@email.em',
-    };
-
-    const response = await blogsTestManager.createBlog(body);
+    const response = await blogsTestManager.createBlog(mockCreateBlogBody);
 
     expect(response).toEqual({
-      name: body.name,
-      description: body.description,
-      websiteUrl: body.websiteUrl,
+      name: mockCreateBlogBody.name,
+      description: mockCreateBlogBody.description,
+      websiteUrl: mockCreateBlogBody.websiteUrl,
       isMembership: false,
       id: expect.any(String),
       createdAt: expect.any(String),
@@ -50,13 +44,7 @@ describe('blogs', () => {
   });
 
   it("shouldn't create blog with invalid auth", async () => {
-    const body: BlogCreateDto = {
-      name: 'name1',
-      description: 'qwerty',
-      websiteUrl: 'email@email.em',
-    };
-
-    const response = await blogsTestManager.createBlogWithInvalidAuth(body);
+    const response = await blogsTestManager.createBlogWithInvalidAuth(mockCreateBlogBody);
 
     expect(response.message).toEqual('Unauthorized');
   });
@@ -72,27 +60,29 @@ describe('blogs', () => {
   });
 
   it('should delete blog', async () => {
-    const blog = await blogsTestManager.createBlog({
-      name: 'name1',
-      description: 'qwerty',
-      websiteUrl: 'example.com',
-    });
-
+    const blog = await blogsTestManager.createBlog(mockCreateBlogBody);
+    const getBlogsResponse = await blogsTestManager.getBlogs();
+    expect(getBlogsResponse.items).toHaveLength(1);
     await blogsTestManager.deleteBlog(blog.id);
+    const getBlogsResponseAfterDelete = await blogsTestManager.getBlogs();
+    expect(getBlogsResponseAfterDelete.items).toHaveLength(0);
+    expect(getBlogsResponseAfterDelete.totalCount).toBe(0);
+    expect(getBlogsResponseAfterDelete.pagesCount).toBe(0);
+  });
 
-    const getBlogsResponse = await blogsTestManager.getBlogs('?pageNumber=1&sortDirection=asc');
-
-    expect(getBlogsResponse.items).toHaveLength(0);
-    expect(getBlogsResponse.totalCount).toBe(0);
-    expect(getBlogsResponse.pagesCount).toBe(0);
+  it('should update blog', async () => {
+    const blog = await blogsTestManager.createBlog(mockCreateBlogBody);
+    const getBlogsResponse = await blogsTestManager.getBlogs();
+    expect(getBlogsResponse.items).toHaveLength(1);
+    await blogsTestManager.updateBlog(blog.id, mockUpdateBlogBody);
+    const getBlogsResponseAfterUpdate = await blogsTestManager.getBlogs();
+    expect(getBlogsResponseAfterUpdate.items[0].name).toBe(mockUpdateBlogBody.name);
+    expect(getBlogsResponseAfterUpdate.items[0].description).toBe(mockUpdateBlogBody.description);
+    expect(getBlogsResponseAfterUpdate.items[0].websiteUrl).toBe(mockUpdateBlogBody.websiteUrl);
   });
 
   it("shouldn't delete blog with invalid auth", async () => {
-    const blog = await blogsTestManager.createBlog({
-      name: 'name1',
-      description: 'qwerty',
-      websiteUrl: 'example.com',
-    });
+    const blog = await blogsTestManager.createBlog(mockCreateBlogBody);
 
     await blogsTestManager.deleteBlogWithInvalidAuth(blog.id);
   });
@@ -104,13 +94,7 @@ describe('blogs', () => {
     expect(blogs.length).toBe(5);
     expect(getBlogsResponse.totalCount).toBe(5);
 
-    const body: BlogCreateDto = {
-      name: 'name1',
-      description: 'qwerty',
-      websiteUrl: 'email@email.em',
-    };
-
-    await blogsTestManager.createBlog(body);
+    await blogsTestManager.createBlog(mockCreateBlogBody);
 
     const getBlogsResponseAgain = await blogsTestManager.getBlogs('?pageNumber=1&sortDirection=asc');
     expect(getBlogsResponseAgain.totalCount).toBe(6);

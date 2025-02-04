@@ -76,7 +76,6 @@ export class SaBlogsController {
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   deleteBlog(@Param('id') id: string): Promise<void> {
-
     return this.commandBus.execute(new DeleteBlogCommand(id));
   }
 

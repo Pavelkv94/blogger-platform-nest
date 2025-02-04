@@ -1,37 +1,35 @@
 import { Injectable } from '@nestjs/common';
-import { InjectDataSource } from '@nestjs/typeorm';
-import { DataSource } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
+import { IsNull, Repository } from 'typeorm';
 import { BlogCreateDto } from '../dto/blog-create.dto';
 import { BlogUpdateDto } from '../dto/blog-update.dto';
+import { Blog } from '../domain/blog.entity';
 
 @Injectable()
 export class BlogsRepository {
-  constructor(
-    @InjectDataSource() private dataSource: DataSource,
-  ) {}
+  constructor(@InjectRepository(Blog) private blogRepositoryTypeOrm: Repository<Blog>) {}
 
-  async findBlogById(id: string): Promise<any | null> {
-    const query = `SELECT * FROM blogs WHERE id = $1 AND deleted_at IS NULL`;
-    const blog = await this.dataSource.query(query, [id]);
+  async findBlogById(id: string): Promise<Blog | null> {
+    const blog = await this.blogRepositoryTypeOrm.findOne({ where: { id: Number(id), deletedAt: IsNull() } });
     if (!blog) {
       return null;
     }
-    return blog[0];
+    return blog;
   }
 
   async createBlog(payload: BlogCreateDto): Promise<string> {
-    const query = `INSERT INTO blogs (name, description, website_url) VALUES ($1, $2, $3) RETURNING id`;
-    const newBlog = await this.dataSource.query(query, [payload.name, payload.description, payload.websiteUrl]);
-    return newBlog[0].id;
+    const blog = Blog.buildInstance(payload.name, payload.description, payload.websiteUrl);
+    const newBlog = await this.blogRepositoryTypeOrm.save(blog);
+    return newBlog.id.toString();
   }
 
-  async updateBlog(id: string, payload: BlogUpdateDto): Promise<void> {
-    const query = `UPDATE blogs SET name = $1, description = $2, website_url = $3 WHERE id = $4`;
-    await this.dataSource.query(query, [payload.name, payload.description, payload.websiteUrl, id]);
+  async updateBlog(blog: Blog, payload: BlogUpdateDto): Promise<void> {
+    blog.update(payload.name, payload.description, payload.websiteUrl);
+    await this.blogRepositoryTypeOrm.save(blog);
   }
 
-  async deleteBlog(id: string): Promise<void> {
-    const query = `UPDATE blogs SET deleted_at = NOW() WHERE id = $1`;
-    await this.dataSource.query(query, [id]);
+  async deleteBlog(blog: Blog): Promise<void> {
+    blog.markDeleted();
+    await this.blogRepositoryTypeOrm.save(blog);
   }
 }
