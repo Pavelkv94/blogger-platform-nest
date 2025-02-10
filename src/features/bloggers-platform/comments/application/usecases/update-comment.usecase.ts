@@ -30,7 +30,7 @@ export class UpdateCommentUseCase implements ICommandHandler<UpdateCommentComman
       throw ForbiddenDomainException.create(resultObject.errorMessage);
     }
     if (resultObject.status === ResultStatus.SUCCESS) {
-      await this.commentsRepository.updateComment(command.commentId, command.payload.content);
+      await this.commentsRepository.updateComment(resultObject.data, command.payload.content);
     }
   }
 }

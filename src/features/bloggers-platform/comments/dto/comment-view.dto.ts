@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { CommentDocument } from '../domain/comment.entity';
+import { Comment } from '../domain/comment.entity';
 import { LikeStatus } from '../../likes/dto/like-status.dto';
 import { CommentatorInfo } from '../domain/commentator-info.schema';
 import { LikesInfo } from '../domain/likes-info.schema';
@@ -17,21 +17,21 @@ export class CommentViewDto {
   likesInfo: LikesInfo & { myStatus: LikeStatus };
 
   constructor(model: any) {
-    this.id = model.id.toString();
-    this.content = model.content;
-    this.createdAt = model.createdAt;
-    this.commentatorInfo = {
-      userId: model.commentator_id.toString(),
-      userLogin: model.commentator_login,
-    };
-    this.likesInfo = {
-      likesCount: +model.likes_count,
-      dislikesCount: +model.dislikes_count,
-      myStatus: model.my_status || LikeStatus.None,
-    };
+    this.id = model.c_id.toString();
+    this.content = model.c_content;
+    this.createdAt = model.c_createdAt;
+    // this.commentatorInfo = {
+    //   userId: model.commentator_id.toString(),
+    //   userLogin: model.commentator_login,
+    // };
+    // this.likesInfo = {
+    //   likesCount: +model.likes_count,
+    //   dislikesCount: +model.dislikes_count,
+    //   myStatus: model.my_status || LikeStatus.None,
+    // };
   }
 
-  static mapToView(comment: CommentDocument): CommentViewDto {
+  static mapToView(comment: Comment): CommentViewDto {
     return new CommentViewDto(comment);
   }
 }

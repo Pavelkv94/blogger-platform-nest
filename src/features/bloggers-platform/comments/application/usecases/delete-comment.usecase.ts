@@ -28,7 +28,7 @@ export class DeleteCommentUseCase implements ICommandHandler<DeleteCommentComman
       throw ForbiddenDomainException.create(resultObject.errorMessage);
     }
     if (resultObject.status === ResultStatus.SUCCESS) {
-      await this.commentsRepository.deleteComment(command.commentId);
+      await this.commentsRepository.deleteComment(resultObject.data);
     }
   }
 }

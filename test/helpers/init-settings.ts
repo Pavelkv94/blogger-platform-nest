@@ -13,6 +13,7 @@ import { UsersTestManager } from './users-test-manager';
 import { DevicesTestManager } from './devices-test-manager';
 import { BlogsTestManager } from './blogs-test-manager';
 import { PostsTestManager } from './posts-test-manager';
+import { CommentsTestManager } from './comments-test-manager';
 
 export const initSettings = async (
   //передаем callback, который получает ModuleBuilder, если хотим изменить настройку тестового модуля
@@ -56,6 +57,7 @@ export const initSettings = async (
   const userTestManger = new UsersTestManager(app);
   const blogsTestManager = new BlogsTestManager(app);
   const postsTestManager = new PostsTestManager(app);
+  const commentsTestManager = new CommentsTestManager(app);
   const devicesTestManager = new DevicesTestManager(app);
 
   await deleteAllData(app);
@@ -67,6 +69,7 @@ export const initSettings = async (
     userTestManger,
     blogsTestManager,
     postsTestManager,
+    commentsTestManager,
     devicesTestManager,
   };
 };

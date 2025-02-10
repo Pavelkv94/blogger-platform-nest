@@ -24,6 +24,7 @@ export class PostsQueryRepository {
     if (userId) {
       queryBuilder.andWhere('p.userId = :userId', { userId });
     }
+    //todo addCommonTableExpression instead of subQuery or subQueryBuilder
     const subQuery = this.postRepositoryTypeOrm.createQueryBuilder().select('b.name').from(Blog, 'b').where('b.id = p.blogId').limit(1).getQuery();
 
     if (sortBy === 'blogName') {
@@ -111,7 +112,8 @@ export class PostsQueryRepository {
     }
 
     const subQuery = this.postRepositoryTypeOrm.createQueryBuilder().select('b.name').from(Blog, 'b').where('b.id = p.blogId').limit(1).getQuery();
-
+    
+    //todo addCommonTableExpression instead of subQuery or subQueryBuilder
     const post = await queryBuilder.addSelect(`(${subQuery})`, 'blogName').getRawOne();
 
     if (!post) {
@@ -159,4 +161,8 @@ export class PostsQueryRepository {
 
     // return PostViewDto.mapToView(posts[0]);
   }
+
+  // private getSubQueryForBlogName(queryBuilder: SelectQueryBuilder<Post>): string {
+  //   return queryBuilder.select('b.name').from(Blog, 'b').where('b.id = p.blogId').limit(1).getQuery();
+  // }
 }

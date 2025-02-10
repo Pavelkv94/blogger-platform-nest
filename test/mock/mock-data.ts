@@ -1,5 +1,7 @@
 import { BlogCreateDto } from 'src/features/bloggers-platform/blogs/dto/blog-create.dto';
 import { BlogUpdateDto } from 'src/features/bloggers-platform/blogs/dto/blog-update.dto';
+import { CreateCommentInputDto } from 'src/features/bloggers-platform/comments/dto/create-comment.dto';
+import { UpdateCommentInputDto } from 'src/features/bloggers-platform/comments/dto/update-comment.dto';
 import { CreatePostForBlogDto } from 'src/features/bloggers-platform/posts/dto/post-create.dto';
 import { UpdatePostDto } from 'src/features/bloggers-platform/posts/dto/post-update.dto';
 import { CreateUserDto } from 'src/features/user-accounts/dto/users/create-user.dto';
@@ -33,4 +35,12 @@ export const mockUpdatePostBody: UpdatePostDto = {
   shortDescription: 'shortDescription2',
   content: 'content2',
   blogId: 'blogId',
+};
+
+export const mockCreateCommentBody: CreateCommentInputDto = {
+  content: 'test comment with long content',
+};
+
+export const mockUpdateCommentBody: UpdateCommentInputDto = {
+  content: 'updated comment with long content',
 };

@@ -4,7 +4,7 @@ import { Column } from 'typeorm';
 import { EmailConfirmation } from './email-confirmation.entity';
 import { RecoveryConfirmation } from './recovery-confirmation.entity';
 import { SecurityDevice } from '../security-device/security-devices.entity';
-
+import { Comment } from 'src/features/bloggers-platform/comments/domain/comment.entity';
 export const loginConstraints = {
   minLength: 3,
   maxLength: 10,
@@ -39,6 +39,9 @@ export class User {
 
   @OneToMany(() => SecurityDevice, (securityDevice) => securityDevice.user)
   securityDevices: SecurityDevice[];
+
+  @OneToMany(() => Comment, (comment) => comment.commentator)
+  comments: Comment[];
 
   static buildInstance(login: string, email: string, passwordHash: string): User {
     const user = new this();

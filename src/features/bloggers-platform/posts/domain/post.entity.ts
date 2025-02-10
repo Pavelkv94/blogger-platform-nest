@@ -1,10 +1,10 @@
-import { CreateDateColumn, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { CreateDateColumn, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Column } from 'typeorm';
 import { Entity } from 'typeorm';
 import { Blog } from '../../blogs/domain/blog.entity';
 import { CreatePostDto } from '../dto/post-create.dto';
 import { UpdateBlogPostDto, UpdatePostDto } from '../dto/post-update.dto';
-
+import { Comment } from 'src/features/bloggers-platform/comments/domain/comment.entity';
 export const titleConstraints = {
   minLength: 1,
   maxLength: 30,
@@ -43,6 +43,9 @@ export class Post {
   @ManyToOne(() => Blog, (blog) => blog.posts)
   @JoinColumn({ name: 'blogId' })
   blog: Blog;
+
+  @OneToMany(() => Comment, (comment) => comment.post)
+  comments: Comment[];
 
   @Column({ type: 'int' })
   blogId: number;

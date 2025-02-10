@@ -35,6 +35,8 @@ import { SaPostsController } from './posts/api/posts.sa.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Blog } from './blogs/domain/blog.entity';
 import { Post } from './posts/domain/post.entity';
+import { Comment } from './comments/domain/comment.entity';
+
 const useCases = [
   CreateBlogUseCase,
   UpdateBlogUseCase,
@@ -73,7 +75,7 @@ const repositories = [
     }),
     CqrsModule,
     UserAccountsModule,
-    TypeOrmModule.forFeature([Blog, Post]),
+    TypeOrmModule.forFeature([Blog, Post, Comment]),
   ],
   exports: [],
   controllers: [BlogsController, PostsController, CommentsController, SaBlogsController, SaPostsController],
