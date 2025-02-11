@@ -16,6 +16,18 @@ export class CommentsTestManager {
     return response.body;
   }
 
+  async getComment(commentId: string): Promise<CommentViewDto> {
+    const response = await request(this.app.getHttpServer()).get(`/comments/${commentId}`).expect(200);
+
+    return response.body;
+  }
+  async getCommentWithAuth(commentId: string, token: string): Promise<CommentViewDto> {
+    const response = await request(this.app.getHttpServer()).get(`/comments/${commentId}`).set('Authorization', 'Bearer ' + token).expect(200);
+
+    return response.body;
+  }
+  
+
   async getPostComments(query: string, postId: string): Promise<PaginatedViewDto<CommentViewDto[]>> {
     const response = await request(this.app.getHttpServer()).get(`/posts/${postId}/comments${query}`).expect(200);
 

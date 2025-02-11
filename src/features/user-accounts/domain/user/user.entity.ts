@@ -1,10 +1,11 @@
 import { CreateDateColumn, Entity, OneToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
-
 import { Column } from 'typeorm';
 import { EmailConfirmation } from './email-confirmation.entity';
 import { RecoveryConfirmation } from './recovery-confirmation.entity';
 import { SecurityDevice } from '../security-device/security-devices.entity';
 import { Comment } from 'src/features/bloggers-platform/comments/domain/comment.entity';
+import { Like } from 'src/features/bloggers-platform/likes/domain/like.entity';
+
 export const loginConstraints = {
   minLength: 3,
   maxLength: 10,
@@ -42,6 +43,9 @@ export class User {
 
   @OneToMany(() => Comment, (comment) => comment.commentator)
   comments: Comment[];
+
+  @OneToMany(() => Like, (like) => like.user)
+  likes: Like[];
 
   static buildInstance(login: string, email: string, passwordHash: string): User {
     const user = new this();

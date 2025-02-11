@@ -15,7 +15,6 @@ export class UpdateBlogUseCase implements ICommandHandler<UpdateBlogCommand> {
   constructor(private readonly blogsRepository: BlogsRepository) {}
 
   async execute(command: UpdateBlogCommand): Promise<void> {
-    console.log('command', command);
     const blog = await this.blogsRepository.findBlogById(command.id);
     if (!blog) {
       throw NotFoundDomainException.create('Blog not found');

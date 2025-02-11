@@ -74,13 +74,18 @@ export class BlogsController {
     @Param('blogId') blogId: string,
     @ExtractAnyUserFromRequest() user: UserJwtPayloadDto | null,
   ): Promise<PaginatedPostViewDto> {
-    const blog = await this.blogsQueryRepository.findBlogByIdOrNotFoundFail(blogId);
+    try {
+      const blog = await this.blogsQueryRepository.findBlogByIdOrNotFoundFail(blogId);
 
     const userId = user ? user.userId : null;
 
     const posts = await this.postQueryRepository.findAllPosts(query, userId, blog.id);
 
-    return posts;
+      return posts;
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
   }
 
   // @SwaggerPostCreateWith404('Create a new post for a blog', PostViewDto, SwaggerAuthStatus.WithAuth) //swagger

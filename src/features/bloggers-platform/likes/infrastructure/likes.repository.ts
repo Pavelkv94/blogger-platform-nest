@@ -1,46 +1,34 @@
 import { Injectable } from '@nestjs/common';
-// import { LikeDocument, LikeEntity, LikeModelType } from '../domain/like.entity';
-import { DataSource } from 'typeorm';
-import { InjectDataSource } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
 import { LikeStatus } from '../dto/like-status.dto';
 import { LikeParent } from '../dto/like-parent.dto';
-
+import { Like } from '../domain/like.entity';
 @Injectable()
 export class LikesRepository {
-  constructor(@InjectDataSource() private dataSource: DataSource) {}
+  constructor(@InjectRepository(Like) private likeRepositoryTypeOrm: Repository<Like>) {}
 
   async findLike(userId: string, parent_id: string): Promise<any | null> {
-    const query = `
-      SELECT * FROM likes
-      WHERE user_id = $1 AND parent_id = $2
-    `
-    const likes = await this.dataSource.query(query, [userId, parent_id]);
+    const like = await this.likeRepositoryTypeOrm.findOne({
+      where: {
+        userId: Number(userId),
+        parentId: Number(parent_id),
+      },
+    });
 
-    if (!likes[0]) {
+    if (!like) {
       return null;
     }
-    return likes[0];
+    return like;
   }
 
   async createLike(parent_id: string, userId: string, newStatus: LikeStatus, parentType: LikeParent): Promise<void> {
-    const query = `
-      INSERT INTO likes (user_id, parent_id, status, updated_at, parent_type)
-      VALUES ($1, $2, $3, NOW(), $4)
-    `
-    await this.dataSource.query(query, [userId, parent_id, newStatus, parentType]);
+    const like = Like.buildInstance(parentType, parent_id, userId, newStatus);
+    await this.likeRepositoryTypeOrm.save(like);
   }
 
-  async updateLike(likeId: string, newStatus: LikeStatus): Promise<void> {
-    const query = `
-      UPDATE likes SET status = $1, updated_at = NOW() WHERE id = $2
-    `
-    await this.dataSource.query(query, [newStatus, likeId]);
+  async updateLike(like: Like, newStatus: LikeStatus): Promise<void> {
+    like.update(newStatus);
+    await this.likeRepositoryTypeOrm.save(like);
   }
-
-  // async deleteLike(likeId: string): Promise<void> {
-  //   const query = `
-  //     DELETE FROM likes WHERE id = $1
-  //   `
-  //   await this.dataSource.query(query, [likeId]);
-  // }
 }

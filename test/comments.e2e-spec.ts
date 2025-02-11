@@ -8,6 +8,7 @@ import { BlogsTestManager } from './helpers/blogs-test-manager';
 import { CommentsTestManager } from './helpers/comments-test-manager';
 import { PostViewDto } from 'src/features/bloggers-platform/posts/dto/post-view.dto';
 import { UsersTestManager } from './helpers/users-test-manager';
+import { LikeStatus } from 'src/features/bloggers-platform/likes/dto/like-status.dto';
 
 describe('comments', () => {
   let app: INestApplication;
@@ -58,7 +59,13 @@ describe('comments', () => {
     });
   });
 
-  it('should get comments with paging', async () => {
+  it('should get comment', async () => {
+    const commentResponse = await commentsTestManager.createComment(mockCreateCommentBody, post.id, token);
+    const getCommentResponse = await commentsTestManager.getComment(commentResponse.id);
+    expect(getCommentResponse).toEqual(commentResponse);
+  });
+
+  it('should get post comments with paging', async () => {
     const comments = await commentsTestManager.createSeveralComments(12, post.id, token);
     const getCommentsResponse = await commentsTestManager.getPostComments('?pageNumber=2&sortDirection=asc', post.id);
     expect(comments.length).toBe(12);
@@ -89,4 +96,30 @@ describe('comments', () => {
     const getCommentsResponseAfterDelete = await commentsTestManager.getPostComments('', post.id);
     expect(getCommentsResponseAfterDelete.items.length).toBe(0);
   });
+
+  it('should like comment', async () => {
+    const comment = await commentsTestManager.createComment(mockCreateCommentBody, post.id, token);
+    await commentsTestManager.likeComment({ likeStatus: LikeStatus.Like }, comment.id, token);
+
+    const getCommentResponse = await commentsTestManager.getComment(comment.id);
+    expect(getCommentResponse.likesInfo.likesCount).toBe(1);
+    expect(getCommentResponse.likesInfo.myStatus).toBe(LikeStatus.None);
+
+    const getCommentAuthResponse = await commentsTestManager.getCommentWithAuth(comment.id, token);
+    expect(getCommentAuthResponse.likesInfo.likesCount).toBe(1);
+    expect(getCommentAuthResponse.likesInfo.myStatus).toBe(LikeStatus.Like);
+  });
+
+  it('should dislike comment', async () => {
+    const comment = await commentsTestManager.createComment(mockCreateCommentBody, post.id, token);
+    await commentsTestManager.likeComment({ likeStatus: LikeStatus.Dislike }, comment.id, token);
+
+    const getCommentResponse = await commentsTestManager.getComment(comment.id);
+    expect(getCommentResponse.likesInfo.likesCount).toBe(0);
+    expect(getCommentResponse.likesInfo.myStatus).toBe(LikeStatus.None);
+
+    const getCommentAuthResponse = await commentsTestManager.getCommentWithAuth(comment.id, token);
+    expect(getCommentAuthResponse.likesInfo.likesCount).toBe(0);
+    expect(getCommentAuthResponse.likesInfo.myStatus).toBe(LikeStatus.Dislike);
+  }); 
 });

@@ -52,27 +52,14 @@ describe('auth', () => {
     } as MeViewDto);
   });
 
-  // it(`shouldn't return users info while "me" request if accessTokens expired`, async () => {
-  //   const tokens = await userTestManger.createAndLoginSeveralUsers(1);
-  //   console.log("tokens", tokens);
-  //   await delay(2000);
-  //   await userTestManger.me(tokens[0].accessToken, HttpStatus.UNAUTHORIZED);
-  // });
-
   it(`should register user without really send email`, async () => {
-    await userTestManger.registration(
-      mockCreateUserBody,
-      HttpStatus.NO_CONTENT,
-    );
+    await userTestManger.registration(mockCreateUserBody, HttpStatus.NO_CONTENT);
   });
 
   it(`should call email sending method while registration`, async () => {
     const sendEmailMethod = (app.get(EmailService).sendConfirmationEmail = jest.fn().mockImplementation(() => Promise.resolve()));
 
-    await userTestManger.registration(
-      mockCreateUserBody,
-      HttpStatus.NO_CONTENT,
-    );
+    await userTestManger.registration(mockCreateUserBody, HttpStatus.NO_CONTENT);
 
     expect(sendEmailMethod).toHaveBeenCalled();
   });

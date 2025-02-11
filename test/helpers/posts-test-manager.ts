@@ -25,6 +25,18 @@ export class PostsTestManager {
     return response.body;
   }
 
+  async getPost(postId: string): Promise<PostViewDto> {
+    const response = await request(this.app.getHttpServer()).get(`/posts/${postId}`).expect(200);
+
+    return response.body;
+  }
+
+  async getPostWithAuth(postId: string, token: string): Promise<PostViewDto> {
+    const response = await request(this.app.getHttpServer()).get(`/posts/${postId}`).set({ Authorization: 'Bearer ' + token }).expect(200);
+
+    return response.body;
+  }
+
   async createPost(createModel: CreatePostForBlogDto, blog_id: string, statusCode: number = HttpStatus.CREATED): Promise<PostViewDto> {
     const response = await request(this.app.getHttpServer()).post(`/sa/blogs/${blog_id}/posts`).send(createModel).auth('admin', 'qwerty').expect(statusCode);
 

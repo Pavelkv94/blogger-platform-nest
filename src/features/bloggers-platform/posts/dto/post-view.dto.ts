@@ -35,14 +35,10 @@ export class PostViewDto {
     this.blogName = model.blogName;
     this.createdAt = model.p_createdAt;
     this.extendedLikesInfo = {
-      // likesCount: +model.likes_count,
-      // dislikesCount: +model.dislikes_count,
-      // myStatus: model.my_status || LikeStatus.None,
-      // newestLikes: model.newest_likes ? model.newest_likes.map((like) => ({ ...like, userId: like.userId.toString() })) : [],
-      likesCount: 0,
-      dislikesCount: 0,
-      myStatus: LikeStatus.None,
-      newestLikes: [],
+      likesCount: model.likesCount,
+      dislikesCount: model.dislikesCount,
+      myStatus: model.myStatus || LikeStatus.None,
+      newestLikes: model.newestLikes ? model.newestLikes.map((like) => ({ ...like, userId: like.userId.toString() })) : [],
     };
   }
 

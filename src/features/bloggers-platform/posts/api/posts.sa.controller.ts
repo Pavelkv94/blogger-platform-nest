@@ -69,37 +69,4 @@ export class SaPostsController {
   async remove(@Param('id') id: string) {
     await this.commandBus.execute(new DeletePostCommand(id));
   }
-
-  //POST COMMENTS
-  // @SwaggerGetWith404('Get all comments for a post', PaginatedCommentViewDto, SwaggerAuthStatus.WithoutAuth) //swagger
-  // @ApiBearerAuth() //swagger
-  // @UseGuards(JwtOptionalAuthGuard)
-  // @Get(':id/comments')
-  // async findPostComments(@Query() query: GetPostsQueryParams, @Param('id') postId: string, @ExtractAnyUserFromRequest() user: UserJwtPayloadDto | null) {
-  //   const userId = user ? user.userId : null;
-  //   const comments = await this.commentsQueryRepository.findAllComments(postId, query, userId);
-  //   return comments;
-  // }
-
-  // @SwaggerGetWith404('Get all comments for a post', PaginatedCommentViewDto, SwaggerAuthStatus.WithoutAuth) //swagger
-  // @ApiBearerAuth() //swagger
-  // @UseGuards(JwtAuthPassportGuard)
-  // @Post(':id/comments')
-  // async createPostComment(@Param('id') postId: string, @Body() payload: CreateCommentInputDto, @ExtractUserFromRequest() user: UserJwtPayloadDto) {
-  //   const newCommentId = await this.commandBus.execute(new CreateCommentCommand(payload, postId, user));
-
-  //   const newComment = await this.commentsQueryRepository.findCommentByIdOrNotFound(newCommentId, user.userId);
-  //   return newComment;
-  // }
-
-  //POST LIKES
-  // @SwaggerPut('Make like/dislike/unlike/undislike operations') //swagger
-  // @ApiBearerAuth() //swagger
-  // //! @UseGuards(JwtAuthPassportGuard) //* падают тесты, нужно замокать както?
-  // @UseGuards(JwtAuthGuard)
-  // @Put(':id/like-status')
-  // @HttpCode(HttpStatus.NO_CONTENT)
-  // async likeStatus(@Param('id') postId: string, @Body() payload: LikeInputDto, @ExtractUserFromRequest() user: UserJwtPayloadDto) {
-  //   await this.commandBus.execute(new LikePostCommand(postId, user.userId, payload.likeStatus));
-  // }
 }

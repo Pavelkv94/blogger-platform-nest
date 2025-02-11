@@ -15,7 +15,6 @@ import { CreateCommentInputDto } from '../../comments/dto/create-comment.dto';
 import { CommandBus } from '@nestjs/cqrs';
 import { CommentsQueryRepository } from '../../comments/infrastructure/comments.query-repository';
 import { SwaggerPut } from 'src/core/decorators/swagger/swagger-put';
-import { JwtAuthGuard } from 'src/core/guards/jwt-auth.guard';
 import { LikeInputDto } from '../../likes/dto/like-input.dto';
 import { LikePostCommand } from '../application/usecases/like-post.usecase';
 
@@ -45,43 +44,16 @@ export class PostsController {
     return post;
   }
 
-  // @SwaggerPostCreate('Create post', PostViewDto, SwaggerAuthStatus.WithAuth) //swagger
-  // @ApiBasicAuth() //swagger
-  // @UseGuards(BasicAuthGuard)
-  // @Post()
-  // @HttpCode(HttpStatus.CREATED)
-  // async create(@Body() createPostDto: CreatePostDto): Promise<PostViewDto> {
-  //   const id = await this.commandBus.execute(new CreatePostCommand(createPostDto));
-  //   const post = await this.postsQueryRepository.findPostByIdOrNotFoundFail(id, null);
-  //   return post;
-  // }
-
-  // @SwaggerPut('Update a post by ID') //swagger
-  // @ApiBasicAuth() //swagger
-  // @UseGuards(BasicAuthGuard)
-  // @Put(':id')
-  // @HttpCode(HttpStatus.NO_CONTENT)
-  // async update(@Param('id') id: string, @Body() updatePostDto: UpdatePostDto) {
-  //   await this.commandBus.execute(new UpdatePostCommand(id, updatePostDto));
-  // }
-
-  // @SwaggerDelete('Delete post by id', 'Post ID')
-  // @ApiBasicAuth() //swagger
-  // @UseGuards(BasicAuthGuard)
-  // @Delete(':id')
-  // @HttpCode(HttpStatus.NO_CONTENT)
-  // async remove(@Param('id') id: string) {
-  //   await this.commandBus.execute(new DeletePostCommand(id));
-  // }
-
   //POST COMMENTS
   @SwaggerGetWith404('Get all comments for a post', PaginatedCommentViewDto, SwaggerAuthStatus.WithoutAuth) //swagger
   @ApiBearerAuth() //swagger
   @UseGuards(JwtOptionalAuthGuard)
   @Get(':id/comments')
   async findPostComments(@Query() query: GetPostsQueryParams, @Param('id') postId: string, @ExtractAnyUserFromRequest() user: UserJwtPayloadDto | null) {
+    const post = await this.postsQueryRepository.findPostByIdOrNotFoundFail(postId, null);
+
     const userId = user ? user.userId : null;
-    const comments = await this.commentsQueryRepository.findAllComments(postId, query, userId);
+    const comments = await this.commentsQueryRepository.findAllComments(post.id, query, userId);
     return comments;
   }
 
@@ -90,7 +62,9 @@ export class PostsController {
   @UseGuards(JwtAuthPassportGuard)
   @Post(':id/comments')
   async createPostComment(@Param('id') postId: string, @Body() payload: CreateCommentInputDto, @ExtractUserFromRequest() user: UserJwtPayloadDto) {
-    const newCommentId = await this.commandBus.execute(new CreateCommentCommand(payload, postId, user));
+    const post = await this.postsQueryRepository.findPostByIdOrNotFoundFail(postId, null);
+
+    const newCommentId = await this.commandBus.execute(new CreateCommentCommand(payload, post.id, user));
 
     const newComment = await this.commentsQueryRepository.findCommentByIdOrNotFound(newCommentId, user.userId);
     return newComment;
@@ -99,8 +73,8 @@ export class PostsController {
   //POST LIKES
   @SwaggerPut('Make like/dislike/unlike/undislike operations') //swagger
   @ApiBearerAuth() //swagger
-  //! @UseGuards(JwtAuthPassportGuard) //* падают тесты, нужно замокать както?
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthPassportGuard) //* падают тесты, нужно замокать както?
+  // @UseGuards(JwtAuthGuard)
   @Put(':id/like-status')
   @HttpCode(HttpStatus.NO_CONTENT)
   async likeStatus(@Param('id') postId: string, @Body() payload: LikeInputDto, @ExtractUserFromRequest() user: UserJwtPayloadDto) {

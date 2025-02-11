@@ -1,7 +1,47 @@
-// import { HydratedDocument, Model } from 'mongoose';
-// import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-// import { LikeStatus } from '../dto/like-status.dto';
-// import { UserDocument } from 'src/features/user-accounts/domain/user/user.entity';
+import { Column, ManyToOne, UpdateDateColumn } from 'typeorm';
+import { PrimaryGeneratedColumn } from 'typeorm';
+import { Entity } from 'typeorm';
+import { LikeStatus } from '../dto/like-status.dto';
+import { User } from 'src/features/user-accounts/domain/user/user.entity';
+import { LikeParent } from '../dto/like-parent.dto';
+
+@Entity()
+export class Like {
+  @PrimaryGeneratedColumn()
+  id: number;
+
+  @Column({ type: 'enum', enum: LikeParent })
+  parentType: string;
+
+  @Column()
+  parentId: number;
+
+  @Column({ type: 'enum', enum: LikeStatus, default: LikeStatus.None })
+  status: LikeStatus;
+
+  @UpdateDateColumn({ type: 'timestamptz' })
+  updatedAt: Date;
+
+  @Column()
+  userId: number;
+
+  @ManyToOne(() => User, (user) => user.likes)
+  user: User;
+
+  static buildInstance(parentType: LikeParent, parentId: string, userId: string, status: LikeStatus): Like {
+    const like = new this();
+    like.parentType = parentType;
+    like.parentId = +parentId;
+    like.userId = +userId;
+    like.status = status;
+    return like;
+  }
+
+  update(newStatus: LikeStatus) {
+    this.status = newStatus;
+    this.updatedAt = new Date();
+  }
+}
 
 // @Schema({ timestamps: true })
 // export class LikeEntity {

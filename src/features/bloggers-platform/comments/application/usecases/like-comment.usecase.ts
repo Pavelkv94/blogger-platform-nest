@@ -41,30 +41,10 @@ export class LikeCommentUseCase implements ICommandHandler<LikeCommentCommand> {
 
     const like = await this.likesRepository.findLike(command.userId, command.commentId);
 
-    // await this.updateCommentLikesCount(command.commentId, like, command.newStatus);
-
     if (like) {
       await this.commandBus.execute(new UpdateLikeCommand(like, command.newStatus));
     } else {
       await this.commandBus.execute(new CreateLikeCommand(command.userId, command.commentId, command.newStatus, LikeParent.Comment));
     }
   }
-
-  // private async updateCommentLikesCount(postId: string, likeDocument: LikeDocument | null, newStatus: LikeStatus): Promise<void> {
-  //   const commentResultObject = await this.commentsRepository.findCommentById(postId);
-
-  //   if (commentResultObject.status === ResultStatus.NOT_FOUND || commentResultObject.status === ResultStatus.FORBIDDEN) {
-  //     throw NotFoundDomainException.create();
-  //   }
-
-  //   if (!likeDocument) {
-  //     //first like
-  //     commentResultObject.data!.countLikes(LikeStatus.None, newStatus);
-  //   } else {
-  //     //existing like
-  //     commentResultObject.data!.countLikes(likeDocument.status, newStatus);
-  //   }
-
-  //   // await this.commentsRepository.save(commentResultObject.data!);
-  // }
 }

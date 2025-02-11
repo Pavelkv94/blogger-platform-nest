@@ -3,14 +3,17 @@ import { initSettings } from './helpers/init-settings';
 import { JwtService } from '@nestjs/jwt';
 import { deleteAllData } from './helpers/delete-all-data';
 import { PostsTestManager } from './helpers/posts-test-manager';
-import { mockCreateBlogBody, mockCreatePostBody, mockUpdatePostBody } from './mock/mock-data';
+import { mockCreateBlogBody, mockCreatePostBody, mockCreateUserBody, mockUpdatePostBody } from './mock/mock-data';
 import { BlogsTestManager } from './helpers/blogs-test-manager';
 import { BlogViewDto } from 'src/features/bloggers-platform/blogs/dto/blog-view.dto';
+import { UsersTestManager } from './helpers/users-test-manager';
+import { LikeStatus } from 'src/features/bloggers-platform/likes/dto/like-status.dto';
 
 describe('posts', () => {
   let app: INestApplication;
   let postsTestManager: PostsTestManager;
   let blogsTestManager: BlogsTestManager;
+  let usersTestManager: UsersTestManager;
   let blog: BlogViewDto;
 
   beforeAll(async () => {
@@ -25,6 +28,7 @@ describe('posts', () => {
     app = result.app;
     postsTestManager = result.postsTestManager;
     blogsTestManager = result.blogsTestManager;
+    usersTestManager = result.userTestManger;
   });
 
   afterAll(async () => {
@@ -95,5 +99,41 @@ describe('posts', () => {
 
     const getPostsResponseAgain = await postsTestManager.getPosts(blog.id, '?pageNumber=1&sortDirection=asc');
     expect(getPostsResponseAgain.totalCount).toBe(6);
+  });
+
+  it('should like post', async () => {
+    const post = await postsTestManager.createPost(mockCreatePostBody, blog.id);
+
+    await usersTestManager.createUser(mockCreateUserBody);
+    const { accessToken } = await usersTestManager.login(mockCreateUserBody.login, mockCreateUserBody.password);
+
+    await postsTestManager.likePost({ likeStatus: LikeStatus.Like }, post.id, accessToken);
+
+    const getPostResponse = await postsTestManager.getPost(post.id);
+
+    expect(getPostResponse.extendedLikesInfo.likesCount).toBe(1);
+    expect(getPostResponse.extendedLikesInfo.myStatus).toBe(LikeStatus.None);
+
+    const getAuthPostResponse = await postsTestManager.getPostWithAuth(post.id, accessToken);
+    expect(getAuthPostResponse.extendedLikesInfo.likesCount).toBe(1);
+    expect(getAuthPostResponse.extendedLikesInfo.myStatus).toBe(LikeStatus.Like);
+  });
+
+  it('should dislike post', async () => {
+    const post = await postsTestManager.createPost(mockCreatePostBody, blog.id);
+
+    await usersTestManager.createUser(mockCreateUserBody);
+    const { accessToken } = await usersTestManager.login(mockCreateUserBody.login, mockCreateUserBody.password);
+
+    await postsTestManager.likePost({ likeStatus: LikeStatus.Dislike }, post.id, accessToken);
+
+    const getPostResponse = await postsTestManager.getPost(post.id);
+
+    expect(getPostResponse.extendedLikesInfo.likesCount).toBe(0);
+    expect(getPostResponse.extendedLikesInfo.myStatus).toBe(LikeStatus.None);
+
+    const getAuthPostResponse = await postsTestManager.getPostWithAuth(post.id, accessToken);
+    expect(getAuthPostResponse.extendedLikesInfo.likesCount).toBe(0);
+    expect(getAuthPostResponse.extendedLikesInfo.myStatus).toBe(LikeStatus.Dislike);
   });
 });
