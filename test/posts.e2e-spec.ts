@@ -5,9 +5,9 @@ import { deleteAllData } from './helpers/delete-all-data';
 import { PostsTestManager } from './helpers/posts-test-manager';
 import { mockCreateBlogBody, mockCreatePostBody, mockCreateUserBody, mockUpdatePostBody } from './mock/mock-data';
 import { BlogsTestManager } from './helpers/blogs-test-manager';
-import { BlogViewDto } from 'src/features/bloggers-platform/blogs/dto/blog-view.dto';
+import { BlogViewDto } from '../src/features/bloggers-platform/blogs/dto/blog-view.dto';
 import { UsersTestManager } from './helpers/users-test-manager';
-import { LikeStatus } from 'src/features/bloggers-platform/likes/dto/like-status.dto';
+import { LikeStatus } from '../src/features/bloggers-platform/likes/dto/like-status.dto';
 
 describe('posts', () => {
   let app: INestApplication;

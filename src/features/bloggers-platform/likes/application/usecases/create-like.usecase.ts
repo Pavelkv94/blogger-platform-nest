@@ -1,8 +1,8 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { LikeStatus } from '../../dto/like-status.dto';
 import { LikesRepository } from '../../infrastructure/likes.repository';
-import { NotFoundDomainException } from 'src/core/exeptions/domain-exceptions';
-import { UsersRepository } from 'src/features/user-accounts/infrastructure/users/users.repository';
+import { NotFoundDomainException } from '../../../../../core/exeptions/domain-exceptions';
+import { UsersRepository } from '../../../../user-accounts/infrastructure/users/users.repository';
 import { LikeParent } from '../../dto/like-parent.dto';
 
 export class CreateLikeCommand {

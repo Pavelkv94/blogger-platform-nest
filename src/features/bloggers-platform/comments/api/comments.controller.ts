@@ -2,19 +2,19 @@ import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Put, UseGua
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { CommentsQueryRepository } from '../infrastructure/comments.query-repository';
 import { CommentViewDto } from '../dto/comment-view.dto';
-import { SwaggerGetWith404 } from 'src/core/decorators/swagger/swagger-get';
-import { SwaggerAuthStatus } from 'src/core/decorators/swagger/swagger-options';
+import { SwaggerGetWith404 } from '../../../../core/decorators/swagger/swagger-get';
+import { SwaggerAuthStatus } from '../../../../core/decorators/swagger/swagger-options';
 import { DeleteCommentCommand } from '../application/usecases/delete-comment.usecase';
 import { CommandBus } from '@nestjs/cqrs';
-import { ExtractAnyUserFromRequest, ExtractUserFromRequest } from 'src/core/decorators/param/extract-user-from-request';
-import { UserJwtPayloadDto } from 'src/features/user-accounts/dto/users/user-jwt-payload.dto';
+import { ExtractAnyUserFromRequest, ExtractUserFromRequest } from '../../../../core/decorators/param/extract-user-from-request';
+import { UserJwtPayloadDto } from '../../../../features/user-accounts/dto/users/user-jwt-payload.dto';
 import { UpdateCommentInputDto } from '../dto/update-comment.dto';
 import { UpdateCommentCommand } from '../application/usecases/update-comment.usecase';
-import { SwaggerPut } from 'src/core/decorators/swagger/swagger-put';
+import { SwaggerPut } from '../../../../core/decorators/swagger/swagger-put';
 import { LikeInputDto } from '../../likes/dto/like-input.dto';
 import { LikeCommentCommand } from '../application/usecases/like-comment.usecase';
-import { JwtOptionalAuthGuard } from 'src/core/guards/jwt-optional-auth.guard';
-import { JwtAuthPassportGuard } from 'src/core/guards/passport/jwt-auth-passport.guard';
+import { JwtOptionalAuthGuard } from '../../../../core/guards/jwt-optional-auth.guard';
+import { JwtAuthPassportGuard } from '../../../../core/guards/passport/jwt-auth-passport.guard';
 
 @ApiTags('Comments') //swagger
 @Controller('comments')

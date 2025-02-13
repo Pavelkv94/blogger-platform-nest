@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { PaginatedUserViewDto } from 'src/core/dto/base.paginated.view-dto';
-import { NotFoundDomainException } from 'src/core/exeptions/domain-exceptions';
+import { PaginatedUserViewDto } from '../../../../core/dto/base.paginated.view-dto';
+import { NotFoundDomainException } from '../../../../core/exeptions/domain-exceptions';
 import { GetUsersQueryParams } from '../../dto/users/get-users-query-params.input-dto';
 import { MeViewDto, BaseUserViewDto } from '../../dto/users/user-view.dto';
 import { InjectRepository } from '@nestjs/typeorm';

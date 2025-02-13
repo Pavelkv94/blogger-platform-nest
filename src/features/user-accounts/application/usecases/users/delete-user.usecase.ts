@@ -1,6 +1,6 @@
-import { NotFoundDomainException } from 'src/core/exeptions/domain-exceptions';
+import { NotFoundDomainException } from '../../../../../core/exeptions/domain-exceptions';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { UsersRepository } from 'src/features/user-accounts/infrastructure/users/users.repository';
+import { UsersRepository } from '../../../infrastructure/users/users.repository';
 
 export class DeleteUserCommand {
   constructor(public readonly id: string) {}
@@ -17,7 +17,5 @@ export class DeleteUserUseCase implements ICommandHandler<DeleteUserCommand> {
     }
 
     await this.usersRepository.deleteUser(command.id);
-    // await user.markDeleted();
-    // await this.usersRepository.save(user);
   }
 }

@@ -1,10 +1,10 @@
 import { Inject } from '@nestjs/common';
 import { CommandBus, CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { RegistrationInputDto } from '../../../dto/users/create-user.dto';
-import { BadRequestDomainException, NotFoundDomainException } from 'src/core/exeptions/domain-exceptions';
-import { EmailService } from 'src/features/notifications/email.service';
 import { CreateUserCommand } from './create-user.usecase';
-import { UsersRepository } from 'src/features/user-accounts/infrastructure/users/users.repository';
+import { UsersRepository } from '../../../infrastructure/users/users.repository';
+import { BadRequestDomainException, NotFoundDomainException } from '../../../../../core/exeptions/domain-exceptions';
+import { EmailService } from '../../../../notifications/email.service';
 
 export class RegisterUserCommand {
   constructor(public readonly payload: RegistrationInputDto) {}

@@ -6,7 +6,7 @@ import {
   ValidatorConstraint,
   ValidatorConstraintInterface,
 } from 'class-validator';
-import { BlogsRepository } from 'src/features/bloggers-platform/blogs/infrastructure/blogs.repository';
+import { BlogsRepository } from '../../../blogs/infrastructure/blogs.repository';
 
 // Обязательна регистрация в ioc
 

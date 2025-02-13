@@ -1,6 +1,6 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { SecurityDevicesRepository } from 'src/features/user-accounts/infrastructure/security-devices/security-devices.repository';
-import { ForbiddenDomainException, NotFoundDomainException } from 'src/core/exeptions/domain-exceptions';
+import { SecurityDevicesRepository } from '../../../infrastructure/security-devices/security-devices.repository';
+import { ForbiddenDomainException, NotFoundDomainException } from '../../../../../core/exeptions/domain-exceptions';
 
 export class DeleteSecurityDeviceCommand {
   constructor(

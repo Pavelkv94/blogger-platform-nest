@@ -5,8 +5,8 @@ import { AppModule } from '../../src/app.module';
 import { deleteAllData } from './delete-all-data';
 import { EmailService } from '../../src/features/notifications/email.service';
 import { EmailServiceMock } from '../mock/email-service.mock';
-import { configApp } from 'src/setup/app.setup';
-import { CoreConfig } from 'src/core/core.config';
+import { configApp } from '../../src/setup/app.setup';
+import { CoreConfig } from '../../src/core/core.config';
 
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersTestManager } from './users-test-manager';

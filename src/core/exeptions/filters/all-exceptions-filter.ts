@@ -2,7 +2,7 @@
 import { Catch, HttpException, HttpStatus } from '@nestjs/common';
 import { BaseExceptionFilter } from './base-exception-filter';
 import { Request, Response } from 'express';
-import { CoreConfig } from 'src/core/core.config';
+import { CoreConfig } from '../../core.config';
 
 @Catch()
 export class AllExceptionsFilter extends BaseExceptionFilter {

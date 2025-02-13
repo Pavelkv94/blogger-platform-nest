@@ -1,9 +1,9 @@
 import { CreateUserDto } from '../../../dto/users/create-user.dto';
-import { BadRequestDomainException } from 'src/core/exeptions/domain-exceptions';
+import { BadRequestDomainException } from '../../../../../core/exeptions/domain-exceptions';
 import { BcryptService } from '../../bcrypt.service';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { UsersRepository } from 'src/features/user-accounts/infrastructure/users/users.repository';
-import { User } from 'src/features/user-accounts/domain/user/user.entity';
+import { UsersRepository } from '../../../infrastructure/users/users.repository';
+import { User } from '../../../domain/user/user.entity';
 
 export class CreateUserCommand {
   constructor(public readonly payload: CreateUserDto) {}

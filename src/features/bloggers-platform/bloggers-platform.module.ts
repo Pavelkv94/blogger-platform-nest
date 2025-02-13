@@ -17,7 +17,7 @@ import { DeletePostUseCase } from './posts/application/usecases/delete-post.usec
 import { CreateCommentUseCase } from './comments/application/usecases/create-comment.usecase';
 import { CommentsRepository } from './comments/infrastructure/comments.repository';
 import { UserAccountsModule } from '../user-accounts/user-accounts.module';
-import { CoreConfig } from 'src/core/core.config';
+import { CoreConfig } from '../../core/core.config';
 import { JwtModule } from '@nestjs/jwt';
 import { DeleteCommentUseCase } from './comments/application/usecases/delete-comment.usecase';
 import { CommentsController } from './comments/api/comments.controller';
@@ -28,7 +28,7 @@ import { CreateLikeUseCase } from './likes/application/usecases/create-like.usec
 import { UpdateLikeUseCase } from './likes/application/usecases/update-like.usecase';
 import { LikesRepository } from './likes/infrastructure/likes.repository';
 import { PassportModule } from '@nestjs/passport';
-import { JwtAccessStrategy } from 'src/core/guards/passport/jwt-access.strategy';
+import { JwtAccessStrategy } from '../../core/guards/passport/jwt-access.strategy';
 import { BlogIsNotExistConstraint } from './posts/api/validation/blogIsExist.decorator';
 import { SaBlogsController } from './blogs/api/blogs.sa.controller';
 import { SaPostsController } from './posts/api/posts.sa.controller';

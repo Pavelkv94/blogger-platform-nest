@@ -5,7 +5,7 @@ import { AuthController } from './api/auth.controller';
 import { JwtModule } from '@nestjs/jwt';
 import { AuthService } from './application/auth.service';
 import { NotificationsModule } from '../notifications/notifications.module';
-import { CoreConfig } from 'src/core/core.config';
+import { CoreConfig } from '../../core/core.config';
 import { CreateUserUseCase } from './application/usecases/users/create-user.usecase';
 import { DeleteUserUseCase } from './application/usecases/users/delete-user.usecase';
 import { RegisterUserUseCase } from './application/usecases/users/register-user.usecase';
@@ -16,7 +16,7 @@ import { RegisterConfirmUseCase } from './application/usecases/users/register-co
 import { PassRecoveryUseCase } from './application/usecases/users/pass-recovery.usecase';
 import { CqrsModule } from '@nestjs/cqrs';
 import { PassportModule } from '@nestjs/passport';
-import { JwtAccessStrategy } from 'src/core/guards/passport/jwt-access.strategy';
+import { JwtAccessStrategy } from '../../core/guards/passport/jwt-access.strategy';
 import { LocalStrategy } from './api/guards/passport/local.strategy';
 import { UsersRepository } from './infrastructure/users/users.repository';
 import { UsersQueryRepository } from './infrastructure/users/users.query-repository';
@@ -25,7 +25,7 @@ import { AddSecurityDeviceUseCase } from './application/usecases/security-device
 import { SecurityDevicesQueryRepository } from './infrastructure/security-devices/security-devices.query-repository';
 import { SecurityDevicesRepository } from './infrastructure/security-devices/security-devices.repository';
 import { RefreshTokenUserUseCase } from './application/usecases/users/refresh-token.usecase';
-import { JwtRefreshAuthPassportStrategy } from 'src/core/guards/passport/jwt-refresh.strategy';
+import { JwtRefreshAuthPassportStrategy } from '../../core/guards/passport/jwt-refresh.strategy';
 import { UpdateSecurityDeviceUseCase } from './application/usecases/security-devices/update-device.usecase';
 import { DeleteSecurityDeviceUseCase } from './application/usecases/security-devices/delete-device.usecase';
 import { DeleteOtherSecurityDevicesUseCase } from './application/usecases/security-devices/delete-devices.usecase';

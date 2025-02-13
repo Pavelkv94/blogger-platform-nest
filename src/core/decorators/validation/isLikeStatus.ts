@@ -1,5 +1,5 @@
 import { registerDecorator, ValidationOptions } from 'class-validator';
-import { LikeStatus } from 'src/features/bloggers-platform/likes/dto/like-status.dto';
+import { LikeStatus } from '../../../features/bloggers-platform/likes/dto/like-status.dto';
 
 export function IsLikeStatus(validationOptions?: ValidationOptions) {
   return function (object: object, propertyName: string) {

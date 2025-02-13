@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { ResultObject, ResultStatus } from 'src/core/dto/result-object.dto';
+import { ResultObject, ResultStatus } from '../../../../core/dto/result-object.dto';
 import { IsNull, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateCommentInputDto } from '../dto/create-comment.dto';
-import { UserJwtPayloadDto } from 'src/features/user-accounts/dto/users/user-jwt-payload.dto';
+import { UserJwtPayloadDto } from '../../../user-accounts/dto/users/user-jwt-payload.dto';
 import { Comment } from '../domain/comment.entity';
 
 @Injectable()

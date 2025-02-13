@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsString, Length } from 'class-validator';
 import { contentConstraints, shortDescriptionConstraints, titleConstraints } from '../domain/post.entity';
-import { IsNotEmptyString } from 'src/core/decorators/validation/IsNotEmptyString';
+import { IsNotEmptyString } from '../../../../core/decorators/validation/IsNotEmptyString';
 import { BlogIsNotExist } from '../api/validation/blogIsExist.decorator';
 
 export class CreatePostForBlogDto {

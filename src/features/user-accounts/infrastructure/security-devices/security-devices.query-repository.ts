@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { DeviceViewDto } from '../../dto/security-devices/device-view.dto';
-import { NotFoundDomainException } from 'src/core/exeptions/domain-exceptions';
+import { NotFoundDomainException } from '../../../../core/exeptions/domain-exceptions';
 import { IsNull, Repository } from 'typeorm';
 import { SecurityDevice } from '../../domain/security-device/security-devices.entity';
 import { InjectRepository } from '@nestjs/typeorm';

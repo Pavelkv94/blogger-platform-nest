@@ -5,7 +5,7 @@ import { deleteAllData } from './helpers/delete-all-data';
 import { UsersTestManager } from './helpers/users-test-manager';
 import { mockCreateUserBody } from './mock/mock-data';
 import { DataSource } from 'typeorm';
-import { MeViewDto } from 'src/features/user-accounts/dto/users/user-view.dto';
+import { MeViewDto } from '../src/features/user-accounts/dto/users/user-view.dto';
 
 describe('users', () => {
   let app: INestApplication;

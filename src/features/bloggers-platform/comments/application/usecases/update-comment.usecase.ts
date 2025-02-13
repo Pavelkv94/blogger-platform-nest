@@ -1,8 +1,8 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { CreateCommentInputDto } from '../../dto/create-comment.dto';
-import { ForbiddenDomainException, NotFoundDomainException } from 'src/core/exeptions/domain-exceptions';
+import { ForbiddenDomainException, NotFoundDomainException } from '../../../../../core/exeptions/domain-exceptions';
 import { CommentsRepository } from '../../infrastructure/comments.repository';
-import { ResultStatus } from 'src/core/dto/result-object.dto';
+import { ResultStatus } from '../../../../../core/dto/result-object.dto';
 
 export class UpdateCommentCommand {
   constructor(

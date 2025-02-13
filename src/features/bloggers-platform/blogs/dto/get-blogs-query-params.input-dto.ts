@@ -1,6 +1,6 @@
 //dto для запроса списка юзеров с пагинацией, сортировкой, фильтрами
 
-import { BaseSortablePaginationParams } from "src/core/dto/base.query-params.input-dto";
+import { BaseSortablePaginationParams } from "../../../../core/dto/base.query-params.input-dto";
 import { BlogsSortBy } from "./blogs-sort-by";
 import { IsEnum } from "class-validator";
 import { IsOptional } from "class-validator";

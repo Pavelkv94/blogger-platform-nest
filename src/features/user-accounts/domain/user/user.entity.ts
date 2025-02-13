@@ -3,8 +3,8 @@ import { Column } from 'typeorm';
 import { EmailConfirmation } from './email-confirmation.entity';
 import { RecoveryConfirmation } from './recovery-confirmation.entity';
 import { SecurityDevice } from '../security-device/security-devices.entity';
-import { Comment } from 'src/features/bloggers-platform/comments/domain/comment.entity';
-import { Like } from 'src/features/bloggers-platform/likes/domain/like.entity';
+import { Comment } from '../../../../features/bloggers-platform/comments/domain/comment.entity';
+import { Like } from '../../../../features/bloggers-platform/likes/domain/like.entity';
 
 export const loginConstraints = {
   minLength: 3,

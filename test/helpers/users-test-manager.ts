@@ -1,9 +1,9 @@
 import { HttpStatus, INestApplication } from '@nestjs/common';
-import { CreateUserDto } from 'src/features/user-accounts/dto/users/create-user.dto';
-import { MeViewDto, BaseUserViewDto } from 'src/features/user-accounts/dto/users/user-view.dto';
+import { CreateUserDto } from '../../src/features/user-accounts/dto/users/create-user.dto';
+import { MeViewDto, BaseUserViewDto } from '../../src/features/user-accounts/dto/users/user-view.dto';
 import request from 'supertest';
 import { delay } from './delay';
-import { PaginatedViewDto } from 'src/core/dto/base.paginated.view-dto';
+import { PaginatedViewDto } from '../../src/core/dto/base.paginated.view-dto';
 
 export class UsersTestManager {
   constructor(private app: INestApplication) {}

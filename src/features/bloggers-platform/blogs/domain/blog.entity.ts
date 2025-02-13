@@ -1,13 +1,5 @@
-// import { HydratedDocument, Model } from 'mongoose';
-// import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-// import { BlogCreateDto } from '../dto/blog-create.dto';
-// import { BlogUpdateDto } from '../dto/blog-update.dto';
-// import { DeletionStatus } from 'src/core/dto/deletion-status';
-
 import { Column, CreateDateColumn, OneToMany } from 'typeorm';
-
 import { PrimaryGeneratedColumn } from 'typeorm';
-
 import { Entity } from 'typeorm';
 import { Post } from '../../posts/domain/post.entity';
 

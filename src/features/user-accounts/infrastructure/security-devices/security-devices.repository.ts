@@ -3,7 +3,7 @@ import { UserJwtPayloadDto } from '../../dto/users/user-jwt-payload.dto';
 import { IsNull, Not, Repository } from 'typeorm';
 import { SecurityDevice } from '../../domain/security-device/security-devices.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { NotFoundDomainException } from 'src/core/exeptions/domain-exceptions';
+import { NotFoundDomainException } from '../../../../core/exeptions/domain-exceptions';
 
 @Injectable()
 export class SecurityDevicesRepository {

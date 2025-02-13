@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { CommentViewDto } from '../dto/comment-view.dto';
 import { GetPostsQueryParams } from '../../posts/dto/get-posts-query-params.input-dto';
-import { PaginatedCommentViewDto } from 'src/core/dto/base.paginated.view-dto';
-import { NotFoundDomainException } from 'src/core/exeptions/domain-exceptions';
+import { PaginatedCommentViewDto } from '../../../../core/dto/base.paginated.view-dto';
+import { NotFoundDomainException } from '../../../../core/exeptions/domain-exceptions';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Comment } from '../domain/comment.entity';
-import { User } from 'src/features/user-accounts/domain/user/user.entity';
+import { User } from '../../../user-accounts/domain/user/user.entity';
 import { Like } from '../../likes/domain/like.entity';
 import { LikeStatus } from '../../likes/dto/like-status.dto';
 import { LikeParent } from '../../likes/dto/like-parent.dto';

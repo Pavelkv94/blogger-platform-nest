@@ -1,17 +1,16 @@
 import { Injectable } from '@nestjs/common';
-import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
 import { randomUUID } from 'crypto';
-import { getExpirationDate } from 'src/core/utils/date/getExpirationDate';
-import { DataSource, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { RecoveryConfirmation } from '../../domain/user/recovery-confirmation.entity';
 import { EmailConfirmation } from '../../domain/user/email-confirmation.entity';
-import { NotFoundDomainException } from 'src/core/exeptions/domain-exceptions';
+import { NotFoundDomainException } from '../../../../core/exeptions/domain-exceptions';
 import { User } from '../../domain/user/user.entity';
+import { getExpirationDate } from '../../../../core/utils/date/getExpirationDate';
 
 @Injectable()
 export class AuthRepository {
   constructor(
-    @InjectDataSource() private datasourse: DataSource,
     @InjectRepository(EmailConfirmation) private emailConfirmationRepositoryTypeOrm: Repository<EmailConfirmation>,
     @InjectRepository(RecoveryConfirmation) private recoveryConfirmationRepositoryTypeOrm: Repository<RecoveryConfirmation>,
     @InjectRepository(User) private userRepositoryTypeOrm: Repository<User>,

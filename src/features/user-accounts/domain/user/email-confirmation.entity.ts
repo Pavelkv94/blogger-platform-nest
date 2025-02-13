@@ -1,9 +1,8 @@
 import { Entity, JoinColumn, OneToOne, PrimaryColumn } from 'typeorm';
-
 import { Column } from 'typeorm';
 import { User } from './user.entity';
 import { randomUUID } from 'crypto';
-import { getExpirationDate } from 'src/core/utils/date/getExpirationDate';
+import { getExpirationDate } from '../../../../core/utils/date/getExpirationDate';
 
 @Entity()
 export class EmailConfirmation {

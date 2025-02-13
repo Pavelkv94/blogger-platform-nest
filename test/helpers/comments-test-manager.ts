@@ -1,11 +1,11 @@
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import request from 'supertest';
-import { PaginatedViewDto } from 'src/core/dto/base.paginated.view-dto';
+import { PaginatedViewDto } from '../../src/core/dto/base.paginated.view-dto';
 import { delay } from './delay';
-import { LikeStatus } from 'src/features/bloggers-platform/likes/dto/like-status.dto';
-import { CommentViewDto } from 'src/features/bloggers-platform/comments/dto/comment-view.dto';
-import { CreateCommentInputDto } from 'src/features/bloggers-platform/comments/dto/create-comment.dto';
-import { UpdateCommentInputDto } from 'src/features/bloggers-platform/comments/dto/update-comment.dto';
+import { LikeStatus } from '../../src/features/bloggers-platform/likes/dto/like-status.dto';
+import { CommentViewDto } from '../../src/features/bloggers-platform/comments/dto/comment-view.dto';
+import { CreateCommentInputDto } from '../../src/features/bloggers-platform/comments/dto/create-comment.dto';
+import { UpdateCommentInputDto } from '../../src/features/bloggers-platform/comments/dto/update-comment.dto';
 
 export class CommentsTestManager {
   constructor(private app: INestApplication) {}

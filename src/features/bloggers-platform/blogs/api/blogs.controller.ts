@@ -1,15 +1,15 @@
 import { Controller, Get, Param, Query, UseGuards } from '@nestjs/common';
 import { BlogsQueryRepository } from '../infrastructure/blogs.query-repository';
 import { BlogViewDto } from '../dto/blog-view.dto';
-import { PaginatedBlogViewDto, PaginatedPostViewDto } from 'src/core/dto/base.paginated.view-dto';
+import { PaginatedBlogViewDto, PaginatedPostViewDto } from '../../../../core/dto/base.paginated.view-dto';
 import { GetBlogsQueryParams } from '../dto/get-blogs-query-params.input-dto';
 import { GetPostsQueryParams } from '../../posts/dto/get-posts-query-params.input-dto';
 import { PostsQueryRepository } from '../../posts/infrastructure/posts.query-repository';
-import { SwaggerAuthStatus } from 'src/core/decorators/swagger/swagger-options';
-import { SwaggerGet, SwaggerGetWith404 } from 'src/core/decorators/swagger/swagger-get';
-import { JwtOptionalAuthGuard } from 'src/core/guards/jwt-optional-auth.guard';
-import { ExtractAnyUserFromRequest } from 'src/core/decorators/param/extract-user-from-request';
-import { UserJwtPayloadDto } from 'src/features/user-accounts/dto/users/user-jwt-payload.dto';
+import { SwaggerAuthStatus } from '../../../../core/decorators/swagger/swagger-options';
+import { SwaggerGet, SwaggerGetWith404 } from '../../../../core/decorators/swagger/swagger-get';
+import { JwtOptionalAuthGuard } from '../../../../core/guards/jwt-optional-auth.guard';
+import { ExtractAnyUserFromRequest } from '../../../../core/decorators/param/extract-user-from-request';
+import { UserJwtPayloadDto } from '../../../../features/user-accounts/dto/users/user-jwt-payload.dto';
 import { ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Blogs') //swagger

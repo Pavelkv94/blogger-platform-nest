@@ -1,7 +1,7 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { BlogsRepository } from '../../infrastructure/blogs.repository';
 import { BlogUpdateDto } from '../../dto/blog-update.dto';
-import { NotFoundDomainException } from 'src/core/exeptions/domain-exceptions';
+import { NotFoundDomainException } from '../../../../../core/exeptions/domain-exceptions';
 
 export class UpdateBlogCommand {
   constructor(

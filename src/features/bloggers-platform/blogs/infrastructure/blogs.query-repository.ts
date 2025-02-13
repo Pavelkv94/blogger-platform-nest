@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { BlogViewDto } from '../dto/blog-view.dto';
 import { GetBlogsQueryParams } from '../dto/get-blogs-query-params.input-dto';
-import { PaginatedBlogViewDto } from 'src/core/dto/base.paginated.view-dto';
+import { PaginatedBlogViewDto } from '../../../../core/dto/base.paginated.view-dto';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { NotFoundDomainException } from 'src/core/exeptions/domain-exceptions';
+import { NotFoundDomainException } from '../../../../core/exeptions/domain-exceptions';
 import { Blog } from '../domain/blog.entity';
 
 @Injectable()

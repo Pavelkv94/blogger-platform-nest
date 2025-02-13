@@ -1,11 +1,11 @@
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import request from 'supertest';
-import { PaginatedViewDto } from 'src/core/dto/base.paginated.view-dto';
+import { PaginatedViewDto } from '../../src/core/dto/base.paginated.view-dto';
 import { delay } from './delay';
-import { CreatePostForBlogDto } from 'src/features/bloggers-platform/posts/dto/post-create.dto';
-import { LikeStatus } from 'src/features/bloggers-platform/likes/dto/like-status.dto';
-import { PostViewDto } from 'src/features/bloggers-platform/posts/dto/post-view.dto';
-import { UpdatePostDto } from 'src/features/bloggers-platform/posts/dto/post-update.dto';
+import { CreatePostForBlogDto } from '../../src/features/bloggers-platform/posts/dto/post-create.dto';
+import { LikeStatus } from '../../src/features/bloggers-platform/likes/dto/like-status.dto';
+import { PostViewDto } from '../../src/features/bloggers-platform/posts/dto/post-view.dto';
+import { UpdatePostDto } from '../../src/features/bloggers-platform/posts/dto/post-update.dto';
 
 export class PostsTestManager {
   constructor(private app: INestApplication) {}

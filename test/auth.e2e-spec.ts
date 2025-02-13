@@ -4,8 +4,8 @@ import { JwtService } from '@nestjs/jwt';
 import { deleteAllData } from './helpers/delete-all-data';
 import { UsersTestManager } from './helpers/users-test-manager';
 import { mockCreateUserBody } from './mock/mock-data';
-import { MeViewDto } from 'src/features/user-accounts/dto/users/user-view.dto';
-import { EmailService } from 'src/features/notifications/email.service';
+import { MeViewDto } from '../src/features/user-accounts/dto/users/user-view.dto';
+import { EmailService } from '../src/features/notifications/email.service';
 
 describe('auth', () => {
   let app: INestApplication;

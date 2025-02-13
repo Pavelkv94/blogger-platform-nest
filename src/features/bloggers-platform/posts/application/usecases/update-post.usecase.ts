@@ -1,8 +1,8 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { PostsRepository } from '../../infrastructure/posts.repository';
 import { UpdateBlogPostDto, UpdatePostDto } from '../../dto/post-update.dto';
-import { ForbiddenDomainException, NotFoundDomainException } from 'src/core/exeptions/domain-exceptions';
-import { BlogsRepository } from 'src/features/bloggers-platform/blogs/infrastructure/blogs.repository';
+import { ForbiddenDomainException, NotFoundDomainException } from '../../../../../core/exeptions/domain-exceptions';
+import { BlogsRepository } from '../../../blogs/infrastructure/blogs.repository';
 
 export class UpdatePostCommand {
   constructor(

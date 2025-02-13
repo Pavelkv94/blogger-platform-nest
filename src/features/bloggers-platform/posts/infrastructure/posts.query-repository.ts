@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { GetPostsQueryParams } from '../dto/get-posts-query-params.input-dto';
 import { PostViewDto } from '../dto/post-view.dto';
-import { PaginatedPostViewDto } from 'src/core/dto/base.paginated.view-dto';
-import { NotFoundDomainException } from 'src/core/exeptions/domain-exceptions';
+import { PaginatedPostViewDto } from '../../../../core/dto/base.paginated.view-dto';
+import { NotFoundDomainException } from '../../../../core/exeptions/domain-exceptions';
 import { Repository, SelectQueryBuilder } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Post } from '../domain/post.entity';
@@ -10,7 +10,7 @@ import { Blog } from '../../blogs/domain/blog.entity';
 import { Like } from '../../likes/domain/like.entity';
 import { LikeParent } from '../../likes/dto/like-parent.dto';
 import { LikeStatus } from '../../likes/dto/like-status.dto';
-import { User } from 'src/features/user-accounts/domain/user/user.entity';
+import { User } from '../../../user-accounts/domain/user/user.entity';
 
 @Injectable()
 export class PostsQueryRepository {

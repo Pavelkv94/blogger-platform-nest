@@ -1,9 +1,8 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { UnauthorizedDomainException } from 'src/core/exeptions/domain-exceptions';
+import { UnauthorizedDomainException } from '../../../core/exeptions/domain-exceptions';
 import { BcryptService } from './bcrypt.service';
 import { LoginInputDto } from '../dto/users/login-user.dto';
 import {} from '../dto/users/create-user.dto';
-// import { UserDocument } from '../domain/user/user.entity';
 import { UsersRepository } from '../infrastructure/users/users.repository';
 
 @Injectable()

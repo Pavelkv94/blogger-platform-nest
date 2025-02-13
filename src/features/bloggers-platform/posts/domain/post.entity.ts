@@ -4,7 +4,8 @@ import { Entity } from 'typeorm';
 import { Blog } from '../../blogs/domain/blog.entity';
 import { CreatePostDto } from '../dto/post-create.dto';
 import { UpdateBlogPostDto, UpdatePostDto } from '../dto/post-update.dto';
-import { Comment } from 'src/features/bloggers-platform/comments/domain/comment.entity';
+import { Comment } from '../../comments/domain/comment.entity';
+
 export const titleConstraints = {
   minLength: 1,
   maxLength: 30,

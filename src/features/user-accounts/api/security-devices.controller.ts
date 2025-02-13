@@ -1,13 +1,13 @@
 import { Controller, Delete, Get, HttpCode, HttpStatus, Param, UseGuards } from '@nestjs/common';
-import { PaginatedUserViewDto } from 'src/core/dto/base.paginated.view-dto';
+import { PaginatedUserViewDto } from '../../../core/dto/base.paginated.view-dto';
 import { ApiTags } from '@nestjs/swagger';
-import { SwaggerAuthStatus } from 'src/core/decorators/swagger/swagger-options';
-import { SwaggerGet } from 'src/core/decorators/swagger/swagger-get';
+import { SwaggerAuthStatus } from '../../../core/decorators/swagger/swagger-options';
+import { SwaggerGet } from '../../../core/decorators/swagger/swagger-get';
 import { CommandBus } from '@nestjs/cqrs';
 import { SecurityDevicesQueryRepository } from '../infrastructure/security-devices/security-devices.query-repository';
 import { DeviceViewDto } from '../dto/security-devices/device-view.dto';
-import { JwtRefreshAuthPassportGuard } from 'src/core/guards/passport/jwt-refresh-passport.guard';
-import { ExtractUserFromRequest } from 'src/core/decorators/param/extract-user-from-request';
+import { JwtRefreshAuthPassportGuard } from '../../../core/guards/passport/jwt-refresh-passport.guard';
+import { ExtractUserFromRequest } from '../../../core/decorators/param/extract-user-from-request';
 import { UserJwtPayloadDto } from '../dto/users/user-jwt-payload.dto';
 import { DeleteSecurityDeviceCommand } from '../application/usecases/security-devices/delete-device.usecase';
 import { DeleteOtherSecurityDevicesCommand } from '../application/usecases/security-devices/delete-devices.usecase';

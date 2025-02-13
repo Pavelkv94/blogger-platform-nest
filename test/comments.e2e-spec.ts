@@ -6,9 +6,9 @@ import { PostsTestManager } from './helpers/posts-test-manager';
 import { mockCreateBlogBody, mockCreateCommentBody, mockCreatePostBody, mockCreateUserBody, mockUpdateCommentBody } from './mock/mock-data';
 import { BlogsTestManager } from './helpers/blogs-test-manager';
 import { CommentsTestManager } from './helpers/comments-test-manager';
-import { PostViewDto } from 'src/features/bloggers-platform/posts/dto/post-view.dto';
+import { PostViewDto } from '../src/features/bloggers-platform/posts/dto/post-view.dto';
 import { UsersTestManager } from './helpers/users-test-manager';
-import { LikeStatus } from 'src/features/bloggers-platform/likes/dto/like-status.dto';
+import { LikeStatus } from '../src/features/bloggers-platform/likes/dto/like-status.dto';
 
 describe('comments', () => {
   let app: INestApplication;

@@ -5,20 +5,20 @@ import { GetPostsQueryParams } from '../dto/get-posts-query-params.input-dto';
 import { PostsQueryRepository } from '../infrastructure/posts.query-repository';
 import { PostViewDto } from '../dto/post-view.dto';
 import { ApiBasicAuth, ApiTags } from '@nestjs/swagger';
-import { SwaggerAuthStatus } from 'src/core/decorators/swagger/swagger-options';
-import { SwaggerGet, SwaggerGetWith404 } from 'src/core/decorators/swagger/swagger-get';
-import { PaginatedPostViewDto } from 'src/core/dto/base.paginated.view-dto';
+import { SwaggerAuthStatus } from '../../../../core/decorators/swagger/swagger-options';
+import { SwaggerGet, SwaggerGetWith404 } from '../../../../core/decorators/swagger/swagger-get';
+import { PaginatedPostViewDto } from '../../../../core/dto/base.paginated.view-dto';
 import { CommandBus } from '@nestjs/cqrs';
 import { CreatePostCommand } from '../application/usecases/create-post.usecase';
 import { UpdatePostCommand } from '../application/usecases/update-post.usecase';
 import { DeletePostCommand } from '../application/usecases/delete-post.usecase';
-import { BasicAuthGuard } from 'src/core/guards/basic-auth.guard';
-import { UserJwtPayloadDto } from 'src/features/user-accounts/dto/users/user-jwt-payload.dto';
-import { ExtractAnyUserFromRequest } from 'src/core/decorators/param/extract-user-from-request';
-import { JwtOptionalAuthGuard } from 'src/core/guards/jwt-optional-auth.guard';
-import { SwaggerPostCreate } from 'src/core/decorators/swagger/swagger-post';
-import { SwaggerPut } from 'src/core/decorators/swagger/swagger-put';
-import { SwaggerDelete } from 'src/core/decorators/swagger/swagger-delete';
+import { BasicAuthGuard } from '../../../../core/guards/basic-auth.guard';
+import { UserJwtPayloadDto } from '../../../user-accounts/dto/users/user-jwt-payload.dto';
+import { ExtractAnyUserFromRequest } from '../../../../core/decorators/param/extract-user-from-request';
+import { JwtOptionalAuthGuard } from '../../../../core/guards/jwt-optional-auth.guard';
+import { SwaggerPostCreate } from '../../../../core/decorators/swagger/swagger-post';
+import { SwaggerPut } from '../../../../core/decorators/swagger/swagger-put';
+import { SwaggerDelete } from '../../../../core/decorators/swagger/swagger-delete';
 
 @ApiTags('posts') //swagger
 @ApiBasicAuth() //swagger

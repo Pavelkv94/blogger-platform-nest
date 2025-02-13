@@ -4,7 +4,7 @@ import { IsUrl } from 'class-validator';
 import { IsString } from 'class-validator';
 import { descriptionConstraints, websiteUrlConstraints } from '../domain/blog.entity';
 import { nameConstraints } from '../domain/blog.entity';
-import { IsNotEmptyString } from 'src/core/decorators/validation/IsNotEmptyString';
+import { IsNotEmptyString } from '../../../../core/decorators/validation/IsNotEmptyString';
 
 export class BlogCreateDto {
   @ApiProperty({ example: 'Blog Name' })

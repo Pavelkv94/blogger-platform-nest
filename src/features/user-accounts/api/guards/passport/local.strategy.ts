@@ -2,8 +2,7 @@ import { Strategy } from 'passport-local';
 import { PassportStrategy } from '@nestjs/passport';
 import { Injectable } from '@nestjs/common';
 import { AuthService } from '../../../application/auth.service';
-import { UnauthorizedDomainException } from 'src/core/exeptions/domain-exceptions';
-// import { UserDocument } from 'src/features/user-accounts/domain/user/user.entity';
+import { UnauthorizedDomainException } from '../../../../../core/exeptions/domain-exceptions';
 
 @Injectable()
 export class LocalStrategy extends PassportStrategy(Strategy) {

@@ -3,7 +3,7 @@ import { configModule } from './config';
 import { CoreModule } from './core/core.module';
 import { Module } from '@nestjs/common';
 import { UserAccountsModule } from './features/user-accounts/user-accounts.module';
-import { BloggersPlatformModule } from './features/bloggers-platform/bloggers-platform.module.ts';
+import { BloggersPlatformModule } from './features/bloggers-platform/bloggers-platform.module';
 import { TestingModule } from './features/testing/testing.module';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { LoggerModule } from './features/logger/logger.module';
@@ -25,7 +25,7 @@ import { CoreConfig } from './core/core.config';
         database: coreConfig.dbName, // Имя вашей базы данных
         entities: [], // Здесь укажите ваши сущности
         autoLoadEntities: true, // Не загружать сущности автоматически - можно true для разработки
-        synchronize: true, // Для разработки, включите, чтобы синхронизировать с базой данных - можно true для разработки
+        synchronize: false, // Для разработки, включите, чтобы синхронизировать с базой данных - можно true для разработки
         logging: false,
       }),
       inject: [CoreConfig],

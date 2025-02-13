@@ -1,12 +1,12 @@
 import { CommandBus, CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { BadRequestDomainException, NotFoundDomainException } from 'src/core/exeptions/domain-exceptions';
-import { LikeStatus } from 'src/features/bloggers-platform/likes/dto/like-status.dto';
-import { LikesRepository } from 'src/features/bloggers-platform/likes/infrastructure/likes.repository';
-import { CreateLikeCommand } from 'src/features/bloggers-platform/likes/application/usecases/create-like.usecase';
-import { UpdateLikeCommand } from 'src/features/bloggers-platform/likes/application/usecases/update-like.usecase';
-import { LikeParent } from 'src/features/bloggers-platform/likes/dto/like-parent.dto';
+import { BadRequestDomainException, NotFoundDomainException } from '../../../../../core/exeptions/domain-exceptions';
+import { LikeStatus } from '../../../likes/dto/like-status.dto';
+import { LikesRepository } from '../../../likes/infrastructure/likes.repository';
+import { CreateLikeCommand } from '../../../likes/application/usecases/create-like.usecase';
+import { UpdateLikeCommand } from '../../../likes/application/usecases/update-like.usecase';
+import { LikeParent } from '../../../likes/dto/like-parent.dto';
 import { CommentsRepository } from '../../infrastructure/comments.repository';
-import { ResultStatus } from 'src/core/dto/result-object.dto';
+import { ResultStatus } from '../../../../../core/dto/result-object.dto';
 
 export class LikeCommentCommand {
   constructor(

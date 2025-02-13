@@ -2,8 +2,8 @@ import { Column, ManyToOne, UpdateDateColumn } from 'typeorm';
 import { PrimaryGeneratedColumn } from 'typeorm';
 import { Entity } from 'typeorm';
 import { LikeStatus } from '../dto/like-status.dto';
-import { User } from 'src/features/user-accounts/domain/user/user.entity';
 import { LikeParent } from '../dto/like-parent.dto';
+import { User } from '../../../user-accounts/domain/user/user.entity';
 
 @Entity()
 export class Like {

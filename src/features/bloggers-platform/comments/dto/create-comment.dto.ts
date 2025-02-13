@@ -2,8 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsString } from 'class-validator';
 import { Length } from 'class-validator';
 import { commentContentConstraints } from '../domain/comment.entity';
-import { IsNotEmptyString } from 'src/core/decorators/validation/IsNotEmptyString';
-// import { UserDocument } from 'src/features/user-accounts/domain/user/user.entity';
+import { IsNotEmptyString } from '../../../../core/decorators/validation/IsNotEmptyString';
 
 export class CreateCommentUriParams {
   @ApiProperty({ example: 'Post ID', description: 'ID of the post' })

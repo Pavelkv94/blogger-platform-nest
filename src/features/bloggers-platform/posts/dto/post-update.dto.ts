@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Length } from 'class-validator';
-import { IsNotEmptyString } from 'src/core/decorators/validation/IsNotEmptyString';
+import { IsNotEmptyString } from '../../../../core/decorators/validation/IsNotEmptyString';
 import { BlogIsNotExist } from '../api/validation/blogIsExist.decorator';
 
 export class UpdateBlogPostDto {
