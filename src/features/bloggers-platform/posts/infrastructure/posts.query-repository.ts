@@ -25,21 +25,13 @@ export class PostsQueryRepository {
       queryBuilder.andWhere('p."blogId" = :blogId', { blogId: Number(blog_id) });
     }
 
-    const subQuery = this.postRepositoryTypeOrm.createQueryBuilder().select('b.name').from(Blog, 'b').where('b.id = p."blogId"').limit(1).getQuery();
-
-    if (sortBy === 'blogName') {
-      queryBuilder.addOrderBy(`(${subQuery})`, sortDirection.toUpperCase() as 'ASC' | 'DESC');
-    } else {
-      queryBuilder.orderBy(`p.${sortBy}`, sortDirection.toUpperCase() as 'ASC' | 'DESC');
-    }
-
     const posts = await queryBuilder
       .addSelect(this.getSubQueryForBlogName, 'blogName')
       .addSelect(this.getSubQueryForLikesCount, 'likesCount')
       .addSelect(this.getSubQueryForDislikesCount, 'dislikesCount')
       .addSelect(this.getSubQueryForMyStatus(userId), 'myStatus')
       .addSelect(this.getSubQueryForNewestLikes, 'newestLikes')
-      .orderBy(`${sortBy === 'blogName' ? sortBy : `p.${sortBy}`}`, sortDirection.toUpperCase() as 'ASC' | 'DESC')
+      .orderBy(`${sortBy === 'blogName' ? '"blogName"' : `p.${sortBy}`}`, sortDirection.toUpperCase() as 'ASC' | 'DESC')
       .skip(queryData.calculateSkip())
       .take(pageSize)
       .getRawMany();

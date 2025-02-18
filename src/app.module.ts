@@ -26,7 +26,7 @@ import { CoreConfig } from './core/core.config';
         entities: [], // Здесь укажите ваши сущности
         autoLoadEntities: true, // Не загружать сущности автоматически - можно true для разработки
         synchronize: false, // Для разработки, включите, чтобы синхронизировать с базой данных - можно true для разработки
-        logging: false,
+        logging: true,
       }),
       inject: [CoreConfig],
     }),
