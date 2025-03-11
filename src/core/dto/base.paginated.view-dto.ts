@@ -4,6 +4,7 @@ import { BlogViewDto } from '../../features/bloggers-platform/blogs/dto/blog-vie
 import { PostViewDto } from '../../features/bloggers-platform/posts/dto/post-view.dto';
 import { CommentViewDto } from '../../features/bloggers-platform/comments/dto/comment-view.dto';
 import { BaseUserViewDto } from '../../features/user-accounts/dto/users/user-view.dto';
+import { QuestionViewDto } from 'src/features/quiz/questions/dto/question-view.dto';
 
 export abstract class PaginatedViewDto<T> {
   @ApiProperty({ type: 'array', isArray: true })
@@ -47,4 +48,9 @@ export abstract class PaginatedCommentViewDto extends PaginatedViewDto<CommentVi
 export abstract class PaginatedUserViewDto extends PaginatedViewDto<BaseUserViewDto[]> {
   @ApiProperty({ type: [BaseUserViewDto] })
   items: BaseUserViewDto[];
+}
+
+export abstract class PaginatedQuestionViewDto extends PaginatedViewDto<QuestionViewDto[]> {
+  @ApiProperty({ type: [QuestionViewDto] })
+  items: QuestionViewDto[];
 }

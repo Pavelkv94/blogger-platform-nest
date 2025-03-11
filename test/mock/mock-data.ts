@@ -1,3 +1,4 @@
+import { QuestionCreateDto } from 'src/features/quiz/questions/dto/question-create.dto';
 import { BlogCreateDto } from '../../src/features/bloggers-platform/blogs/dto/blog-create.dto';
 import { BlogUpdateDto } from '../../src/features/bloggers-platform/blogs/dto/blog-update.dto';
 import { CreateCommentInputDto } from '../../src/features/bloggers-platform/comments/dto/create-comment.dto';
@@ -5,6 +6,7 @@ import { UpdateCommentInputDto } from '../../src/features/bloggers-platform/comm
 import { CreatePostForBlogDto } from '../../src/features/bloggers-platform/posts/dto/post-create.dto';
 import { UpdatePostDto } from '../../src/features/bloggers-platform/posts/dto/post-update.dto';
 import { CreateUserDto } from '../../src/features/user-accounts/dto/users/create-user.dto';
+import { QuestionUpdateDto } from 'src/features/quiz/questions/dto/question-update.dto';
 
 export const mockCreateUserBody: CreateUserDto = {
   login: 'name1',
@@ -43,4 +45,14 @@ export const mockCreateCommentBody: CreateCommentInputDto = {
 
 export const mockUpdateCommentBody: UpdateCommentInputDto = {
   content: 'updated comment with long content',
+};
+
+export const mockCreateQuestionBody: QuestionCreateDto = {
+  body: 'test question',
+  correctAnswers: ['1', '2', 3, 'four'],
+};
+
+export const mockUpdateQuestionBody: QuestionUpdateDto = {
+  body: 'updated question',
+  correctAnswers: ['one'],
 };

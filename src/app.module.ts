@@ -9,6 +9,7 @@ import { ThrottlerModule } from '@nestjs/throttler';
 import { LoggerModule } from './features/logger/logger.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CoreConfig } from './core/core.config';
+import { QuizModule } from './features/quiz/quiz.module';
 
 @Module({
   imports: [
@@ -39,6 +40,7 @@ import { CoreConfig } from './core/core.config';
     ]),
     UserAccountsModule,
     BloggersPlatformModule,
+    QuizModule,
     LoggerModule.register(process.env.INCLUDE_ENDPOINTS_LOGGER!), // Include LoggerModule conditionally
     TestingModule.register(process.env.INCLUDE_TESTING_MODULE!), //* см. ниже
     // TestingModule.registerAsync({
