@@ -15,16 +15,45 @@ import { Question } from './questions/domain/question.entity';
 import { DeleteQuestionUseCase } from './questions/application/usecases/delete-question.usecase';
 import { UpdateQuestionUseCase } from './questions/application/usecases/update-question.usecase';
 import { PublishQuestionUseCase } from './questions/application/usecases/publish-question.usecase';
+import { PairGameController } from './pairGame/api/pairGame.controller';
+import { Game } from './pairGame/domain/game.entity';
+import { Answer } from './pairGame/domain/answer.entity';
+import { Player } from './pairGame/domain/player.entity';
+import { GameQuestions } from './pairGame/domain/game-questions.entity';
+import { CreatePlayerUseCase } from './pairGame/application/usecases/create-player.usecase';
+import { ConnectToGamePairUseCase } from './pairGame/application/usecases/connect-game.usecase';
+import { SelectQuestionsForGamePairUseCase } from './pairGame/application/usecases/select-questions-for-game.usecase';
+import { GameQuestionsRepository } from './pairGame/infrastructure/game-questions.repository';
+import { GameRepository } from './pairGame/infrastructure/game.repository';
+import { PlayerRepository } from './pairGame/infrastructure/player.repository';
+import { PlayerQueryRepository } from './pairGame/infrastructure/player.query-repository';
+import { GameQueryRepository } from './pairGame/infrastructure/game.query-repository';
+import { CreateAnswerUseCase } from './pairGame/application/usecases/create-answer.usecase';
+import { AnswerRepository } from './pairGame/infrastructure/answer.repository';
+import { AnswerQueryRepository } from './pairGame/infrastructure/answer.query-repository';
+
 const useCases = [
   CreateQuestionUseCase,
   UpdateQuestionUseCase,
   PublishQuestionUseCase,
-  DeleteQuestionUseCase
+  DeleteQuestionUseCase,
+  ConnectToGamePairUseCase,
+  CreatePlayerUseCase,
+  SelectQuestionsForGamePairUseCase,
+  CreateAnswerUseCase
+  
 ];
 
 const repositories = [
   QuestionsRepository, 
-  QuestionsQueryRepository
+  QuestionsQueryRepository,
+  PlayerRepository,
+  PlayerQueryRepository,
+  GameRepository,
+  GameQueryRepository,
+  GameQuestionsRepository,
+  AnswerRepository,
+  AnswerQueryRepository
 ];
 
 @ApiTags('Quiz') //swagger
@@ -39,10 +68,10 @@ const repositories = [
     }),
     CqrsModule,
     UserAccountsModule,
-    TypeOrmModule.forFeature([Question]),
+    TypeOrmModule.forFeature([Question, Game, GameQuestions, Player, Answer]),
   ],
   exports: [],
-  controllers: [SaQuestionsController],
+  controllers: [SaQuestionsController, PairGameController],
   providers: [...useCases, ...repositories, JwtAccessStrategy],
 })
 export class QuizModule {}

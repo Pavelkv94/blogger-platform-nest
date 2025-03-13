@@ -37,4 +37,9 @@ export class QuestionsRepository {
     question.markDeleted();
     await this.questionRepositoryTypeOrm.save(question);
   }
+
+  async getRandomQuestions(): Promise<Question[]> {
+    const questions = await this.questionRepositoryTypeOrm.createQueryBuilder('question').orderBy('RANDOM()').take(5).getMany();
+    return questions;
+  }
 }

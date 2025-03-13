@@ -6,7 +6,7 @@ import { QuestionsTestManager } from './helpers/questions-test-manager';
 import { mockCreateQuestionBody, mockUpdateQuestionBody } from './mock/mock-data';
 import { PublishedStatus } from 'src/features/quiz/questions/dto/questions-publishedStatus';
 
-describe('quiz', () => {
+describe('quiz questions', () => {
   let app: INestApplication;
   let questionsTestManager: QuestionsTestManager;
 
@@ -164,4 +164,6 @@ describe('quiz', () => {
     const responseAfterUnpublish = await questionsTestManager.getQuestions();
     expect(responseAfterUnpublish.items[0].published).toBe(false);
   });
+
+  
 });

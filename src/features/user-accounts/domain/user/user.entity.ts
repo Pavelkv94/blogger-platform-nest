@@ -5,6 +5,7 @@ import { RecoveryConfirmation } from './recovery-confirmation.entity';
 import { SecurityDevice } from '../security-device/security-devices.entity';
 import { Comment } from '../../../../features/bloggers-platform/comments/domain/comment.entity';
 import { Like } from '../../../../features/bloggers-platform/likes/domain/like.entity';
+import { Player } from '../../../quiz/pairGame/domain/player.entity';
 
 export const loginConstraints = {
   minLength: 3,
@@ -47,6 +48,9 @@ export class User {
   @OneToMany(() => Like, (like) => like.user)
   likes: Like[];
 
+  @OneToMany(() => Player, (player) => player.user)
+  players: Player[];
+  
   static buildInstance(login: string, email: string, passwordHash: string): User {
     const user = new this();
     user.login = login;

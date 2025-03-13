@@ -15,6 +15,7 @@ import { BlogsTestManager } from './blogs-test-manager';
 import { PostsTestManager } from './posts-test-manager';
 import { CommentsTestManager } from './comments-test-manager';
 import { QuestionsTestManager } from './questions-test-manager';
+import { GameTestManager } from './game-test-manager';
 
 export const initSettings = async (
   //передаем callback, который получает ModuleBuilder, если хотим изменить настройку тестового модуля
@@ -61,6 +62,7 @@ export const initSettings = async (
   const commentsTestManager = new CommentsTestManager(app);
   const devicesTestManager = new DevicesTestManager(app);
   const questionsTestManager = new QuestionsTestManager(app);
+  const gameTestManager = new GameTestManager(app);
 
   await deleteAllData(app);
 
@@ -73,5 +75,6 @@ export const initSettings = async (
     commentsTestManager,
     devicesTestManager,
     questionsTestManager,
+    gameTestManager,
   };
 };

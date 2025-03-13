@@ -1,6 +1,7 @@
-import { Column, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import { Column, CreateDateColumn, OneToMany, UpdateDateColumn } from 'typeorm';
 import { PrimaryGeneratedColumn } from 'typeorm';
 import { Entity } from 'typeorm';
+import { GameQuestions } from '../../pairGame/domain/game-questions.entity';
 
 @Entity()
 export class Question {
@@ -25,8 +26,8 @@ export class Question {
   @Column({ type: 'timestamptz', nullable: true })
   deletedAt: Date;
 
-  //   @OneToMany(() => Post, (post) => post.blog)
-  //   posts: Post[];
+  @OneToMany(() => GameQuestions, (gameQuestions) => gameQuestions.question)
+  gameQuestions: GameQuestions[];
 
   static buildInstance(body: string, correctAnswers: Array<string | number>): Question {
     const question = new this();

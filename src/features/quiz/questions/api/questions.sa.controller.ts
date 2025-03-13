@@ -35,7 +35,6 @@ export class SaQuestionsController {
   }
 
   @SwaggerPostCreate('Create a new question', QuestionViewDto, SwaggerAuthStatus.WithAuth) //swagger
-  @ApiBasicAuth() //swagger
   @Post()
   @HttpCode(HttpStatus.CREATED)
   async createQuestion(@Body() body: QuestionCreateDto): Promise<QuestionViewDto> {
