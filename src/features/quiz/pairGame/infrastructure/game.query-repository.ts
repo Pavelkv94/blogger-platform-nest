@@ -18,7 +18,6 @@ export class GameQueryRepository {
     if (!game) {
       throw NotFoundDomainException.create('Game not found');
     }
-    console.log('Initial data from DB: ', game);
 
     return GameViewDto.mapToView(game);
   }
@@ -82,18 +81,10 @@ export class GameQueryRepository {
             .addSelect('q.body', 'qbody')
             .from('question', 'q')
             .where('gq."gameId" = :gameId', { gameId: Number(gameId) })
-            .leftJoin('game_questions', 'gq', 'q.id = gq."questionId"');
+            .leftJoin('game_questions', 'gq', 'q.id = gq."questionId"')
+            .orderBy('gq.index', 'ASC');
         }, 'question');
       }, 'questions');
-
-    // .addSelect((qb) => {
-    //   return qb.select(`jsonb_agg(json_build_object('id', question.id, 'body', question.body))`).from('question', 'question');
-    // }, 'questions');
-
-    // SELECT jsonb_agg(json_build_object('id', question.id, 'body', question.body))
-    // FROM game_questions gq
-    // LEFT JOIN question ON question.id = gq."questionId"
-    // WHERE gq."gameId" = 81;
 
     return gameQueryBuilder;
   }

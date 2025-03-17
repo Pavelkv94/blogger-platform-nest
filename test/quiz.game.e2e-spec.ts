@@ -1,4 +1,4 @@
-import { INestApplication } from '@nestjs/common';
+import { INestApplication, HttpStatus } from '@nestjs/common';
 import { initSettings } from './helpers/init-settings';
 import { JwtService } from '@nestjs/jwt';
 import { deleteAllData } from './helpers/delete-all-data';
@@ -73,13 +73,11 @@ describe('quiz game', () => {
   });
 
   it('user should connect to existing game pair', async () => {
-    const gameResponse = await gameTestManager.connectToGamePair(firstUserToken);
-    console.log('gameResponse ', gameResponse);
+    await gameTestManager.connectToGamePair(firstUserToken);
 
     await delay(1000);
 
     const gameResponse2 = await gameTestManager.connectToGamePair(secondUserToken);
-    console.log('gameResponse2 ', gameResponse2);
 
     expect(gameResponse2).toEqual({
       finishGameDate: null,
@@ -91,7 +89,7 @@ describe('quiz game', () => {
           login: secondUser.login,
         },
         score: 0,
-        answers: null,
+        answers: [],
       },
       startGameDate: expect.any(String),
       status: GameStatus.Active,
@@ -101,12 +99,11 @@ describe('quiz game', () => {
           login: firstUser.login,
         },
         score: 0,
-        answers: null,
+        answers: [],
       },
       questions: expect.any(Array),
     });
 
-    // todo: fix
     expect(gameResponse2.questions.length).toBe(5);
   });
 
@@ -122,7 +119,19 @@ describe('quiz game', () => {
       pairCreatedDate: expect.any(String),
       startGameDate: null,
       finishGameDate: null,
-      firstPlayerProgress: { player: { id: expect.any(String), login: firstUser.login }, score: 0, answers: null },
+      firstPlayerProgress: { player: { id: expect.any(String), login: firstUser.login }, score: 0, answers: [] },
     });
+  });
+
+  it('user should get 404 when game not found', async () => {
+    await gameTestManager.getMyCurrentGame(firstUserToken, HttpStatus.NOT_FOUND);
+  });
+
+  it('user should answer on the firstquestion', async () => {
+    await gameTestManager.connectToGamePair(firstUserToken);
+    await delay(1000);
+    await gameTestManager.connectToGamePair(secondUserToken);
+
+    
   });
 });

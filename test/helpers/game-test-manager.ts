@@ -11,8 +11,8 @@ export class GameTestManager {
     return response.body;
   }
 
-  async getMyCurrentGame(token: string): Promise<GameViewDto> {
-    const response = await request(this.app.getHttpServer()).get(`/pair-game-quiz/pairs/my-current`).auth(token, { type: 'bearer' }).expect(HttpStatus.OK);
+  async getMyCurrentGame(token: string, status: HttpStatus = HttpStatus.OK): Promise<GameViewDto> {
+    const response = await request(this.app.getHttpServer()).get(`/pair-game-quiz/pairs/my-current`).auth(token, { type: 'bearer' }).expect(status);
 
     return response.body;
   }
