@@ -3,7 +3,7 @@ import { initSettings } from './helpers/init-settings';
 import { JwtService } from '@nestjs/jwt';
 import { deleteAllData } from './helpers/delete-all-data';
 import { QuestionsTestManager } from './helpers/questions-test-manager';
-import { mockCreateQuestionBody, mockUpdateQuestionBody } from './mock/mock-data';
+import { getLongText, mockCreateQuestionBody, mockUpdateQuestionBody } from './mock/mock-data';
 import { PublishedStatus } from 'src/features/quiz/questions/dto/questions-publishedStatus';
 
 describe('quiz questions', () => {
@@ -40,7 +40,7 @@ describe('quiz questions', () => {
       correctAnswers: mockCreateQuestionBody.correctAnswers,
       published: false,
       createdAt: expect.any(String),
-      updatedAt: expect.any(String),
+      updatedAt: null,
     });
   });
 
@@ -70,7 +70,7 @@ describe('quiz questions', () => {
   it('should get questions with search', async () => {
     await questionsTestManager.createSeveralQuestions(10);
     const response = await questionsTestManager.getQuestions({
-      bodySearchTerm: 'body1',
+      bodySearchTerm: 'body with index 1',
     });
 
     expect(response.items).toHaveLength(1);
@@ -101,7 +101,7 @@ describe('quiz questions', () => {
     await questionsTestManager.createSeveralQuestions(10);
     const responseWithPublishedStatus = await questionsTestManager.getQuestions({
       publishedStatus: PublishedStatus.Published,
-      bodySearchTerm: 'body1',
+      bodySearchTerm: 'body with index 1',
     });
 
     expect(responseWithPublishedStatus.items).toHaveLength(0);
@@ -109,7 +109,7 @@ describe('quiz questions', () => {
 
     const responseWithNotPublishedStatus = await questionsTestManager.getQuestions({
       publishedStatus: PublishedStatus.NotPublished,
-      bodySearchTerm: 'body1',
+      bodySearchTerm: 'body with index 1',
     });
 
     expect(responseWithNotPublishedStatus.items).toHaveLength(1);
@@ -123,16 +123,16 @@ describe('quiz questions', () => {
       sortDirection: 'desc',
     });
 
-    expect(responseDesc.items[0].body).toBe('body9');
-    expect(responseDesc.items[9].body).toBe('body0');
+    expect(responseDesc.items[0].body).toBe('body with index 9');
+    expect(responseDesc.items[9].body).toBe('body with index 0');
 
     const responseAsc = await questionsTestManager.getQuestions({
       sortBy: 'body',
       sortDirection: 'asc',
     });
 
-    expect(responseAsc.items[0].body).toBe('body0');
-    expect(responseAsc.items[9].body).toBe('body9');
+    expect(responseAsc.items[0].body).toBe('body with index 0');
+    expect(responseAsc.items[9].body).toBe('body with index 9');
   });
 
   it('should delete question', async () => {
@@ -165,5 +165,28 @@ describe('quiz questions', () => {
     expect(responseAfterUnpublish.items[0].published).toBe(false);
   });
 
-  
+  it('should return error if passed body is incorrect; status 400', async () => {
+    await questionsTestManager.createQuestion(
+      {
+        body: getLongText(1001),
+        correctAnswers: mockCreateQuestionBody.correctAnswers,
+      },
+      400,
+    );
+  });
+
+  it('shouldnt publish question if it has incorrect body', async () => {
+    const response = await questionsTestManager.createQuestion(mockCreateQuestionBody);
+    await questionsTestManager.publishQuestion(response.id, { published: 'true' }, 400);
+  });
+
+  it('should create question and publish it', async () => {
+    const response = await questionsTestManager.createQuestion(mockCreateQuestionBody);
+    await questionsTestManager.publishQuestion(response.id, { published: true });
+    const responseAfterPublish = await questionsTestManager.getQuestions();
+    expect(responseAfterPublish.items[0].published).toBe(true);
+    await questionsTestManager.createQuestion(mockCreateQuestionBody);
+    const response2 = await questionsTestManager.getQuestions();
+    expect(response2.items.length).toBe(2);
+  });
 });

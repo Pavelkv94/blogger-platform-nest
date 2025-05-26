@@ -28,7 +28,7 @@ export class QuestionsTestManager {
     for (let i = 0; i < count; ++i) {
       await delay(100);
       const response = this.createQuestion({
-        body: `body${i}`,
+        body: `body with index ${i}`,
         correctAnswers: [`correctAnswer${i}`],
       });
 
@@ -50,7 +50,7 @@ export class QuestionsTestManager {
     return response.body;
   }
 
-  async publishQuestion(questionId: string, publishModel: QuestionPublishDto, statusCode: number = HttpStatus.NO_CONTENT): Promise<void> {
+  async publishQuestion(questionId: string, publishModel: QuestionPublishDto | any, statusCode: number = HttpStatus.NO_CONTENT): Promise<void> {
     const response = await request(this.app.getHttpServer()).put(`/sa/quiz/questions/${questionId}/publish`).send(publishModel).auth('admin', 'qwerty').expect(statusCode);
 
     return response.body;

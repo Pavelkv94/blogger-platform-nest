@@ -33,6 +33,6 @@ SELECT truncate_tables($1);
 
     await this.datasourse.query(createFunctionQuery);
 
-    await this.datasourse.query(callFunctionQuery, ['admin']);
+    await this.datasourse.query(callFunctionQuery, ['postgres']); //db username
   }
 }

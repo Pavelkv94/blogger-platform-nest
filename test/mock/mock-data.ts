@@ -56,3 +56,6 @@ export const mockUpdateQuestionBody: QuestionUpdateDto = {
   body: 'updated question',
   correctAnswers: ['one'],
 };
+export const getLongText = (symbolsCount: number) => {
+return 'a'.repeat(symbolsCount);
+}

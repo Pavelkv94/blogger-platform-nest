@@ -54,6 +54,7 @@ describe('quiz game', () => {
 
   it('user should connect to game pair, when game pairs are not exist', async () => {
     const gameResponse = await gameTestManager.connectToGamePair(firstUserToken);
+    
     expect(gameResponse).toEqual({
       finishGameDate: null,
       id: expect.any(String),
@@ -61,13 +62,14 @@ describe('quiz game', () => {
       secondPlayerProgress: null,
       startGameDate: null,
       status: GameStatus.PendingSecondPlayer,
+      questions: null,
       firstPlayerProgress: {
         player: {
           id: expect.any(String),
           login: firstUser.login,
         },
         score: 0,
-        answers: null,
+        answers: [],
       },
     });
   });

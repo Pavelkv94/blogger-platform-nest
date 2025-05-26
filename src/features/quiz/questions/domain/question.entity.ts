@@ -1,4 +1,4 @@
-import { Column, CreateDateColumn, OneToMany, UpdateDateColumn } from 'typeorm';
+import { Column, CreateDateColumn, OneToMany } from 'typeorm';
 import { PrimaryGeneratedColumn } from 'typeorm';
 import { Entity } from 'typeorm';
 import { GameQuestions } from '../../pairGame/domain/game-questions.entity';
@@ -20,7 +20,7 @@ export class Question {
   @CreateDateColumn({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
   createdAt: Date;
 
-  @UpdateDateColumn({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
+  @Column({ type: 'timestamptz', nullable: true, default: null })
   updatedAt: Date;
 
   @Column({ type: 'timestamptz', nullable: true })
@@ -43,6 +43,7 @@ export class Question {
   update(body: string, correctAnswers: Array<string | number>) {
     this.body = body;
     this.correctAnswers = correctAnswers;
+    this.updatedAt = new Date();
   }
 
   setPublishStatus(published: boolean) {
