@@ -5,10 +5,11 @@ import { Game } from '../domain/game.entity';
 import { GameViewDto } from '../dto/game-view.dto';
 import { ForbiddenDomainException, NotFoundDomainException } from 'src/core/exeptions/domain-exceptions';
 import { GameStatus } from '../dto/game-status';
+import { PlayerQueryRepository } from './player.query-repository';
 
 @Injectable()
 export class GameQueryRepository {
-  constructor(@InjectRepository(Game) private gameRepositoryTypeOrm: Repository<GameViewDto>) {}
+  constructor(@InjectRepository(Game) private gameRepositoryTypeOrm: Repository<GameViewDto>, private playerQueryRepository: PlayerQueryRepository) {}
 
   async findGameById(gameId: string): Promise<GameViewDto> {
     const gameQueryBuilder = await this._defaultGameQueryBuilder(gameId);
@@ -27,11 +28,13 @@ export class GameQueryRepository {
 
     const game = await gameQueryBuilder.where('game.id = :id', { id: Number(gameId) }).getRawOne();
 
+    const player = await this.playerQueryRepository.findPlayerByUserId(userId);
+
     if (!game) {
       throw NotFoundDomainException.create('Game not found');
     }
 
-    if (game.firstPlayerId !== userId && game.secondPlayerId !== userId) {
+    if (!player || (game.firstPlayer_id !== player.id && game.secondPlayer_id !== player.id)) {
       throw ForbiddenDomainException.create('You are not a participant of this game');
     }
 
@@ -56,7 +59,6 @@ export class GameQueryRepository {
     if (!game) {
       throw NotFoundDomainException.create('Game not found');
     }
-    console.log('Initial data from DB: ', game);
 
     return GameViewDto.mapToView(game);
   }

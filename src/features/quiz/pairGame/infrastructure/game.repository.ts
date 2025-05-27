@@ -13,6 +13,11 @@ export class GameRepository {
     return game;
   }
 
+  async findGameById(gameId: string): Promise<Game | null> {
+    const game = await this.gameRepositoryTypeOrm.findOne({ where: { id: +gameId } });
+    return game;
+  }
+
   async findAvailableGamePair(): Promise<Game | null> {
     const game = await this.gameRepositoryTypeOrm.findOne({ where: { gameStatus: GameStatus.PendingSecondPlayer } });
     return game;
@@ -32,6 +37,11 @@ export class GameRepository {
 
   async startGame(game: Game): Promise<void> {
     game.startGame();
+    await this.gameRepositoryTypeOrm.save(game);
+  }
+
+  async finishGame(game: Game): Promise<void> {
+    game.finishGame();
     await this.gameRepositoryTypeOrm.save(game);
   }
 }

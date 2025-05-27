@@ -31,6 +31,8 @@ import { GameQueryRepository } from './pairGame/infrastructure/game.query-reposi
 import { CreateAnswerUseCase } from './pairGame/application/usecases/create-answer.usecase';
 import { AnswerRepository } from './pairGame/infrastructure/answer.repository';
 import { AnswerQueryRepository } from './pairGame/infrastructure/answer.query-repository';
+import { GameQuestionsQueryRepository } from './pairGame/infrastructure/game-questions.query-repository';
+import { FinishGameUseCase } from './pairGame/application/usecases/finish-game.usecase';
 
 const useCases = [
   CreateQuestionUseCase,
@@ -40,7 +42,8 @@ const useCases = [
   ConnectToGamePairUseCase,
   CreatePlayerUseCase,
   SelectQuestionsForGamePairUseCase,
-  CreateAnswerUseCase
+  CreateAnswerUseCase,
+  FinishGameUseCase
   
 ];
 
@@ -53,7 +56,8 @@ const repositories = [
   GameQueryRepository,
   GameQuestionsRepository,
   AnswerRepository,
-  AnswerQueryRepository
+  AnswerQueryRepository,
+  GameQuestionsQueryRepository
 ];
 
 @ApiTags('Quiz') //swagger

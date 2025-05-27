@@ -27,7 +27,7 @@ import { QuizModule } from './features/quiz/quiz.module';
         entities: [], // Здесь укажите ваши сущности
         autoLoadEntities: true, // Не загружать сущности автоматически - можно true для разработки
         synchronize: false, // Для разработки, включите, чтобы синхронизировать с базой данных - можно true для разработки
-        logging: true,
+        logging: false,
       }),
       inject: [CoreConfig],
     }),

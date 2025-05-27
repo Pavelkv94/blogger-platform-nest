@@ -1,4 +1,4 @@
-import { INestApplication } from '@nestjs/common';
+import { HttpStatus, INestApplication } from '@nestjs/common';
 import { initSettings } from './helpers/init-settings';
 import { JwtService } from '@nestjs/jwt';
 import { deleteAllData } from './helpers/delete-all-data';
@@ -171,13 +171,13 @@ describe('quiz questions', () => {
         body: getLongText(1001),
         correctAnswers: mockCreateQuestionBody.correctAnswers,
       },
-      400,
+      HttpStatus.BAD_REQUEST,
     );
   });
 
   it('shouldnt publish question if it has incorrect body', async () => {
     const response = await questionsTestManager.createQuestion(mockCreateQuestionBody);
-    await questionsTestManager.publishQuestion(response.id, { published: 'true' }, 400);
+    await questionsTestManager.publishQuestion(response.id, { published: 'true' }, HttpStatus.BAD_REQUEST);
   });
 
   it('should create question and publish it', async () => {

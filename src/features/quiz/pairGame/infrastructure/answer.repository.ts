@@ -7,9 +7,8 @@ import { Answer } from '../domain/answer.entity';
 export class AnswerRepository {
   constructor(@InjectRepository(Answer) private answerRepositoryTypeOrm: Repository<Answer>) {}
 
-  async createAnswer(answer: string): Promise<Answer> {
-    const questionId = 1; //todo temporary
-    const newAnswer = Answer.buildInstance(answer, questionId);
+  async createAnswer(answer: string, playerId: number, answerIsCorrect: boolean, questionId: number): Promise<Answer> {
+    const newAnswer = Answer.buildInstance(answer, questionId, playerId, answerIsCorrect);
     await this.answerRepositoryTypeOrm.save(newAnswer);
     return newAnswer;
   }

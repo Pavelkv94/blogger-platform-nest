@@ -25,12 +25,16 @@ export class Answer {
   @JoinColumn({ name: 'playerId' })
   player: Player;
 
-  static buildInstance(answer: string, questionId: number): Answer {
+  @Column()
+  playerId: number;
+
+  static buildInstance(answer: string, questionId: number, playerId: number, answerIsCorrect: boolean): Answer {
     const answerEntity = new Answer();
     answerEntity.answer = answer;
     answerEntity.questionId = questionId;
-    answerEntity.answerStatus = AnswerStatus.Correct;
+    answerEntity.answerStatus = answerIsCorrect ? AnswerStatus.Correct : AnswerStatus.Incorrect;
     answerEntity.addedAt = new Date();
+    answerEntity.playerId = playerId;
     return answerEntity;
   }
 }
