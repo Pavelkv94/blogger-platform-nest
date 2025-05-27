@@ -52,7 +52,7 @@ describe('quiz game', () => {
     await questionsTestManager.createSeveralQuestions(10);
   });
 
-  it('user should connect to game pair, when game pairs are not exist', async () => {
+  it('user should connect to game pair, when availablegame pairs are not exist', async () => {
     const gameResponse = await gameTestManager.connectToGamePair(firstUserToken);
     
     expect(gameResponse).toEqual({
