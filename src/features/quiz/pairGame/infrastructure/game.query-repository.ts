@@ -4,7 +4,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Game } from '../domain/game.entity';
 import { GameViewDto } from '../dto/game-view.dto';
 import { ForbiddenDomainException, NotFoundDomainException } from 'src/core/exeptions/domain-exceptions';
-import { GameStatus } from '../dto/game-status';
 import { PlayerQueryRepository } from './player.query-repository';
 import { AnswerQueryRepository } from './answer.query-repository';
 
@@ -17,7 +16,7 @@ export class GameQueryRepository {
   ) { }
 
   async findGameById(gameId: string): Promise<GameViewDto> {
-    const gameQueryBuilder = await this._defaultGameQueryBuilder(gameId);
+    const gameQueryBuilder = await this._defaultGameQueryBuilderByGameId(gameId);
 
     const game = await gameQueryBuilder.where('game.id = :id', { id: Number(gameId) }).getRawOne();
 
@@ -29,7 +28,7 @@ export class GameQueryRepository {
   }
 
   async findGameByUserAndGameId(userId: string, gameId: string): Promise<GameViewDto> {
-    const gameQueryBuilder = await this._defaultGameQueryBuilder(gameId);
+    const gameQueryBuilder = await this._defaultGameQueryBuilderByGameId(gameId);
 
     const game = await gameQueryBuilder.where('game.id = :id', { id: Number(gameId) }).getRawOne();
 
@@ -49,28 +48,6 @@ export class GameQueryRepository {
     return GameViewDto.mapToView(game, firstPlayerAnswers, secondPlayerAnswers);
   }
 
-  async findGameByUserId(userId: string): Promise<GameViewDto> {
-    const gameQueryBuilder = await this._defaultGameQueryBuilder('1');
-    const game = await gameQueryBuilder
-      .where(
-        `(
-          (firstUser.id = :userId AND game."gameStatus" = :pendingStatus) OR
-          (firstUser.id = :userId OR secondUser.id = :userId) AND game."gameStatus" = :activeStatus
-      )`,
-        {
-          userId: Number(userId),
-          pendingStatus: GameStatus.PendingSecondPlayer,
-          activeStatus: GameStatus.Active,
-        },
-      )
-      .getRawOne();
-    if (!game) {
-      throw NotFoundDomainException.create('Game not found');
-    }
-
-    return GameViewDto.mapToView(game, [], []);
-  }
-
   async findGameByPlayerId(playerId: string): Promise<GameViewDto> {
 
     const gameQueryBuilder = await this._defaultGameQueryBuilderByPlayerId(playerId);
@@ -82,7 +59,7 @@ export class GameQueryRepository {
     return GameViewDto.mapToView(game, firstPlayerAnswers, secondPlayerAnswers);
   }
 
-  private async _defaultGameQueryBuilder(gameId: string): Promise<any> {
+  private async _defaultGameQueryBuilderByGameId(gameId: string): Promise<any> {
     const gameQueryBuilder = this.gameRepositoryTypeOrm
       .createQueryBuilder('game')
       .leftJoin('game.firstPlayer', 'firstPlayer')

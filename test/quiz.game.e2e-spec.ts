@@ -169,7 +169,6 @@ describe('quiz game', () => {
 
   it('should return 403 when user tries to get game in which they are not a participant', async () => {
     const gameResponse = await gameTestManager.connectToGamePair(firstUserToken);
-    console.log(gameResponse);
     await gameTestManager.getGameById(secondUserToken, gameResponse.id, HttpStatus.FORBIDDEN);
   });
 
@@ -322,12 +321,63 @@ describe('quiz game', () => {
   });
 
 
-  // it('Test', async () => {
-  //   await gameTestManager.connectToGamePair(firstUserToken);
-  //   await delay(100);
-  //   await gameTestManager.getMyCurrentGame(firstUserToken);
-  //   await gameTestManager.connectToGamePair(secondUserToken);
-  //   await gameTestManager.getMyCurrentGame(firstUserToken);
-  // });
+  it('Test game flow', async () => {
+    await gameTestManager.connectToGamePair(secondUserToken);
+    await delay(100);
+    await gameTestManager.getMyCurrentGame(secondUserToken);
+    await gameTestManager.connectToGamePair(firstUserToken);
+    await gameTestManager.getMyCurrentGame(firstUserToken);
+    const gameResponse = await gameTestManager.getMyCurrentGame(secondUserToken);
+
+    const questionsIndexes = gameResponse.questions.map(q => q.body[q.body.length - 1]);
+    const answers = questionsIndexes.map(i => `correctAnswer${i}`);
+
+    await gameTestManager.answerOnQuestion(firstUserToken, answers[0]);
+    const gameResponse2 = await gameTestManager.getMyCurrentGame(firstUserToken);
+    console.log("first user answer correct 1", gameResponse2)
+
+    await gameTestManager.answerOnQuestion(firstUserToken, answers[1]);
+    const gameResponse3 = await gameTestManager.getMyCurrentGame(firstUserToken);
+    console.log("first user answer correct 2", gameResponse3)
+
+    await gameTestManager.answerOnQuestion(secondUserToken, answers[0]);
+    const gameResponse4 = await gameTestManager.getMyCurrentGame(firstUserToken);
+    console.log("secondUser answer correct 1", gameResponse4)
+
+    await gameTestManager.answerOnQuestion(secondUserToken, answers[1]);
+    const gameResponse5 = await gameTestManager.getMyCurrentGame(firstUserToken);
+    console.log("secondUser answer correct 2", gameResponse5)
+
+    await gameTestManager.answerOnQuestion(firstUserToken, "incorrect");
+    const gameResponse6 = await gameTestManager.getMyCurrentGame(firstUserToken);
+    console.log("first user answer incorrect 3", gameResponse6)
+
+    await gameTestManager.answerOnQuestion(firstUserToken, answers[3]);
+    const gameResponse7 = await gameTestManager.getMyCurrentGame(firstUserToken);
+    console.log("first user answer correct 4", gameResponse7)
+
+    await gameTestManager.answerOnQuestion(secondUserToken, answers[2]);
+    const gameResponse8 = await gameTestManager.getMyCurrentGame(firstUserToken);
+    console.log("secondUser answer correct 3", gameResponse8)
+
+    await gameTestManager.answerOnQuestion(firstUserToken, answers[4]);
+    const gameResponse9 = await gameTestManager.getMyCurrentGame(firstUserToken);
+    console.log("first user answer correct 5", gameResponse9)
+
+    await gameTestManager.answerOnQuestion(secondUserToken, answers[3]);
+    const gameResponse10 = await gameTestManager.getMyCurrentGame(firstUserToken);
+    console.log("secondUser answer correct 4", gameResponse10)
+
+    await delay(100);
+    await gameTestManager.answerOnQuestion(secondUserToken, answers[4]);
+
+    await delay(100);
+    const gameResponse12 = await gameTestManager.getGameById(firstUserToken, gameResponse10.id);
+    const gameResponse13 = await gameTestManager.getGameById(secondUserToken, gameResponse10.id);
+
+    console.log("firstUser results", gameResponse12)
+    console.log("secondUser results", gameResponse13)
+
+  });
 
 });

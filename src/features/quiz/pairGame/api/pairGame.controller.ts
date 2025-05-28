@@ -52,10 +52,18 @@ export class PairGameController {
   @Get(':id')
   @HttpCode(HttpStatus.OK)
   async getGameById(@ExtractAnyUserFromRequest() user: UserJwtPayloadDto, @Param('id') id: string): Promise<any> {
+
     if (!id || isNaN(+id)) {
       throw BadRequestDomainException.create('Game id is required');
     }
-    const game = await this.gameQueryRepository.findGameByUserAndGameId(user.userId, id);
+    const game = await this.gameQueryRepository.findGameById(id);
+
+    const currentPlayer = await this.playerQueryRepository.findPlayerByUserId(user.userId);
+
+    if(!currentPlayer || ![game.firstPlayerProgress.player.id, game.secondPlayerProgress.player.id].includes(currentPlayer!.id.toString())) {
+      throw ForbiddenDomainException.create('You are not a participant of this game');
+    }
+
     if(game.questions) {
       return {...game, questions: game.questions.map(q => ({...q, id: q.id.toString()}))};
     }
@@ -81,13 +89,13 @@ export class PairGameController {
   @Post('my-current/answers')
   @HttpCode(HttpStatus.OK)
   async answers(@ExtractAnyUserFromRequest() user: UserJwtPayloadDto, @Body() body: { answer: string }): Promise<any> {
-    const player = await this.playerQueryRepository.findPlayerByUserId(user.userId);
+    const player = await this.playerQueryRepository.findActivePlayerByUserId(user.userId);
 
     if (!player) {
       throw ForbiddenDomainException.create('Player not found');
     }
 
-    const game = await this.gameQueryRepository.findGameByUserId(user.userId);
+    const game = await this.gameQueryRepository.findGameByPlayerId(player.id.toString());
 
     if (game.status === GameStatus.PendingSecondPlayer) {
       throw ForbiddenDomainException.create('Game is not active');
@@ -98,12 +106,11 @@ export class PairGameController {
     }
 
     const answers = await this.answerQueryRepository.findAnswersByPlayerId(player.id);
-
     if (answers.length >= 5) {
       throw ForbiddenDomainException.create('You have already answered 5 questions');
     }
 
-    const secondPlayerId = [game.firstPlayerProgress.player.id, game.secondPlayerProgress.player.id].find(id => id !== player.id);
+    const secondPlayerId = [game.firstPlayerProgress.player.id, game.secondPlayerProgress.player.id].find(id => id != player.id);
     const secondPlayerAnswers = await this.answerQueryRepository.findAnswersByPlayerId(secondPlayerId);
 
 
