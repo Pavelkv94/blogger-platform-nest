@@ -3,6 +3,7 @@ import { IsNull, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Player } from '../domain/player.entity';
 import { NotFoundDomainException } from 'src/core/exeptions/domain-exceptions';
+import { PlayerStatus } from '../dto/player-status';
 
 @Injectable()
 export class PlayerRepository {
@@ -26,5 +27,17 @@ export class PlayerRepository {
       throw NotFoundDomainException.create('Player not found');
     }
     return player;
+  }
+
+  async updatePlayerScore(playerId: string): Promise<void> {
+    const player = await this.findPlayerById(playerId);
+    player.addScore();
+    await this.playerRepositoryTypeOrm.save(player);
+  }
+
+  async updatePlayerStatus(playerId: string, status: PlayerStatus): Promise<void> {
+    const player = await this.findPlayerById(playerId);
+    player.setStatus(status);
+    await this.playerRepositoryTypeOrm.save(player);
   }
 }

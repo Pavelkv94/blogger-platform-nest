@@ -29,19 +29,6 @@ export class Player {
   @Column({ type: 'timestamptz', nullable: true })
   deletedAt: Date;
 
-  // @OneToOne(() => Game, (game) => game.firstPlayer)
-  // firstPlayer: Game;
-
-  // firstPlayerId: number;
-
-  // @OneToOne(() => Game, (game) => game.secondPlayer)
-  // secondPlayer: Game;
-
-  // secondPlayerId: number;
-
-  // @OneToMany(() => Question, (question) => question.game)
-  // questions: Question[];
-
   static buildInstance(userId: string): Player {
     const player = new this();
     player.userId = userId;
@@ -52,12 +39,12 @@ export class Player {
     this.deletedAt = new Date();
   }
 
-  // update(body: string, correctAnswers: Array<string | number>) {
-  //   this.body = body;
-  //   this.correctAnswers = correctAnswers;
-  // }
+  addScore() {
+    this.score += 1;
+  }
 
-  // setPublishStatus(published: boolean) {
-  //   this.published = published;
-  // }
+  setStatus(status: PlayerStatus) {
+    this.status = status;
+  }
+
 }

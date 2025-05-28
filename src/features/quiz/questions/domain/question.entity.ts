@@ -48,5 +48,6 @@ export class Question {
 
   setPublishStatus(published: boolean) {
     this.published = published;
+    this.updatedAt = new Date();
   }
 }

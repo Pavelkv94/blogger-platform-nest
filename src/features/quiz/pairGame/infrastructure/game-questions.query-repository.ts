@@ -8,11 +8,11 @@ import { NotFoundDomainException } from 'src/core/exeptions/domain-exceptions';
 export class GameQuestionsQueryRepository {
   constructor(@InjectRepository(GameQuestions) private gameQuestionsRepositoryTypeOrm: Repository<GameQuestions>) {}
 
-  async findGameQuestionByGameId(gameId: string): Promise<GameQuestions> {
-    const gameQuestion = await this.gameQuestionsRepositoryTypeOrm.findOne({ where: { gameId: gameId } });
-    if (!gameQuestion) {
-      throw NotFoundDomainException.create('Game question not found');
+  async findGameQuestionsByGameId(gameId: string): Promise<GameQuestions[]> {
+    const gameQuestions = await this.gameQuestionsRepositoryTypeOrm.find({ where: { gameId: gameId } });
+    if (!gameQuestions) {
+      throw NotFoundDomainException.create('Game questions not found');
     }
-    return gameQuestion;
+    return gameQuestions;
   }
 }

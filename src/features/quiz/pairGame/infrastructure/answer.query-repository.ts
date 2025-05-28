@@ -7,20 +7,19 @@ import { AnswerViewDto } from '../dto/answer-view.dto';
 
 @Injectable()
 export class AnswerQueryRepository {
-  constructor(@InjectRepository(Answer) private answerRepositoryTypeOrm: Repository<AnswerViewDto>) {}
+  constructor(@InjectRepository(Answer) private answerRepositoryTypeOrm: Repository<Answer>) {}
 
-  async findAnswersByPlayerId(playerId: number): Promise<any[]> {
+  async findAnswersByPlayerId(playerId: number): Promise<AnswerViewDto[]> {
     const answers = await this.answerRepositoryTypeOrm.createQueryBuilder('answer')
       .where('answer.playerId = :playerId', { playerId: playerId })
       .getMany();
-    return answers;
+    return answers.map(a => AnswerViewDto.mapToView(a));
   }
-
 
   async findAnswerById(answerId: string): Promise<AnswerViewDto> {
     const answer = await this.answerRepositoryTypeOrm.createQueryBuilder('answer')
       .where('answer.id = :id', { id: answerId })
-      .getRawOne();
+      .getOne();
 
     if (!answer) {
       throw NotFoundDomainException.create('Answer not found');

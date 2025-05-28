@@ -6,9 +6,16 @@ export class AnswerViewDto {
   addedAt: Date;
 
   constructor(model: any) {
-    this.answerStatus = model.answer_answerStatus;
-    this.questionId = model.answer_questionId;
-    this.addedAt = model.answer_addedAt;
+    if (model instanceof Answer) {
+      this.answerStatus = model.answerStatus;
+      this.questionId = model.questionId;
+      this.addedAt = model.addedAt;
+    } else {
+      // Handle raw query results
+      this.answerStatus = model.answer_answerStatus;
+      this.questionId = model.answer_questionId;
+      this.addedAt = model.answer_addedAt;
+    }
   }
 
   static mapToView(answer: Answer): AnswerViewDto {

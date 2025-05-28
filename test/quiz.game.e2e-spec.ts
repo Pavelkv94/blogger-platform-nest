@@ -138,7 +138,7 @@ describe('quiz game', () => {
     await gameTestManager.connectToGamePair(firstUserToken);
     await delay(1000);
     await gameTestManager.connectToGamePair(secondUserToken);
-    for(let i = 0; i < 5; i++) {
+    for (let i = 0; i < 5; i++) {
       await gameTestManager.answerOnQuestion(firstUserToken, `incorrect ${i}`);
       await delay(100);
       await gameTestManager.answerOnQuestion(secondUserToken, `incorrect ${i}`);
@@ -191,19 +191,19 @@ describe('quiz game', () => {
     await gameTestManager.connectToGamePair(firstUserToken);
     await gameTestManager.answerOnQuestion(firstUserToken, 'incorrect', HttpStatus.FORBIDDEN);
   });
- 
+
   it('user should get 403 when he tries to answer more than 5 times', async () => {
     await gameTestManager.connectToGamePair(firstUserToken);
     await delay(1000);
-    await gameTestManager.connectToGamePair(secondUserToken);    
-    for(let i = 0; i < 5; i++) {
+    await gameTestManager.connectToGamePair(secondUserToken);
+    for (let i = 0; i < 5; i++) {
       await gameTestManager.answerOnQuestion(firstUserToken, `incorrect ${i}`);
       await delay(100);
     }
     await gameTestManager.answerOnQuestion(firstUserToken, 'incorrect', HttpStatus.FORBIDDEN);
   });
 
-  it('Should return new created active game', async () => { //! вопросики
+  it('Should return new created active game', async () => {
     const gameResponse = await gameTestManager.connectToGamePair(firstUserToken);
     await delay(1000);
     await gameTestManager.connectToGamePair(secondUserToken);
@@ -227,5 +227,107 @@ describe('quiz game', () => {
     expect(gameResponse3.id).toEqual(gameResponse.id);
   });
 
+  it('Should return 403 when user tries to connect to game pair when he is already in game', async () => {
+    await gameTestManager.connectToGamePair(firstUserToken);
+    await delay(1000);
+    const gameResponse2 = await gameTestManager.getMyCurrentGame(firstUserToken);
+    await gameTestManager.connectToGamePair(firstUserToken, HttpStatus.FORBIDDEN);
+    await delay(1000);
+    const gameResponse4 = await gameTestManager.getMyCurrentGame(firstUserToken);
+    expect(gameResponse2.id).toEqual(gameResponse4.id);
+  });
+
+  it('Should be correct answers flow', async () => {
+    await gameTestManager.connectToGamePair(firstUserToken);
+    await delay(1000);
+    await gameTestManager.connectToGamePair(secondUserToken);
+    const gameResponse = await gameTestManager.getMyCurrentGame(firstUserToken);
+    const questionsIndexes = gameResponse.questions.map(q => q.body[q.body.length - 1]);
+    const answers = questionsIndexes.map(i => `correctAnswer${i}`);
+    await gameTestManager.answerOnQuestion(firstUserToken, answers[0]);
+    const gameResponse2 = await gameTestManager.getMyCurrentGame(firstUserToken);
+    expect(gameResponse2.firstPlayerProgress.score).toBe(1)
+    expect(gameResponse2.secondPlayerProgress.score).toBe(0)
+
+    await delay(100);
+    await gameTestManager.answerOnQuestion(secondUserToken, "Incorrect");
+    const gameResponse3 = await gameTestManager.getMyCurrentGame(secondUserToken);
+    expect(gameResponse3.firstPlayerProgress.score).toBe(1)
+    expect(gameResponse3.secondPlayerProgress.score).toBe(0)
+
+    await delay(100);
+    await gameTestManager.answerOnQuestion(secondUserToken, answers[0]);
+    const gameResponseFirstUser4 = await gameTestManager.getMyCurrentGame(firstUserToken);
+    const gameResponseSecondUser4 = await gameTestManager.getMyCurrentGame(secondUserToken);
+    expect(gameResponseSecondUser4.firstPlayerProgress.score).toBe(1)
+    expect(gameResponseSecondUser4.secondPlayerProgress.score).toBe(1)
+    expect(gameResponseFirstUser4.firstPlayerProgress.score).toBe(1)
+    expect(gameResponseFirstUser4.secondPlayerProgress.score).toBe(1)
+  });
+
+
+  it('Should test my-current game', async () => {
+    await gameTestManager.connectToGamePair(firstUserToken);
+    const gameResponse = await gameTestManager.getMyCurrentGame(firstUserToken);
+    expect(gameResponse.questions).toBe(null);
+    expect(gameResponse.status).toBe(GameStatus.PendingSecondPlayer);
+
+    await delay(100);
+    await gameTestManager.connectToGamePair(secondUserToken);
+    const gameResponse2 = await gameTestManager.getMyCurrentGame(firstUserToken);
+    expect(gameResponse2.questions.length).toBe(5);
+    expect(gameResponse2.status).toBe(GameStatus.Active);
+    const questionsIndexes = gameResponse2.questions.map(q => q.body[q.body.length - 1]);
+    const answers = questionsIndexes.map(i => `correctAnswer${i}`);
+
+    for (let i = 0; i < 5; i++) {
+      await gameTestManager.answerOnQuestion(firstUserToken, answers[i]);
+      await delay(100);
+      await gameTestManager.answerOnQuestion(secondUserToken, `incorrect ${i}`);
+      await delay(100);
+    }
+    await gameTestManager.getMyCurrentGame(firstUserToken, HttpStatus.NOT_FOUND);
+    const gameResponse3 = await gameTestManager.getGameById(firstUserToken, gameResponse.id);
+    expect(gameResponse3.status).toBe(GameStatus.Finished);
+  });
+
+
+  it('Test the second game after the first game is finished', async () => {
+    await gameTestManager.connectToGamePair(firstUserToken);
+    await delay(100);
+    await gameTestManager.connectToGamePair(secondUserToken);
+    const gameResponse = await gameTestManager.getMyCurrentGame(firstUserToken);
+    const questionsIndexes = gameResponse.questions.map(q => q.body[q.body.length - 1]);
+    const answers = questionsIndexes.map(i => `correctAnswer${i}`);
+
+    for (let i = 0; i < 5; i++) {
+      await gameTestManager.answerOnQuestion(firstUserToken, answers[i]);
+      await delay(100);
+      await gameTestManager.answerOnQuestion(secondUserToken, `incorrect ${i}`);
+      await delay(100);
+    }
+    await gameTestManager.getMyCurrentGame(firstUserToken, HttpStatus.NOT_FOUND);
+    const gameResponse3 = await gameTestManager.getGameById(firstUserToken, gameResponse.id);
+    expect(gameResponse3.status).toBe(GameStatus.Finished);
+
+    // finished rhe first game and start the second
+    await gameTestManager.connectToGamePair(firstUserToken);
+    await delay(100);
+    await gameTestManager.getMyCurrentGame(firstUserToken);
+    await gameTestManager.getMyCurrentGame(secondUserToken, HttpStatus.NOT_FOUND);
+    await gameTestManager.connectToGamePair(secondUserToken);
+    await delay(100);
+    await gameTestManager.getMyCurrentGame(secondUserToken);
+
+  });
+
+
+  // it('Test', async () => {
+  //   await gameTestManager.connectToGamePair(firstUserToken);
+  //   await delay(100);
+  //   await gameTestManager.getMyCurrentGame(firstUserToken);
+  //   await gameTestManager.connectToGamePair(secondUserToken);
+  //   await gameTestManager.getMyCurrentGame(firstUserToken);
+  // });
 
 });

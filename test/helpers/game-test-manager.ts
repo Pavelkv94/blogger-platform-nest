@@ -5,8 +5,8 @@ import request from 'supertest';
 export class GameTestManager {
   constructor(private readonly app: INestApplication) {}
 
-  async connectToGamePair(token: string): Promise<GameViewDto> {
-    const response = await request(this.app.getHttpServer()).post(`/pair-game-quiz/pairs/connection`).auth(token, { type: 'bearer' }).expect(HttpStatus.OK);
+  async connectToGamePair(token: string, status: HttpStatus = HttpStatus.OK): Promise<GameViewDto> {
+    const response = await request(this.app.getHttpServer()).post(`/pair-game-quiz/pairs/connection`).auth(token, { type: 'bearer' }).expect(status);
 
     return response.body;
   }

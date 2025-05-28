@@ -1,4 +1,5 @@
 import { Game } from '../domain/game.entity';
+import { AnswerViewDto } from './answer-view.dto';
 
 export class GameViewDto {
   id: string;
@@ -10,7 +11,7 @@ export class GameViewDto {
   secondPlayerProgress: any = null;
   questions: any = null;
 
-  constructor(model: any) {
+  constructor(model: any, firstPlayerAnswers: AnswerViewDto[], secondPlayerAnswers: AnswerViewDto[]) {
     this.id = model.game_id.toString();
     this.status = model.game_gameStatus;
     this.pairCreatedDate = model.game_pairCreatedDate;
@@ -23,7 +24,7 @@ export class GameViewDto {
         login: model.firstPlayer_login,
       },
       score: model.firstPlayer_score,
-      answers: [],
+      answers: firstPlayerAnswers,
     };
     this.secondPlayerProgress = model.secondPlayer_id
       ? {
@@ -32,12 +33,12 @@ export class GameViewDto {
             login: model.secondPlayer_login,
           },
           score: model.secondPlayer_score,
-          answers: [],
+          answers: secondPlayerAnswers,
         }
       : null;
   }
 
-  static mapToView(game: Game): GameViewDto {
-    return new GameViewDto(game);
+  static mapToView(game: Game, firstPlayerAnswers: AnswerViewDto[], secondPlayerAnswers: AnswerViewDto[]): GameViewDto {
+    return new GameViewDto(game, firstPlayerAnswers, secondPlayerAnswers);
   }
 }
