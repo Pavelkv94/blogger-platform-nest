@@ -24,7 +24,10 @@ export class GameQueryRepository {
       throw NotFoundDomainException.create('Game not found');
     }
 
-    return GameViewDto.mapToView(game, [], []);
+    const firstPlayerAnswers = await this.answerQueryRepository.findAnswersByPlayerId(game.firstPlayer_id);
+    const secondPlayerAnswers = await this.answerQueryRepository.findAnswersByPlayerId(game.secondPlayer_id);
+
+    return GameViewDto.mapToView(game, firstPlayerAnswers, secondPlayerAnswers);
   }
 
   async findGameByUserAndGameId(userId: string, gameId: string): Promise<GameViewDto> {
@@ -42,7 +45,6 @@ export class GameQueryRepository {
     const secondPlayerAnswers = await this.answerQueryRepository.findAnswersByPlayerId(game.secondPlayer_id);
 
     if (!player || (game.firstPlayer_id !== player.id && game.secondPlayer_id !== player.id)) {
-      console.log("You are not a participant of this game");
       throw ForbiddenDomainException.create('You are not a participant of this game');
     }
     return GameViewDto.mapToView(game, firstPlayerAnswers, secondPlayerAnswers);

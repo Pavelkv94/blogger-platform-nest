@@ -38,6 +38,18 @@ export class QuestionsTestManager {
     return Promise.all(questionsPromises);
   }
 
+  async createAndPublishSeveralQuestions(count: number): Promise<QuestionViewDto[]> {
+    const createdQuestions = await this.createSeveralQuestions(count);
+  
+    await Promise.all(
+      createdQuestions.map(async (question) => {
+        await this.publishQuestion(question.id, { published: true });
+      })
+    );
+  
+    return createdQuestions;
+  }
+  
   async updateQuestion(questionId: string, updateModel: QuestionUpdateDto, statusCode: number = HttpStatus.NO_CONTENT): Promise<void> {
     const response = await request(this.app.getHttpServer()).put(`/sa/quiz/questions/${questionId}`).send(updateModel).auth('admin', 'qwerty').expect(statusCode);
 

@@ -22,6 +22,11 @@ export class PlayerQueryRepository {
     return players;
   }
 
+  async findPlayerByPlayerIdAndUserId(playerId: number, userId: string): Promise<Player | null> {
+    const player = await this.playerRepositoryTypeOrm.findOne({ where: { id: playerId, userId: userId, deletedAt: IsNull() } });
+    return player;
+  }
+
   // async findQuestions(queryData: GetQuestionsQueryParams): Promise<PaginatedQuestionViewDto> {
   //   const { pageSize, pageNumber, sortBy, sortDirection, bodySearchTerm, publishedStatus } = queryData;
 

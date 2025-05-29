@@ -1,5 +1,6 @@
 import { Game } from '../domain/game.entity';
 import { AnswerViewDto } from './answer-view.dto';
+import { GameStatus } from './game-status';
 
 export class GameViewDto {
   id: string;
@@ -17,7 +18,7 @@ export class GameViewDto {
     this.pairCreatedDate = model.game_pairCreatedDate;
     this.startGameDate = model.game_startGameDate;
     this.finishGameDate = model.game_finishGameDate;
-    this.questions = model.secondPlayer_id ? model.questions : null;
+    this.questions = model.status !== GameStatus.PendingSecondPlayer ? model.questions : null;
     this.firstPlayerProgress = {
       player: {
         id: model.firstPlayer_id.toString(),

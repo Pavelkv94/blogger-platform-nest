@@ -24,7 +24,6 @@ export class ConnectToGamePairUseCase implements ICommandHandler<ConnectToGamePa
       await this.gameRepository.startGame(availableGamePair);
     }
 
-    // await this.playerRepository.setGameIdForPlayer(command.playerId, gameId);
     return gameId;
   }
 }

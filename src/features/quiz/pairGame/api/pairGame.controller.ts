@@ -57,10 +57,14 @@ export class PairGameController {
       throw BadRequestDomainException.create('Game id is required');
     }
     const game = await this.gameQueryRepository.findGameById(id);
+    const firstPlayerId = game.firstPlayerProgress.player.id;
+    const secondPlayerId = game.secondPlayerProgress?.player.id;
+ 
+    const currentPlayer = await this.playerQueryRepository.findPlayerByPlayerIdAndUserId(firstPlayerId, user.userId) 
+    || await this.playerQueryRepository.findPlayerByPlayerIdAndUserId(secondPlayerId, user.userId);
 
-    const currentPlayer = await this.playerQueryRepository.findPlayerByUserId(user.userId);
-
-    if(!currentPlayer || ![game.firstPlayerProgress.player.id, game.secondPlayerProgress.player.id].includes(currentPlayer!.id.toString())) {
+    if(!currentPlayer || ![firstPlayerId, secondPlayerId].includes(currentPlayer!.id.toString())) {
+ 
       throw ForbiddenDomainException.create('You are not a participant of this game');
     }
 
