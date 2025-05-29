@@ -22,13 +22,20 @@ export class GetMyStatisticUseCase implements ICommandHandler<GetMyStatisticComm
     async execute(command: GetMyStatisticCommand): Promise<Statistic> {
         const players = await this.playerRepository.findPlayersByUserId(command.userId);
 
+        const sumScore = players.reduce((acc, player) => acc + player.score, 0);
+        const avgScores = Number((sumScore / players.length).toFixed(2));
+        const gamesCount = players.length;
+        const winsCount = players.filter(player => player.status === PlayerStatus.WIN).length;
+        const lossesCount = players.filter(player => player.status === PlayerStatus.LOSE).length;
+        const drawsCount = players.filter(player => player.status === PlayerStatus.DRAW).length;
+
         return {
-            sumScore: players.reduce((acc, player) => acc + player.score, 0),
-            avgScores: Number((players.reduce((acc, player) => acc + player.score, 0) / players.length).toFixed(2)),
-            gamesCount: players.length,
-            winsCount: players.filter(player => player.status === PlayerStatus.WIN).length,
-            lossesCount: players.filter(player => player.status === PlayerStatus.LOSE).length,
-            drawsCount: players.filter(player => player.status === PlayerStatus.DRAW).length,
+            sumScore,
+            avgScores,
+            gamesCount,
+            winsCount,
+            lossesCount,
+            drawsCount,
         };
     }
 }

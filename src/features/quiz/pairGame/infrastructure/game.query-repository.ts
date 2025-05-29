@@ -70,6 +70,7 @@ export class GameQueryRepository {
 
     const games = await queryBuilder
       .orderBy(`game.${sortBy === "status" ? "gameStatus" : sortBy}`, sortDirection.toUpperCase() as 'ASC' | 'DESC')
+      .addOrderBy('game.pairCreatedDate', sortBy === "status" ? 'DESC' : sortDirection.toUpperCase() as 'ASC' | 'DESC')
       .skip(queryData.calculateSkip())
       .take(pageSize)
       .getRawMany();

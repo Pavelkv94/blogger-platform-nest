@@ -7,14 +7,13 @@ export class AnswerViewDto {
 
   constructor(model: any) {
     if (model instanceof Answer) {
+      this.addedAt = model.addedAt;
       this.answerStatus = model.answerStatus;
       this.questionId = model.questionId;
-      this.addedAt = model.addedAt;
     } else {
-      // Handle raw query results
+      this.addedAt = model.answer_addedAt;
       this.answerStatus = model.answer_answerStatus;
       this.questionId = model.answer_questionId;
-      this.addedAt = model.answer_addedAt;
     }
   }
 

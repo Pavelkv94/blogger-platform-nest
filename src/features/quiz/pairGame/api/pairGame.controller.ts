@@ -84,7 +84,7 @@ export class PairGameController {
   async connection(@ExtractAnyUserFromRequest() user: UserJwtPayloadDto): Promise<any> {
 
     const activePlayer = await this.playerQueryRepository.findActivePlayerByUserId(user.userId);
-    console.log(activePlayer);
+
     if (activePlayer) {
       throw ForbiddenDomainException.create('User is already in game');
     }
