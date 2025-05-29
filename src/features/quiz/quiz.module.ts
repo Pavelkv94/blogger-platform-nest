@@ -33,6 +33,7 @@ import { AnswerRepository } from './pairGame/infrastructure/answer.repository';
 import { AnswerQueryRepository } from './pairGame/infrastructure/answer.query-repository';
 import { GameQuestionsQueryRepository } from './pairGame/infrastructure/game-questions.query-repository';
 import { FinishGameUseCase } from './pairGame/application/usecases/finish-game.usecase';
+import { GetMyStatisticUseCase } from './pairGame/application/usecases/get-my-stat.usecase';
 
 const useCases = [
   CreateQuestionUseCase,
@@ -43,7 +44,8 @@ const useCases = [
   CreatePlayerUseCase,
   SelectQuestionsForGamePairUseCase,
   CreateAnswerUseCase,
-  FinishGameUseCase
+  FinishGameUseCase,
+  GetMyStatisticUseCase
   
 ];
 

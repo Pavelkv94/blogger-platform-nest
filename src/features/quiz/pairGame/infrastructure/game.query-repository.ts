@@ -6,6 +6,8 @@ import { GameViewDto } from '../dto/game-view.dto';
 import { ForbiddenDomainException, NotFoundDomainException } from 'src/core/exeptions/domain-exceptions';
 import { PlayerQueryRepository } from './player.query-repository';
 import { AnswerQueryRepository } from './answer.query-repository';
+import { GetGamesQueryParams } from '../dto/get-games-query-params.input-dto';
+import { PaginatedGameViewDto } from 'src/core/dto/base.paginated.view-dto';
 
 @Injectable()
 export class GameQueryRepository {
@@ -59,6 +61,34 @@ export class GameQueryRepository {
     const secondPlayerAnswers = await this.answerQueryRepository.findAnswersByPlayerId(game.secondPlayer_id);
 
     return GameViewDto.mapToView(game, firstPlayerAnswers, secondPlayerAnswers);
+  }
+
+  async findAllGamesByUserId(userId: string, queryData: GetGamesQueryParams): Promise<PaginatedGameViewDto> {
+    const { pageSize, pageNumber, sortBy, sortDirection } = queryData;
+
+    const queryBuilder = await this._defaultGameQueryBuilderByUserId(userId);
+
+    const games = await queryBuilder
+      .orderBy(`game.${sortBy === "status" ? "gameStatus" : sortBy}`, sortDirection.toUpperCase() as 'ASC' | 'DESC')
+      .skip(queryData.calculateSkip())
+      .take(pageSize)
+      .getRawMany();
+
+      const gamesCount = await queryBuilder.getCount();
+
+    const gamesView = await Promise.all(games.map(async (game) => {
+      const firstPlayerAnswers = await this.answerQueryRepository.findAnswersByPlayerId(game.firstPlayer_id);
+      const secondPlayerAnswers = await this.answerQueryRepository.findAnswersByPlayerId(game.secondPlayer_id);
+      return GameViewDto.mapToView(game, firstPlayerAnswers, secondPlayerAnswers);
+    }));
+
+    return PaginatedGameViewDto.mapToView({
+      items: gamesView,
+      page: pageNumber,
+      size: pageSize,
+      totalCount: gamesCount,
+    });
+
   }
 
   private async _defaultGameQueryBuilderByGameId(gameId: string): Promise<any> {
@@ -121,4 +151,36 @@ export class GameQueryRepository {
 
     return gameQueryBuilder;
   }
+
+  private async _defaultGameQueryBuilderByUserId(userId: string): Promise<any> {
+    const gameQueryBuilder = this.gameRepositoryTypeOrm
+    .createQueryBuilder('game')
+    .leftJoin('game.firstPlayer', 'firstPlayer')
+    .leftJoin('game.secondPlayer', 'secondPlayer')
+    .leftJoin('firstPlayer.user', 'firstUser')
+    .leftJoin('secondPlayer.user', 'secondUser')
+    .addSelect('firstPlayer.score', 'firstPlayer_score')
+    .addSelect('firstPlayer.id', 'firstPlayer_id')
+    .addSelect('firstUser.login', 'firstPlayer_login')
+    .addSelect('firstUser.id', 'firstPlayer_userId')
+    .addSelect('secondPlayer.score', 'secondPlayer_score')
+    .addSelect('secondPlayer.id', 'secondPlayer_id')
+    .addSelect('secondUser.login', 'secondPlayer_login')
+    .addSelect('secondUser.id', 'secondPlayer_userId')
+    .addSelect((qb) => {
+      return qb.select(`jsonb_agg(json_build_object('id', qid, 'body', qbody))`).from((qb) => {
+        return qb
+          .select(`q.id`, 'qid')
+          .addSelect('q.body', 'qbody')
+          .from('question', 'q')
+          .where('gq."gameId" = game.id')
+          .leftJoin('game_questions', 'gq', 'q.id = gq."questionId"')
+          .orderBy('gq.index', 'ASC');
+      }, 'question');
+    }, 'questions')
+    
+
+    return gameQueryBuilder.where('firstUser.id = :userId OR secondUser.id = :userId', { userId });
+  }
+
 }

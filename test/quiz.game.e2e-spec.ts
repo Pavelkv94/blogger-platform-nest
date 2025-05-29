@@ -509,7 +509,147 @@ describe('quiz game', () => {
     expect(response10).toEqual(response12);
     expect(response10.questions).not.toBe(null);
     expect(response10.status).toBe(GameStatus.Active);
+  });
 
+  it('test statistic', async () => {
+    await gameTestManager.connectToGamePair(firstUserToken);
+    await delay(100);
+    await gameTestManager.connectToGamePair(secondUserToken);
+    const response3 = await gameTestManager.getMyCurrentGame(secondUserToken);
+    const questionsIndexes = response3.questions.map(q => q.body[q.body.length - 1]);
+    const answers = questionsIndexes.map(i => `correctAnswer${i}`);
+
+    for (let i = 0; i < 5; i++) {
+      await gameTestManager.answerOnQuestion(firstUserToken, answers[i]);
+      await delay(100);
+      await gameTestManager.answerOnQuestion(secondUserToken, answers[i]);
+      await delay(100);
+    }
+    const response5 = await gameTestManager.getGameById(firstUserToken, response3.id);
+    const response6 = await gameTestManager.getGameById(secondUserToken, response3.id);
+    expect(response5).toEqual(response6);
+    expect(response5.status).toBe(GameStatus.Finished);
+    expect(response5.finishGameDate).not.toBeNull();
+    expect(response5.firstPlayerProgress.score).toBe(6); // first user score
+    expect(response5.firstPlayerProgress.answers.length).toBe(5);
+    expect(response5.secondPlayerProgress.score).toBe(5); // second user score
+
+    //start the second game
+    await gameTestManager.connectToGamePair(firstUserToken);
+    await delay(100);
+    const respons13 = await gameTestManager.connectToGamePair(thirdUserToken);
+
+    const questionsIndexesGame2 = respons13.questions.map(q => q.body[q.body.length - 1]);
+    const answersGame2 = questionsIndexesGame2.map(i => `correctAnswer${i}`);
+
+    for (let i = 0; i < 5; i++) {
+      await gameTestManager.answerOnQuestion(thirdUserToken, `incorrect ${i}`);
+      await delay(100);
+      await gameTestManager.answerOnQuestion(firstUserToken, answersGame2[i]);
+      await delay(100);
+
+    }
+    const response14 = await gameTestManager.getGameById(thirdUserToken, respons13.id);
+
+    expect(response14.status).toBe(GameStatus.Finished);
+    expect(response14.firstPlayerProgress.score).toBe(5); // first user score
+    expect(response14.secondPlayerProgress.score).toBe(1); // third user score
+
+    const statisticOfFirstuser = await gameTestManager.getMyStatistic(firstUserToken);
+    expect(statisticOfFirstuser.sumScore).toBe(11);
+    expect(statisticOfFirstuser.avgScores).toBe(5.5);
+    expect(statisticOfFirstuser.gamesCount).toBe(2);
+    expect(statisticOfFirstuser.winsCount).toBe(2);
+    expect(statisticOfFirstuser.lossesCount).toBe(0);
+    expect(statisticOfFirstuser.drawsCount).toBe(0);
+
+    const statisticOfSeconduser = await gameTestManager.getMyStatistic(secondUserToken);
+    expect(statisticOfSeconduser.sumScore).toBe(5);
+    expect(statisticOfSeconduser.avgScores).toBe(5);
+    expect(statisticOfSeconduser.gamesCount).toBe(1);
+    expect(statisticOfSeconduser.winsCount).toBe(0);
+    expect(statisticOfSeconduser.lossesCount).toBe(1);
+    expect(statisticOfSeconduser.drawsCount).toBe(0);
+
+    const statisticOfThirduser = await gameTestManager.getMyStatistic(thirdUserToken);
+    expect(statisticOfThirduser.sumScore).toBe(1);
+    expect(statisticOfThirduser.avgScores).toBe(1);
+    expect(statisticOfThirduser.gamesCount).toBe(1);
+    expect(statisticOfThirduser.winsCount).toBe(0);
+    expect(statisticOfThirduser.lossesCount).toBe(1);
+    expect(statisticOfThirduser.drawsCount).toBe(0);
+  });
+
+  it('test history', async () => {
+    await gameTestManager.connectToGamePair(firstUserToken);
+    await delay(100);
+    await gameTestManager.connectToGamePair(secondUserToken);
+    const response3 = await gameTestManager.getMyCurrentGame(secondUserToken);
+    const questionsIndexes = response3.questions.map(q => q.body[q.body.length - 1]);
+    const answers = questionsIndexes.map(i => `correctAnswer${i}`);
+
+    for (let i = 0; i < 5; i++) {
+      await gameTestManager.answerOnQuestion(firstUserToken, answers[i]);
+      await delay(100);
+      await gameTestManager.answerOnQuestion(secondUserToken, answers[i]);
+      await delay(100);
+    }
+    const response5 = await gameTestManager.getGameById(firstUserToken, response3.id);
+    const response6 = await gameTestManager.getGameById(secondUserToken, response3.id);
+    expect(response5).toEqual(response6);
+    expect(response5.status).toBe(GameStatus.Finished);
+    expect(response5.finishGameDate).not.toBeNull();
+    expect(response5.firstPlayerProgress.score).toBe(6); // first user score
+    expect(response5.firstPlayerProgress.answers.length).toBe(5);
+    expect(response5.secondPlayerProgress.score).toBe(5); // second user score
+
+    //start the second game
+    await gameTestManager.connectToGamePair(firstUserToken);
+    await delay(100);
+    const respons13 = await gameTestManager.connectToGamePair(thirdUserToken);
+
+    const questionsIndexesGame2 = respons13.questions.map(q => q.body[q.body.length - 1]);
+    const answersGame2 = questionsIndexesGame2.map(i => `correctAnswer${i}`);
+
+    for (let i = 0; i < 5; i++) {
+      await gameTestManager.answerOnQuestion(thirdUserToken, `incorrect ${i}`);
+      await delay(100);
+      await gameTestManager.answerOnQuestion(firstUserToken, answersGame2[i]);
+      await delay(100);
+
+    }
+    const response14 = await gameTestManager.getGameById(thirdUserToken, respons13.id);
+
+    expect(response14.status).toBe(GameStatus.Finished);
+    expect(response14.firstPlayerProgress.score).toBe(5); // first user score
+    expect(response14.secondPlayerProgress.score).toBe(1); // third user score
+
+    const statisticOfFirstuser = await gameTestManager.getMyStatistic(firstUserToken);
+    expect(statisticOfFirstuser.sumScore).toBe(11);
+    expect(statisticOfFirstuser.avgScores).toBe(5.5);
+    expect(statisticOfFirstuser.gamesCount).toBe(2);
+    expect(statisticOfFirstuser.winsCount).toBe(2);
+    expect(statisticOfFirstuser.lossesCount).toBe(0);
+    expect(statisticOfFirstuser.drawsCount).toBe(0);
+
+    const statisticOfSeconduser = await gameTestManager.getMyStatistic(secondUserToken);
+    expect(statisticOfSeconduser.sumScore).toBe(5);
+    expect(statisticOfSeconduser.avgScores).toBe(5);
+    expect(statisticOfSeconduser.gamesCount).toBe(1);
+    expect(statisticOfSeconduser.winsCount).toBe(0);
+    expect(statisticOfSeconduser.lossesCount).toBe(1);
+    expect(statisticOfSeconduser.drawsCount).toBe(0);
+
+    const statisticOfThirduser = await gameTestManager.getMyStatistic(thirdUserToken);
+    expect(statisticOfThirduser.sumScore).toBe(1);
+    expect(statisticOfThirduser.avgScores).toBe(1);
+    expect(statisticOfThirduser.gamesCount).toBe(1);
+    expect(statisticOfThirduser.winsCount).toBe(0);
+    expect(statisticOfThirduser.lossesCount).toBe(1);
+    expect(statisticOfThirduser.drawsCount).toBe(0);
+
+    const games = await gameTestManager.getMyGames(firstUserToken);
+    expect(games.items.length).toBe(2);
 
   });
 

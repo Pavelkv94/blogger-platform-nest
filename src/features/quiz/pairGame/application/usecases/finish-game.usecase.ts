@@ -25,11 +25,11 @@ export class FinishGameUseCase implements ICommandHandler<FinishGameCommand> {
     const secondPlayer = await this.playerRepository.findPlayerById(command.secondPlayerId);
 
     if(currentPlayer.score > secondPlayer.score) {
-      await this.playerRepository.updatePlayerStatus(command.secondPlayerId, PlayerStatus.WIN);
-      await this.playerRepository.updatePlayerStatus(command.playerId, PlayerStatus.LOSE);
-    } else if(currentPlayer.score < secondPlayer.score) {
       await this.playerRepository.updatePlayerStatus(command.secondPlayerId, PlayerStatus.LOSE);
       await this.playerRepository.updatePlayerStatus(command.playerId, PlayerStatus.WIN);
+    } else if(currentPlayer.score < secondPlayer.score) {
+      await this.playerRepository.updatePlayerStatus(command.secondPlayerId, PlayerStatus.WIN);
+      await this.playerRepository.updatePlayerStatus(command.playerId, PlayerStatus.LOSE);
     } else {
       await this.playerRepository.updatePlayerStatus(command.secondPlayerId, PlayerStatus.DRAW);
       await this.playerRepository.updatePlayerStatus(command.playerId, PlayerStatus.DRAW);
