@@ -48,7 +48,7 @@ export class QuestionsQueryRepository {
   async findQuestionByIdOrNotFoundFail(questionId: string): Promise<QuestionViewDto> {
     const question = await this.questionRepositoryTypeOrm
       .createQueryBuilder('question')
-      .where('question.id = :id', { id: Number(questionId) })
+      .where('question.id = :id', { id: questionId })
       .andWhere('question.deletedAt IS NULL')
       .getOne();
 

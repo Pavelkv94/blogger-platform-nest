@@ -5,8 +5,8 @@ import { GameQuestions } from '../../pairGame/domain/game-questions.entity';
 
 @Entity()
 export class Question {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column({ collation: 'C' })
   body: string;

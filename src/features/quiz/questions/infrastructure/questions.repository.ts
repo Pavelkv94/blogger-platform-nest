@@ -4,13 +4,17 @@ import { IsNull, Repository } from 'typeorm';
 import { QuestionCreateDto } from '../dto/question-create.dto';
 import { Question } from '../domain/question.entity';
 import { QuestionPublishDto } from '../dto/question-update.dto';
+import { validate as uuidValidate } from 'uuid';
 
 @Injectable()
 export class QuestionsRepository {
   constructor(@InjectRepository(Question) private questionRepositoryTypeOrm: Repository<Question>) {}
 
   async findQuestionById(id: string): Promise<Question | null> {
-    const question = await this.questionRepositoryTypeOrm.findOne({ where: { id: Number(id), deletedAt: IsNull() } });
+    if (!uuidValidate(id)) {
+      return null;
+    }
+    const question = await this.questionRepositoryTypeOrm.findOne({ where: { id: id, deletedAt: IsNull() } });
     if (!question) {
       return null;
     }

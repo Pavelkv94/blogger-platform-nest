@@ -1,4 +1,4 @@
 export enum AnswerStatus {
-  Correct = 'correct',
-  Incorrect = 'incorrect',
+  Correct = 'Correct',
+  Incorrect = 'Incorrect',
 }

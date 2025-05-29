@@ -21,7 +21,7 @@ export class GameViewDto {
     this.questions = model.status !== GameStatus.PendingSecondPlayer ? model.questions : null;
     this.firstPlayerProgress = {
       player: {
-        id: model.firstPlayer_id.toString(),
+        id: model.firstPlayer_userId.toString(),
         login: model.firstPlayer_login,
       },
       score: model.firstPlayer_score,
@@ -30,7 +30,7 @@ export class GameViewDto {
     this.secondPlayerProgress = model.secondPlayer_id
       ? {
           player: {
-            id: model.secondPlayer_id.toString(),
+            id: model.secondPlayer_userId.toString(),
             login: model.secondPlayer_login,
           },
           score: model.secondPlayer_score,

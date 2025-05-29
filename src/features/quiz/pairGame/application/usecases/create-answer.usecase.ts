@@ -8,7 +8,7 @@ export class CreateAnswerCommand {
     public readonly answer: string,
     public readonly playerId: number,
     public readonly answerIsCorrect: boolean,
-    public readonly questionId: number
+    public readonly questionId: string
   ) { }
 }
 

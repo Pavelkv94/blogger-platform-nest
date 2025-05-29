@@ -16,7 +16,7 @@ export class Answer {
   answerStatus: string;
 
   @Column()
-  questionId: number;
+  questionId: string;
 
   @CreateDateColumn()
   addedAt: Date;
@@ -28,7 +28,7 @@ export class Answer {
   @Column()
   playerId: number;
 
-  static buildInstance(answer: string, questionId: number, playerId: number, answerIsCorrect: boolean): Answer {
+  static buildInstance(answer: string, questionId: string, playerId: number, answerIsCorrect: boolean): Answer {
     const answerEntity = new Answer();
     answerEntity.answer = answer;
     answerEntity.questionId = questionId;

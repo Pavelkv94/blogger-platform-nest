@@ -71,9 +71,11 @@ export class GameQueryRepository {
       .addSelect('firstPlayer.score', 'firstPlayer_score')
       .addSelect('firstPlayer.id', 'firstPlayer_id')
       .addSelect('firstUser.login', 'firstPlayer_login')
+      .addSelect('firstUser.id', 'firstPlayer_userId')
       .addSelect('secondPlayer.score', 'secondPlayer_score')
       .addSelect('secondPlayer.id', 'secondPlayer_id')
       .addSelect('secondUser.login', 'secondPlayer_login')
+      .addSelect('secondUser.id', 'secondPlayer_userId')
       .addSelect((qb) => {
         return qb.select(`jsonb_agg(json_build_object('id', qid, 'body', qbody))`).from((qb) => {
           return qb
@@ -100,9 +102,11 @@ export class GameQueryRepository {
       .addSelect('firstPlayer.score', 'firstPlayer_score')
       .addSelect('firstPlayer.id', 'firstPlayer_id')
       .addSelect('firstUser.login', 'firstPlayer_login')
+      .addSelect('firstUser.id', 'firstPlayer_userId')
       .addSelect('secondPlayer.score', 'secondPlayer_score')
       .addSelect('secondPlayer.id', 'secondPlayer_id')
       .addSelect('secondUser.login', 'secondPlayer_login')
+      .addSelect('secondUser.id', 'secondPlayer_userId')
       .addSelect((qb) => {
         return qb.select(`jsonb_agg(json_build_object('id', qid, 'body', qbody))`).from((qb) => {
           return qb

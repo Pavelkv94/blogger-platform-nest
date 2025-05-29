@@ -189,4 +189,8 @@ describe('quiz questions', () => {
     const response2 = await questionsTestManager.getQuestions();
     expect(response2.items.length).toBe(2);
   });
+
+  it('should return 404 if question not found when delete', async () => {
+    await questionsTestManager.deleteQuestion('123', HttpStatus.NOT_FOUND);
+  });
 });

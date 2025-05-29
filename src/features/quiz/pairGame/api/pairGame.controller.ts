@@ -39,12 +39,9 @@ export class PairGameController {
     }
 
     const game = await this.gameQueryRepository.findGameByPlayerId(activePlayer.id.toString());
-
+    
     if(game.status === GameStatus.Finished) {
       throw NotFoundDomainException.create('Game is finished');
-    }
-    if(game.questions) {
-      return {...game, questions: game.questions.map(q => ({...q, id: q.id.toString()}))};
     }
     return game;
   }
@@ -60,24 +57,22 @@ export class PairGameController {
     const firstPlayerId = game.firstPlayerProgress.player.id;
     const secondPlayerId = game.secondPlayerProgress?.player.id;
  
-    const currentPlayer = await this.playerQueryRepository.findPlayerByPlayerIdAndUserId(firstPlayerId, user.userId) 
-    || await this.playerQueryRepository.findPlayerByPlayerIdAndUserId(secondPlayerId, user.userId);
+    // const currentPlayer = await this.playerQueryRepository.findPlayerByPlayerIdAndUserId(firstPlayerId, user.userId) 
+    // || await this.playerQueryRepository.findPlayerByPlayerIdAndUserId(secondPlayerId, user.userId);
 
-    if(!currentPlayer || ![firstPlayerId, secondPlayerId].includes(currentPlayer!.id.toString())) {
- 
+    if(![firstPlayerId, secondPlayerId].includes(user.userId.toString())) {
       throw ForbiddenDomainException.create('You are not a participant of this game');
     }
 
-    if(game.questions) {
-      return {...game, questions: game.questions.map(q => ({...q, id: q.id.toString()}))};
-    }
     return game;
   }
 
   @Post('connection')
   @HttpCode(HttpStatus.OK)
   async connection(@ExtractAnyUserFromRequest() user: UserJwtPayloadDto): Promise<any> {
+
     const activePlayer = await this.playerQueryRepository.findActivePlayerByUserId(user.userId);
+
     if (activePlayer) {
       throw ForbiddenDomainException.create('User is already in game');
     }
@@ -110,13 +105,15 @@ export class PairGameController {
     }
 
     const answers = await this.answerQueryRepository.findAnswersByPlayerId(player.id);
+
     if (answers.length >= 5) {
       throw ForbiddenDomainException.create('You have already answered 5 questions');
     }
+    const secondPlayerUserId = [game.firstPlayerProgress.player.id, game.secondPlayerProgress.player.id].find(id => id != user.userId);
 
-    const secondPlayerId = [game.firstPlayerProgress.player.id, game.secondPlayerProgress.player.id].find(id => id != player.id);
-    const secondPlayerAnswers = await this.answerQueryRepository.findAnswersByPlayerId(secondPlayerId);
+    const secondPlayer = await this.playerQueryRepository.findActivePlayerByUserId(secondPlayerUserId);
 
+    const secondPlayerAnswers = await this.answerQueryRepository.findAnswersByPlayerId(secondPlayer!.id);
 
     const gameQuestions = await this.gameQuestionsQueryRepository.findGameQuestionsByGameId(game.id);
 
@@ -124,11 +121,10 @@ export class PairGameController {
 
     const answerIsCorrect = question.correctAnswers.includes(body.answer);
 
-    const answerId = await this.commandBus.execute(new CreateAnswerCommand(user.userId, body.answer, player.id, answerIsCorrect, Number(gameQuestions[answers.length].questionId)));
+    const answerId = await this.commandBus.execute(new CreateAnswerCommand(user.userId, body.answer, player.id, answerIsCorrect, gameQuestions[answers.length].questionId));
     const answer = await this.answerQueryRepository.findAnswerById(answerId);
-
     if (secondPlayerAnswers.length === 5 && answers.length === 4) {
-      await this.commandBus.execute(new FinishGameCommand(game.id,  player.id.toString(), secondPlayerId.toString()));
+      await this.commandBus.execute(new FinishGameCommand(game.id,  player.id.toString(), secondPlayer!.id.toString()));
     }
     return answer;
   }

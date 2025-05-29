@@ -42,15 +42,15 @@ export class Game {
   @OneToMany(() => GameQuestions, (gameQuestions) => gameQuestions.game)
   questions: GameQuestions[];
 
-  static buildInstance(userId: string): Game {
+  static buildInstance(playerId: string): Game {
     const game = new this();
-    game.firstPlayerId = userId;
+    game.firstPlayerId = playerId;
     game.gameStatus = GameStatus.PendingSecondPlayer;
     return game;
   }
 
-  connectSecondPlayer(userId: string) {
-    this.secondPlayerId = userId;
+  connectSecondPlayer(playerId: string) {
+    this.secondPlayerId = playerId;
   }
 
   startGame() {

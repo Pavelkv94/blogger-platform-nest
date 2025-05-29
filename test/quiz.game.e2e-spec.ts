@@ -69,7 +69,6 @@ describe('quiz game', () => {
 
   it('user should connect to game pair, when availablegame pairs are not exist', async () => {
     const gameResponse = await gameTestManager.connectToGamePair(firstUserToken);
-
     expect(gameResponse).toEqual({
       finishGameDate: null,
       id: expect.any(String),
@@ -147,7 +146,7 @@ describe('quiz game', () => {
 
   it('user should get 404 when game finished', async () => {
     await gameTestManager.connectToGamePair(firstUserToken);
-    await delay(1000);
+    await delay(100);
     await gameTestManager.connectToGamePair(secondUserToken);
     for (let i = 0; i < 5; i++) {
       await gameTestManager.answerOnQuestion(firstUserToken, `incorrect ${i}`);
@@ -270,7 +269,7 @@ describe('quiz game', () => {
     expect(gameResponse3.secondPlayerProgress.score).toBe(0)
 
     await delay(100);
-    await gameTestManager.answerOnQuestion(secondUserToken, answers[0]);
+    await gameTestManager.answerOnQuestion(secondUserToken, answers[1]);
     const gameResponseFirstUser4 = await gameTestManager.getMyCurrentGame(firstUserToken);
     const gameResponseSecondUser4 = await gameTestManager.getMyCurrentGame(secondUserToken);
     expect(gameResponseSecondUser4.firstPlayerProgress.score).toBe(1)
@@ -461,6 +460,7 @@ describe('quiz game', () => {
     const response = await gameTestManager.connectToGamePair(firstUserToken);
     const response1 = await gameTestManager.getMyCurrentGame(firstUserToken);
     const response2 = await gameTestManager.getGameById(firstUserToken, response.id);
+    expect(response.status).toBe(GameStatus.PendingSecondPlayer);
     expect(response1).toEqual(response2);
     expect(response1.questions).toBe(null);
     expect(response1.status).toBe(GameStatus.PendingSecondPlayer);
@@ -509,6 +509,7 @@ describe('quiz game', () => {
     expect(response10).toEqual(response12);
     expect(response10.questions).not.toBe(null);
     expect(response10.status).toBe(GameStatus.Active);
+
 
   });
 
