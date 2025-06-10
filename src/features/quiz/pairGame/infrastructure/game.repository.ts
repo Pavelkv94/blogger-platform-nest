@@ -6,7 +6,7 @@ import { GameStatus } from '../dto/game-status';
 
 @Injectable()
 export class GameRepository {
-  constructor(@InjectRepository(Game) private gameRepositoryTypeOrm: Repository<Game>) {}
+  constructor(@InjectRepository(Game) private gameRepositoryTypeOrm: Repository<Game>) { }
 
   async findGameByUserId(userId: string): Promise<Game | null> {
     const game = await this.gameRepositoryTypeOrm.findOne({ where: { firstPlayerId: userId } });
@@ -43,5 +43,39 @@ export class GameRepository {
   async finishGame(game: Game): Promise<void> {
     game.finishGame();
     await this.gameRepositoryTypeOrm.save(game);
+  }
+
+  async findAllGames(): Promise<any[]> {
+    const gameQueryBuilder = this.gameRepositoryTypeOrm
+      .createQueryBuilder('game')
+      .leftJoin('game.firstPlayer', 'firstPlayer')
+      .leftJoin('game.secondPlayer', 'secondPlayer')
+      .leftJoin('firstPlayer.user', 'firstUser')
+      .leftJoin('secondPlayer.user', 'secondUser')
+      .addSelect((subQuery) => {
+        return subQuery
+          .select(`jsonb_agg(json_build_object('answer', answer, 'addedAt', "addedAt"))`, 'answers')
+          .from('answer', 'answer')
+          .where('answer.playerId = secondPlayer.id')
+          // .orderBy('answer.addedAt', 'ASC');
+      }, 'secondPlayer_answers')
+      .addSelect((subQuery) => {
+        return subQuery
+          .select(`jsonb_agg(json_build_object('answer', answer, 'addedAt', "addedAt"))`, 'answers')
+          .from('answer', 'answer')
+          .where('answer.playerId = firstPlayer.id')
+          // .orderBy('answer.addedAt', 'ASC');
+      }, 'firstPlayer_answers')
+      .addSelect('firstPlayer.score', 'firstPlayer_score')
+      .addSelect('firstPlayer.id', 'firstPlayer_id')
+      .addSelect('firstUser.login', 'firstPlayer_login')
+      .addSelect('firstUser.id', 'firstPlayer_userId')
+      .addSelect('secondPlayer.score', 'secondPlayer_score')
+      .addSelect('secondPlayer.id', 'secondPlayer_id')
+      .addSelect('secondUser.login', 'secondPlayer_login')
+      .addSelect('secondUser.id', 'secondPlayer_userId')
+      ;
+    const games = await gameQueryBuilder.where('game.gameStatus = :status', { status: GameStatus.Active }).getRawMany();
+    return games;
   }
 }

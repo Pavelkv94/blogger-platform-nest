@@ -75,7 +75,7 @@ export class GameQueryRepository {
       .take(pageSize)
       .getRawMany();
 
-      const gamesCount = await queryBuilder.getCount();
+    const gamesCount = await queryBuilder.getCount();
 
     const gamesView = await Promise.all(games.map(async (game) => {
       const firstPlayerAnswers = await this.answerQueryRepository.findAnswersByPlayerId(game.firstPlayer_id);
@@ -91,6 +91,8 @@ export class GameQueryRepository {
     });
 
   }
+
+
 
   private async _defaultGameQueryBuilderByGameId(gameId: string): Promise<any> {
     const gameQueryBuilder = this.gameRepositoryTypeOrm
@@ -155,31 +157,31 @@ export class GameQueryRepository {
 
   private async _defaultGameQueryBuilderByUserId(userId: string): Promise<any> {
     const gameQueryBuilder = this.gameRepositoryTypeOrm
-    .createQueryBuilder('game')
-    .leftJoin('game.firstPlayer', 'firstPlayer')
-    .leftJoin('game.secondPlayer', 'secondPlayer')
-    .leftJoin('firstPlayer.user', 'firstUser')
-    .leftJoin('secondPlayer.user', 'secondUser')
-    .addSelect('firstPlayer.score', 'firstPlayer_score')
-    .addSelect('firstPlayer.id', 'firstPlayer_id')
-    .addSelect('firstUser.login', 'firstPlayer_login')
-    .addSelect('firstUser.id', 'firstPlayer_userId')
-    .addSelect('secondPlayer.score', 'secondPlayer_score')
-    .addSelect('secondPlayer.id', 'secondPlayer_id')
-    .addSelect('secondUser.login', 'secondPlayer_login')
-    .addSelect('secondUser.id', 'secondPlayer_userId')
-    .addSelect((qb) => {
-      return qb.select(`jsonb_agg(json_build_object('id', qid, 'body', qbody))`).from((qb) => {
-        return qb
-          .select(`q.id`, 'qid')
-          .addSelect('q.body', 'qbody')
-          .from('question', 'q')
-          .where('gq."gameId" = game.id')
-          .leftJoin('game_questions', 'gq', 'q.id = gq."questionId"')
-          .orderBy('gq.index', 'ASC');
-      }, 'question');
-    }, 'questions')
-    
+      .createQueryBuilder('game')
+      .leftJoin('game.firstPlayer', 'firstPlayer')
+      .leftJoin('game.secondPlayer', 'secondPlayer')
+      .leftJoin('firstPlayer.user', 'firstUser')
+      .leftJoin('secondPlayer.user', 'secondUser')
+      .addSelect('firstPlayer.score', 'firstPlayer_score')
+      .addSelect('firstPlayer.id', 'firstPlayer_id')
+      .addSelect('firstUser.login', 'firstPlayer_login')
+      .addSelect('firstUser.id', 'firstPlayer_userId')
+      .addSelect('secondPlayer.score', 'secondPlayer_score')
+      .addSelect('secondPlayer.id', 'secondPlayer_id')
+      .addSelect('secondUser.login', 'secondPlayer_login')
+      .addSelect('secondUser.id', 'secondPlayer_userId')
+      .addSelect((qb) => {
+        return qb.select(`jsonb_agg(json_build_object('id', qid, 'body', qbody))`).from((qb) => {
+          return qb
+            .select(`q.id`, 'qid')
+            .addSelect('q.body', 'qbody')
+            .from('question', 'q')
+            .where('gq."gameId" = game.id')
+            .leftJoin('game_questions', 'gq', 'q.id = gq."questionId"')
+            .orderBy('gq.index', 'ASC');
+        }, 'question');
+      }, 'questions')
+
 
     return gameQueryBuilder.where('firstUser.id = :userId OR secondUser.id = :userId', { userId });
   }

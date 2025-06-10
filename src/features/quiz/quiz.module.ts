@@ -34,6 +34,8 @@ import { AnswerQueryRepository } from './pairGame/infrastructure/answer.query-re
 import { GameQuestionsQueryRepository } from './pairGame/infrastructure/game-questions.query-repository';
 import { FinishGameUseCase } from './pairGame/application/usecases/finish-game.usecase';
 import { GetMyStatisticUseCase } from './pairGame/application/usecases/get-my-stat.usecase';
+import { ScheduleModule } from '@nestjs/schedule';
+import { CronSchedulerUseCase } from './pairGame/application/usecases/cron-scheduler.usecase';
 
 const useCases = [
   CreateQuestionUseCase,
@@ -45,7 +47,8 @@ const useCases = [
   SelectQuestionsForGamePairUseCase,
   CreateAnswerUseCase,
   FinishGameUseCase,
-  GetMyStatisticUseCase
+  GetMyStatisticUseCase,
+  CronSchedulerUseCase
   
 ];
 
@@ -65,6 +68,7 @@ const repositories = [
 @ApiTags('Quiz') //swagger
 @Module({
   imports: [
+    ScheduleModule.forRoot(),
     PassportModule,
     JwtModule.registerAsync({
       useFactory: (coreConfig: CoreConfig) => ({

@@ -653,4 +653,37 @@ describe('quiz game', () => {
 
   });
 
+  it('test scheduler', async () => {
+    await gameTestManager.connectToGamePair(firstUserToken);
+    await delay(100);
+    await gameTestManager.connectToGamePair(secondUserToken);
+    const response3 = await gameTestManager.getMyCurrentGame(secondUserToken);
+    const questionsIndexes = response3.questions.map(q => q.body[q.body.length - 1]);
+    const answers = questionsIndexes.map(i => `correctAnswer${i}`);
+
+    for (let i = 0; i < 4; i++) {
+      await gameTestManager.answerOnQuestion(firstUserToken, answers[i]);
+      await delay(100);
+      await gameTestManager.answerOnQuestion(secondUserToken, answers[i]);
+      await delay(100);
+    }
+    await gameTestManager.answerOnQuestion(firstUserToken, answers[4]);
+
+    const response5 = await gameTestManager.getGameById(firstUserToken, response3.id);
+
+    expect(response5.status).toBe(GameStatus.Active);
+    expect(response5.finishGameDate).toBeNull();
+    expect(response5.firstPlayerProgress.score).toBe(5); 
+    expect(response5.firstPlayerProgress.answers.length).toBe(5);
+    expect(response5.secondPlayerProgress.score).toBe(4); 
+
+    await delay(3000);
+    const response6 = await gameTestManager.getGameById(firstUserToken, response3.id);
+    expect(response6.status).toBe(GameStatus.Finished);
+    expect(response6.finishGameDate).not.toBeNull();
+    expect(response6.firstPlayerProgress.score).toBe(6);
+    expect(response6.firstPlayerProgress.answers.length).toBe(5);
+    expect(response6.secondPlayerProgress.score).toBe(4);
+    expect(response6.secondPlayerProgress.answers.length).toBe(5);
+  })
 });

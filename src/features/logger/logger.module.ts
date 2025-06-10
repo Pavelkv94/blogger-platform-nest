@@ -21,6 +21,7 @@ export class LoggerModule implements NestModule {
     };
   }
 
+  // можно использовать сразу в app.module.ts
   configure(consumer: MiddlewareConsumer) {
     if (this.includeLogger) {
       consumer.apply(LoggerMiddleware).forRoutes('*'); // Apply LoggerMiddleware for all routes

@@ -20,7 +20,7 @@ import { PaginatedGameViewDto } from 'src/core/dto/base.paginated.view-dto';
 import { GetGamesQueryParams } from '../dto/get-games-query-params.input-dto';
 
 @ApiTags('Pair Game') //swagger
-@UseGuards(JwtAuthPassportGuard)
+
 @Controller('pair-game-quiz')
 export class PairGameController {
   constructor(
@@ -33,6 +33,7 @@ export class PairGameController {
   ) { }
 
   @Get('pairs/my-current')
+  @UseGuards(JwtAuthPassportGuard)
   @HttpCode(HttpStatus.OK)
   async getMyCurrentGame(@ExtractAnyUserFromRequest() user: UserJwtPayloadDto): Promise<any> {
     const activePlayer = await this.playerQueryRepository.findActivePlayerByUserId(user.userId);
@@ -42,14 +43,15 @@ export class PairGameController {
     }
 
     const game = await this.gameQueryRepository.findGameByPlayerId(activePlayer.id.toString());
-    
-    if(game.status === GameStatus.Finished) {
+
+    if (game.status === GameStatus.Finished) {
       throw NotFoundDomainException.create('Game is finished');
     }
     return game;
   }
 
   @Get('pairs/my')
+  @UseGuards(JwtAuthPassportGuard)
   @HttpCode(HttpStatus.OK)
   async getAllMyGames(@ExtractAnyUserFromRequest() user: UserJwtPayloadDto, @Query() query: GetGamesQueryParams): Promise<PaginatedGameViewDto> {
     try {
@@ -62,6 +64,7 @@ export class PairGameController {
   }
 
   @Get('pairs/:id')
+  @UseGuards(JwtAuthPassportGuard)
   @HttpCode(HttpStatus.OK)
   async getGameById(@ExtractAnyUserFromRequest() user: UserJwtPayloadDto, @Param('id') id: string): Promise<any> {
 
@@ -72,7 +75,7 @@ export class PairGameController {
     const firstPlayerId = game.firstPlayerProgress.player.id;
     const secondPlayerId = game.secondPlayerProgress?.player.id;
 
-    if(![firstPlayerId, secondPlayerId].includes(user.userId.toString())) {
+    if (![firstPlayerId, secondPlayerId].includes(user.userId.toString())) {
       throw ForbiddenDomainException.create('You are not a participant of this game');
     }
 
@@ -80,6 +83,7 @@ export class PairGameController {
   }
 
   @Post('pairs/connection')
+  @UseGuards(JwtAuthPassportGuard)
   @HttpCode(HttpStatus.OK)
   async connection(@ExtractAnyUserFromRequest() user: UserJwtPayloadDto): Promise<any> {
 
@@ -98,6 +102,7 @@ export class PairGameController {
   }
 
   @Post('pairs/my-current/answers')
+  @UseGuards(JwtAuthPassportGuard)
   @HttpCode(HttpStatus.OK)
   async answers(@ExtractAnyUserFromRequest() user: UserJwtPayloadDto, @Body() body: { answer: string }): Promise<any> {
     const player = await this.playerQueryRepository.findActivePlayerByUserId(user.userId);
@@ -134,21 +139,27 @@ export class PairGameController {
     const answerIsCorrect = question.correctAnswers.includes(body.answer);
 
     const answerId = await this.commandBus.execute(new CreateAnswerCommand(user.userId, body.answer, player.id, answerIsCorrect, questionId));
-    
+
     const answer = await this.answerQueryRepository.findAnswerById(answerId);
     if (secondPlayerAnswers.length === 5 && currentPlayerAnswers.length === 4) {
-      await this.commandBus.execute(new FinishGameCommand(game.id,  player.id.toString(), secondPlayer!.id.toString()));
+      await this.commandBus.execute(new FinishGameCommand(game.id, player.id.toString(), secondPlayer!.id.toString()));
     }
     return answer;
   }
 
   @Get('users/my-statistic')
+  @UseGuards(JwtAuthPassportGuard)
   @HttpCode(HttpStatus.OK)
   async getMyStatistic(@ExtractAnyUserFromRequest() user: UserJwtPayloadDto): Promise<any> {
     const statistic = await this.commandBus.execute(new GetMyStatisticCommand(user.userId));
     return statistic;
   }
 
-
+  @Get('users/top')
+  @HttpCode(HttpStatus.OK)
+  async getTopUsers(@ExtractAnyUserFromRequest() user: UserJwtPayloadDto): Promise<any> {
+    const statistic = await this.commandBus.execute(new GetMyStatisticCommand(user.userId));
+    return statistic;
+  }
 
 }
