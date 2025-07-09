@@ -18,6 +18,7 @@ import { FinishGameCommand } from '../application/usecases/finish-game.usecase';
 import { GetMyStatisticCommand } from '../application/usecases/get-my-stat.usecase';
 import { PaginatedGameViewDto } from 'src/core/dto/base.paginated.view-dto';
 import { GetGamesQueryParams } from '../dto/get-games-query-params.input-dto';
+import { GetTopUsersQueryParams } from '../dto/get-top-users-query-params.input-dto';
 
 @ApiTags('Pair Game') //swagger
 
@@ -138,7 +139,16 @@ export class PairGameController {
 
     const answerIsCorrect = question.correctAnswers.includes(body.answer);
 
-    const answerId = await this.commandBus.execute(new CreateAnswerCommand(user.userId, body.answer, player.id, answerIsCorrect, questionId));
+    const answerId = await this.commandBus.execute(new CreateAnswerCommand(
+      user.userId,
+      body.answer,
+      player.id,
+      answerIsCorrect,
+      questionId,
+      player,
+      secondPlayer!,
+      game,
+    ));
 
     const answer = await this.answerQueryRepository.findAnswerById(answerId);
     if (secondPlayerAnswers.length === 5 && currentPlayerAnswers.length === 4) {
@@ -157,9 +167,15 @@ export class PairGameController {
 
   @Get('users/top')
   @HttpCode(HttpStatus.OK)
-  async getTopUsers(@ExtractAnyUserFromRequest() user: UserJwtPayloadDto): Promise<any> {
-    const statistic = await this.commandBus.execute(new GetMyStatisticCommand(user.userId));
-    return statistic;
+  async getTopUsers(@Query() query: GetTopUsersQueryParams): Promise<any> {
+    try {
+      const topUsers = await this.gameQueryRepository.findTopUsers(query);
+      return topUsers;
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
+
   }
 
 }

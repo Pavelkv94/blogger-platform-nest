@@ -2,6 +2,13 @@
 //значения по-умолчанию применятся автоматически при настройке глобального ValidationPipe в main.ts
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
+import { ValidateNested, IsArray, IsOptional } from 'class-validator';
+import { TransformSortQuery } from '../decorators/transform/sort-query';
+
+export interface SortParameter<T> {
+  field: T;
+  direction: SortDirection;
+}
 
 class PaginationParams {
   //для трансформации в number
@@ -27,4 +34,19 @@ export enum SortDirection {
 export abstract class BaseSortablePaginationParams<T> extends PaginationParams {
   sortDirection: SortDirection = SortDirection.Desc;
   abstract sortBy: T;
+}
+
+export abstract class BaseSortableStringPaginationParams<T> extends PaginationParams {
+  @ApiProperty({
+    example: [{ field: 'avgScores', direction: 'desc' }, { field: 'sumScore', direction: 'desc' }],
+    description: 'Array of sort parameters',
+    type: 'array',
+    required: false
+  })
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => Object)
+  @IsOptional()
+  @TransformSortQuery()
+  sort: SortParameter<T>[] = [];
 }

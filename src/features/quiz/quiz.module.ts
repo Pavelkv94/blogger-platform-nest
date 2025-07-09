@@ -36,6 +36,7 @@ import { FinishGameUseCase } from './pairGame/application/usecases/finish-game.u
 import { GetMyStatisticUseCase } from './pairGame/application/usecases/get-my-stat.usecase';
 import { ScheduleModule } from '@nestjs/schedule';
 import { CronSchedulerUseCase } from './pairGame/application/usecases/cron-scheduler.usecase';
+import { User } from '../user-accounts/domain/user/user.entity';
 
 const useCases = [
   CreateQuestionUseCase,
@@ -62,7 +63,7 @@ const repositories = [
   GameQuestionsRepository,
   AnswerRepository,
   AnswerQueryRepository,
-  GameQuestionsQueryRepository
+  GameQuestionsQueryRepository,
 ];
 
 @ApiTags('Quiz') //swagger
@@ -78,7 +79,7 @@ const repositories = [
     }),
     CqrsModule,
     UserAccountsModule,
-    TypeOrmModule.forFeature([Question, Game, GameQuestions, Player, Answer]),
+    TypeOrmModule.forFeature([Question, Game, GameQuestions, Player, Answer, User]),
   ],
   exports: [],
   controllers: [SaQuestionsController, PairGameController],

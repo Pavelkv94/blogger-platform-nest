@@ -679,6 +679,7 @@ describe('quiz game', () => {
 
     await delay(3000);
     const response6 = await gameTestManager.getGameById(firstUserToken, response3.id);
+    console.log(response6);
     expect(response6.status).toBe(GameStatus.Finished);
     expect(response6.finishGameDate).not.toBeNull();
     expect(response6.firstPlayerProgress.score).toBe(6);

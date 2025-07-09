@@ -4,7 +4,10 @@ import { GameRepository } from '../../infrastructure/game.repository';
 import { PlayerRepository } from '../../infrastructure/player.repository';
 // import { PlayerStatus } from '../../dto/player-status';
 import { AnswerRepository } from '../../infrastructure/answer.repository';
+import { PlayerStatus } from '../../dto/player-status';
+import { Cron, CronExpression } from '@nestjs/schedule';
 
+const TIME_DIFFERENCE = 3000;
 export class CronSchedulerCommand {
   constructor() { }
 }
@@ -16,59 +19,64 @@ export class CronSchedulerUseCase implements ICommandHandler<CronSchedulerComman
   async execute(): Promise<void> {
   }
 
-  // @Cron('*/1 * * * * *')
-  // async handleCron() {
-  //   console.log('Cron job executed at every 10 seconds');
-  //   const games = await this.gameRepository.findAllGames();
+  // @Cron(CronExpression.EVERY_SECOND)
+  @Cron(CronExpression.EVERY_10_HOURS)
 
-  //   for (const game of games) {
-  //     const firstPlayerAnswersLength = game.firstPlayer_answers.length;
-  //     const secondPlayerAnswersLength = game.secondPlayer_answers.length;
+  async handleCron() {
+    // console.log('Cron job executed at every 10 seconds');
+    const games = await this.gameRepository.findAllGames();
 
-  //     if (firstPlayerAnswersLength === 5 && secondPlayerAnswersLength < 5) {
-  //       const givenTimestamp = new Date(game.firstPlayer_answers[4].addedAt);
-  //       const currentTimestamp = new Date();
-  //       const timeDifference = currentTimestamp.getTime() - givenTimestamp.getTime();
+    for (const game of games) {
 
-  //       if (timeDifference > 10000) {
-  //         await this.playerRepository.updatePlayerScore(game.firstPlayer_id);
-  //         await this.playerRepository.updatePlayerStatus(game.firstPlayer_id, PlayerStatus.WIN);
-  //         const incorrectAnswersForSecondPlayer = 5 - secondPlayerAnswersLength;
+      // console.log(game.firstPlayer_answers);
+      // console.log(game.secondPlayer_answers);
+      const firstPlayerAnswersLength = game.firstPlayer_answers.length || 0;
+      const secondPlayerAnswersLength = game.secondPlayer_answers.length || 0;
 
-  //         for (let i = 0; i < incorrectAnswersForSecondPlayer; i++) {
-  //           await this.answerRepository.createAnswer("Incorrect", game.secondPlayer_id, false, game.id);
-  //         }
-  //         await this.playerRepository.updatePlayerStatus(game.secondPlayer_id, PlayerStatus.LOSE);
+      if (firstPlayerAnswersLength === 5 && secondPlayerAnswersLength < 5) {
+        const givenTimestamp = new Date(game.firstPlayer_answers[4].addedAt);
+        const currentTimestamp = new Date();
+        const timeDifference = currentTimestamp.getTime() - givenTimestamp.getTime();
 
-  //         await this.gameRepository.finishGame(game.id);
-  //         console.log('Game is finished');
-  //       }
+        if (timeDifference > TIME_DIFFERENCE) {
+          await this.playerRepository.updatePlayerScore(game.firstPlayer_id);
+          await this.playerRepository.updatePlayerStatus(game.firstPlayer_id, PlayerStatus.WIN);
+          const incorrectAnswersForSecondPlayer = 5 - secondPlayerAnswersLength;
+
+          for (let i = 0; i < incorrectAnswersForSecondPlayer; i++) {
+            await this.answerRepository.createAnswer("Incorrect", game.secondPlayer_id, false, game.id);
+          }
+          await this.playerRepository.updatePlayerStatus(game.secondPlayer_id, PlayerStatus.LOSE);
+
+          await this.gameRepository.finishGame(game.id);
+          console.log('Game is finished');
+        }
           
-  //     }
+      }
 
-  //     if (secondPlayerAnswersLength === 5 && firstPlayerAnswersLength < 5) {
-  //       const givenTimestamp = new Date(game.secondPlayer_answers[4].addedAt);
-  //       const currentTimestamp = new Date();
-  //       const timeDifference = currentTimestamp.getTime() - givenTimestamp.getTime();
+      if (secondPlayerAnswersLength === 5 && firstPlayerAnswersLength < 5) {
+        const givenTimestamp = new Date(game.secondPlayer_answers[4].addedAt);
+        const currentTimestamp = new Date();
+        const timeDifference = currentTimestamp.getTime() - givenTimestamp.getTime();
 
-  //       if (timeDifference > 10000) {
-  //         await this.playerRepository.updatePlayerScore(game.secondPlayer_id);
-  //         await this.playerRepository.updatePlayerStatus(game.secondPlayer_id, PlayerStatus.WIN);
-  //         const incorrectAnswersForFirstPlayer = 5 - firstPlayerAnswersLength;
+        if (timeDifference > TIME_DIFFERENCE) {
+          await this.playerRepository.updatePlayerScore(game.secondPlayer_id);
+          await this.playerRepository.updatePlayerStatus(game.secondPlayer_id, PlayerStatus.WIN);
+          const incorrectAnswersForFirstPlayer = 5 - firstPlayerAnswersLength;
 
-  //         for (let i = 0; i < incorrectAnswersForFirstPlayer; i++) {
-  //           await this.answerRepository.createAnswer("Incorrect", game.firstPlayer_id, false, game.id);
-  //         }
-  //         await this.playerRepository.updatePlayerStatus(game.firstPlayer_id, PlayerStatus.LOSE);
+          for (let i = 0; i < incorrectAnswersForFirstPlayer; i++) {
+            await this.answerRepository.createAnswer("Incorrect", game.firstPlayer_id, false, game.id);
+          }
+          await this.playerRepository.updatePlayerStatus(game.firstPlayer_id, PlayerStatus.LOSE);
 
-  //         await this.gameRepository.finishGame(game.id);
-  //         console.log('Game is finished');
-  //       }
+          await this.gameRepository.finishGame(game.id);
+          console.log('Game is finished');
+        }
           
-  //     }
-  //   }
+      }
+    }
 
-  // }
+  }
 
 
 }
